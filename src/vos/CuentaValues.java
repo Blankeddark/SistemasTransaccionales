@@ -1,5 +1,6 @@
 package vos;
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class CuentaValues 
@@ -12,14 +13,14 @@ public class CuentaValues
 
 	private int oficina;
 
-	private GregorianCalendar fechaUltimoMovimiento;
+	private Date fechaUltimoMovimiento;
 
 	private int  saldo;
 
 	private String estado;
 
 	public CuentaValues(int idCuenta, String correo, String tipoCuenta,
-			int oficina, GregorianCalendar fechaUltimoMovimiento, int saldo,
+			int oficina, Date fechaUltimoMovimiento, int saldo,
 			String estado) {
 		super();
 		this.idCuenta = idCuenta;
@@ -63,11 +64,11 @@ public class CuentaValues
 		this.oficina = oficina;
 	}
 
-	public GregorianCalendar getFechaUltimoMovimiento() {
+	public Date getFechaUltimoMovimiento() {
 		return fechaUltimoMovimiento;
 	}
 
-	public void setFechaUltimoMovimiento(GregorianCalendar fechaUltimoMovimiento) {
+	public void setFechaUltimoMovimiento(Date fechaUltimoMovimiento) {
 		this.fechaUltimoMovimiento = fechaUltimoMovimiento;
 	}
 

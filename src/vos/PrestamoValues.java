@@ -1,5 +1,6 @@
 package vos;
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class PrestamoValues 
@@ -12,7 +13,7 @@ public class PrestamoValues
 
 	private String tipo;
 
-	private GregorianCalendar fechaPrestamo;
+	private Date fechaPrestamo;
 
 	private int diaPagoMensual;
 
@@ -29,7 +30,7 @@ public class PrestamoValues
 	private int cuotasEfectivas;
 
 	public PrestamoValues(int id, String correoCliente, int montoPrestado,
-			String tipo, GregorianCalendar fechaPrestamo, int diaPagoMensual,
+			String tipo, Date fechaPrestamo, int diaPagoMensual,
 			int cuota, int saldoPendiente, String estado, int numeroCuotas,
 			float interes, int cuotasEfectivas) {
 		super();
@@ -79,11 +80,11 @@ public class PrestamoValues
 		this.tipo = tipo;
 	}
 
-	public GregorianCalendar getFechaPrestamo() {
+	public Date getFechaPrestamo() {
 		return fechaPrestamo;
 	}
 
-	public void setFechaPrestamo(GregorianCalendar fechaPrestamo) {
+	public void setFechaPrestamo(Date fechaPrestamo) {
 		this.fechaPrestamo = fechaPrestamo;
 	}
 

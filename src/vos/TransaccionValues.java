@@ -1,5 +1,6 @@
 package vos;
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class TransaccionValues 
@@ -11,12 +12,12 @@ public class TransaccionValues
 
 	private String tipo;
 
-	private GregorianCalendar fechaTransaccion;
+	private Date fechaTransaccion;
 
 	private int idPuntoAtencion;
 
 	public TransaccionValues(int idTransaccion, String correoUsuario,
-			String tipo, GregorianCalendar fechaTransaccion, int idPuntoAtencion) {
+			String tipo, Date fechaTransaccion, int idPuntoAtencion) {
 		super();
 		this.idTransaccion = idTransaccion;
 		this.correoUsuario = correoUsuario;
@@ -49,11 +50,11 @@ public class TransaccionValues
 		this.tipo = tipo;
 	}
 
-	public GregorianCalendar getFechaTransaccion() {
+	public Date getFechaTransaccion() {
 		return fechaTransaccion;
 	}
 
-	public void setFechaTransaccion(GregorianCalendar fechaTransaccion) {
+	public void setFechaTransaccion(Date fechaTransaccion) {
 		this.fechaTransaccion = fechaTransaccion;
 	}
 

@@ -30,10 +30,9 @@ public class UsuarioValues
  
  private GregorianCalendar fecha_registro;
 
- private String tipo_usuario;
  
 public UsuarioValues(String correo, String login, String contraseña,String numero_id, String tipo_id, String nombre, String nacionalidad,
-		String direccion, String telefono, String ciudad, String departamento,String cod_postal, GregorianCalendar fecha_registro, String tipo_usuario) 
+		String direccion, String telefono, String ciudad, String departamento,String cod_postal, GregorianCalendar fecha_registro) 
 {
 	super();
 	this.correo = correo;
@@ -49,28 +48,6 @@ public UsuarioValues(String correo, String login, String contraseña,String numer
 	this.departamento = departamento;
 	this.cod_postal = cod_postal;
 	this.fecha_registro = fecha_registro;
-	this.tipo_usuario = tipo_usuario;
-}
-
-public UsuarioValues(String correo, String login, String contraseña, String numero_id, 
-		String tipo_id, String tipo_usuario)
-{
-	this.correo = correo;
-	this.login = login;
-	this.contraseña = contraseña;
-	this.numero_id = numero_id;
-	this.tipo_id = tipo_id;
-	this.tipo_usuario = tipo_usuario;
-}
-
-public String getTipo_usuario()
-{
-	return tipo_usuario;
-}
-
-public void setTipo_usuario(String tipo_usuario)
-{
-	this.tipo_usuario = tipo_usuario;
 }
 
 public String getCorreo() 
