@@ -3,13 +3,15 @@ package DAOS;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Properties;
 
 import vos.PrestamoValues;
@@ -309,7 +311,7 @@ public class CerrarPrestamoDAO
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean cerrarPrestamoExistentePagado (int id_eliminar) throws Exception
+	public boolean cerrarPrestamoExistentePagado (int id_eliminar, int oficina) throws Exception
 	{
 		PreparedStatement prepStmt = null;
 
@@ -321,9 +323,16 @@ public class CerrarPrestamoDAO
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT SALDO_PENDIENTE FROM PRESTAMOS WHERE ID = "
 					+ id_eliminar );
-			
-			
 			int saldoPendiente = rs.getInt("SALDO_PENDIENTE");
+			rs = s.executeQuery("SELECT ID_TRANSACCION FROM(SELECT * FROM TRANSACCIONES"
+					+ "ORDER BY ID_TRANSACCION DESC) WHERE ROWNUM = 1");
+			int idTransaccionMax = rs.getInt("ID_TRANSACCION");
+			idTransaccionMax++;
+			
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date = new Date();
+			String fecha_registro = dateFormat.format(date) ;
+			
 			
 			if(saldoPendiente != 0)
 			{
@@ -332,6 +341,29 @@ public class CerrarPrestamoDAO
 			
 			else if (saldoPendiente == 0)
 			{
+				rs = s.executeQuery("SELECT CORREO_CLIENTE FROM PRESTAMOS WHERE ID = " + id_eliminar);
+				String correo_cliente = rs.getString("CORREO_USUARIO");
+				rs = s.executeQuery("SELECT ID FROM PUNTOS_ATENCION WHERE OFICINA = " + oficina);
+				int puesto_atencion = rs.getInt("ID");
+				String sentencia = "INSERT INTO TRANSACCIONES (ID_TRANSACCION, CORREO_USUARIO, TIPO, FECHA_TRANSACCION, ID_PUNTO_ATENCION) "+
+						"VALUES (" + idTransaccionMax + "," + "'" + correo_cliente + "'"  + "," + 
+						"'" + "CP" + "'" + "," + "TO_DATE ("+
+						"'" + fecha_registro + "' , 'yyyy/mm/dd HH24-Mi-SS')" + "," 
+					     + puesto_atencion + ")";
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentencia);
+				prepStmt = conexion.prepareStatement(sentencia);
+				prepStmt.executeUpdate();
+				conexion.commit();	
+				
+				sentencia = "INSERT INTO CIERRES_PRESTAMOS (ID_CIERRE, ID_PRESTAMO_CERRADO) "+
+						"VALUES (" + idTransaccionMax + "," + id_eliminar + ")";
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentencia);
+				prepStmt = conexion.prepareStatement(sentencia);
+				prepStmt.executeUpdate();
+				conexion.commit();	
+				
 				String sentencia1 = "UPDATE PRESTAMOS SET ESTADO = 'CERRADO' WHERE ID = "
 						+ id_eliminar;
 				System.out.println("--------------------------------------------------------------------------");

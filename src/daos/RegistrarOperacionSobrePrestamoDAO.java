@@ -135,8 +135,8 @@ public class RegistrarOperacionSobrePrestamoDAO
 
 	}
 
-	public boolean registrarOperacionSobrePrestamoExistente (String tipo, String correo_cliente, int id_cuenta, int valor, int puesto_atencion, String cajero, String tipo_prestamo, String id_solicitud,
-			int diaPagoMensual, int numCuotas) throws Exception
+	public boolean registrarOperacionSobrePrestamoExistente (String tipo, String correo_cliente, int id_cuenta, int valor, int puesto_atencion, String cajero, String tipo_prestamo, int id_solicitud,
+			int numCuotas, int idPrestamo) throws Exception
 	{
 		PreparedStatement prepStmt = null;
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -157,11 +157,19 @@ public class RegistrarOperacionSobrePrestamoDAO
 
 			idTransaccion = rs1.getInt("ID_TRANSACCION");
 			idTransaccion++;
-
-
+            
+            String tipoX = "";
+			
+            if(tipo.equals("Solicitar")) tipoX = "SP";
+            else if(tipo.equals("Aprobar")) tipoX = "AP";
+            else if(tipo.equals("Rechazar")) tipoX = "RP";
+            else if(tipo.equals("Pagar cuota")) tipoX = "PP";
+            else if(tipo.equals("Pagar cuota extraordinaria")) tipoX = "PPE";
+            
+                
 			String sentencia = "INSERT INTO TRANSACCIONES (ID_TRANSACCION, CORREO_USUARIO, TIPO, FECHA_TRANSACCION, ID_PUNTO_ATENCION) "+
 					"VALUES (" + idTransaccion + "," + "'" + correo_cliente + "'"  + "," 
-					+ "'" + tipo + "'"  + "," + "TO_DATE (" + "'" + fecha_registro 
+					+ "'" + tipoX + "'"  + "," + "TO_DATE (" + "'" + fecha_registro 
 					+ "' , 'yyyy/mm/dd HH24-Mi-SS')" + "," + puesto_atencion + ")";
 			System.out.println("--------------------------------------------------------------------------");
 			System.out.println(sentencia);
@@ -172,18 +180,11 @@ public class RegistrarOperacionSobrePrestamoDAO
 
 			if(tipo.equals("Solicitar"))
 			{
-				int idMax = 0;
-				Statement s = conexion.createStatement();
-				ResultSet rs = s.executeQuery("SELECT ID"
-						+ "FROM (SELECT ID FROM SOLICITUDES_PRESTAMO ORDER BY ID DESC)"
-						+ "WHERE ROWNUM = 1");
-
-				idMax = rs.getInt("ID");
-				idMax++;
+				Statement s = conexion.createStatement();	
 
 				String sentencia1 = "INSERT INTO SOLICITUDES_PRESTAMO (ID, MONTO_SOLICITADO,"
 						+ " TIPO, ESTADO) "+
-						"VALUES (" + idMax + "," + valor + "," + "'" + tipo_prestamo + "'" + "," 
+						"VALUES (" + idTransaccion + "," + valor + "," + "'" + tipo_prestamo + "'" + "," 
 						+ "'" + "EnEspera" + "'" + ")";
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia1);
@@ -195,27 +196,22 @@ public class RegistrarOperacionSobrePrestamoDAO
 
 			else if(tipo.equals("Aprobar"))
 			{
-				int idMax = 0;
-				Statement s = conexion.createStatement();
-				ResultSet rs = s.executeQuery("SELECT ID"
-						+ "FROM (SELECT ID FROM APROBACIONES_PRESTAMO ORDER BY ID DESC)"
-						+ "WHERE ROWNUM = 1");
-
-				idMax = rs.getInt("ID");
-				idMax++;
-
+				Statement s = conexion.createStatement();	
 				String sentencia1 = "INSERT INTO APROBACIONES_PRESTAMO"
 						+ " (ID, SOLICITUD_APROBADA) "+
-						"VALUES (" + idMax + "," + id_solicitud + ")";
+						"VALUES (" + idTransaccion + "," + id_solicitud + ")";
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia1);
 
 				prepStmt = conexion.prepareStatement(sentencia1);
 				prepStmt.executeUpdate();
 				conexion.commit();
+				
+				
+				
 
 				sentencia1 = "UPDATE SOLICITUDES_PRESTAMO SET ESTADO = 'Aprobada' "
-						+ "WHERE ID = " + idMax;
+						+ "WHERE ID = " + idTransaccion;
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia1);
 				prepStmt = conexion.prepareStatement(sentencia1);
@@ -224,7 +220,7 @@ public class RegistrarOperacionSobrePrestamoDAO
 
 				int idPrestamoMax = 0;
 				s = conexion.createStatement();
-			    rs = s.executeQuery("SELECT ID"
+			    ResultSet rs = s.executeQuery("SELECT ID"
 						+ "FROM (SELECT ID FROM PRESTAMOS ORDER BY ID DESC)"
 						+ "WHERE ROWNUM = 1");
 
@@ -260,16 +256,11 @@ public class RegistrarOperacionSobrePrestamoDAO
 			{
 				int idMax = 0;
 				Statement s = conexion.createStatement();
-				ResultSet rs = s.executeQuery("SELECT ID"
-						+ "FROM (SELECT ID FROM RECHAZOS_PRESTAMO ORDER BY ID DESC)"
-						+ "WHERE ROWNUM = 1");
-
-				idMax = rs.getInt("ID");
-				idMax++;
+				
 
 				String sentencia1 = "INSERT INTO RECHAZOS_PRESTAMO"
 						+ " (ID, SOLICITUD_RECHAZADA) "+
-						"VALUES (" + idMax + "," + id_solicitud + ")";
+						"VALUES (" + idTransaccion + "," + id_solicitud + ")";
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia1);
 				prepStmt = conexion.prepareStatement(sentencia1);
@@ -288,12 +279,52 @@ public class RegistrarOperacionSobrePrestamoDAO
 
 			else if(tipo.equals("Pagar cuota"))
 			{
-                  
+				Statement s = conexion.createStatement();
+				ResultSet rs = s.executeQuery("SELECT SALDO_PENDIENTE FROM PRESTAMOS WHERE ID = " + idPrestamo);
+				int saldoPendiente = rs.getInt("SALDO_PENDIENTE");
+				saldoPendiente -= (valor/numCuotas);
+				rs = s.executeQuery("SELECT CUOTAS_EFECTIVAS FROM PRESTAMOS WHERE ID = " + idPrestamo);
+				int cuotasEfectivas = rs.getInt("CUOTAS_EFECTIVAS");
+				cuotasEfectivas++;
+				String sentencia1 = "UPDATE PRESTAMOS SET SALDO_PENDIENTE = " + saldoPendiente + "," 
+						+ " CUOTAS_EFECTIVAS = " + cuotasEfectivas + "WHERE ID = " + idPrestamo;
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentencia1);
+				prepStmt = conexion.prepareStatement(sentencia1);
+				prepStmt.executeUpdate();
+				conexion.commit();
+				sentencia1 = "INSERT INTO PAGOS_PRESTAMO(ID_PAGO, ID_PRESTAMO_PAGADO, MONTO_PAGADO) "
+						+ "VALUES (" + idTransaccion + "," + idPrestamo + "," + (valor/numCuotas) + ")";
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentencia1);
+				prepStmt = conexion.prepareStatement(sentencia1);
+				prepStmt.executeUpdate();
+				conexion.commit();
 			}
 
 			else if(tipo.equals("Pagar cuota extraordinaria"))
 			{
-
+				Statement s = conexion.createStatement();
+				ResultSet rs = s.executeQuery("SELECT SALDO_PENDIENTE FROM PRESTAMOS WHERE ID = " + idPrestamo);
+				int saldoPendiente = rs.getInt("SALDO_PENDIENTE");
+				saldoPendiente -= valor;
+				rs = s.executeQuery("SELECT CUOTAS_EFECTIVAS FROM PRESTAMOS WHERE ID = " + idPrestamo);
+				int cuotasEfectivas = rs.getInt("CUOTAS_EFECTIVAS");
+				cuotasEfectivas++;
+				String sentencia1 = "UPDATE PRESTAMOS SET SALDO_PENDIENTE = " + saldoPendiente + "," 
+						+ " CUOTAS_EFECTIVAS = " + cuotasEfectivas + "WHERE ID = " + idPrestamo;
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentencia1);
+				prepStmt = conexion.prepareStatement(sentencia1);
+				prepStmt.executeUpdate();
+				conexion.commit();
+				sentencia1 = "INSERT INTO PAGOS_PRESTAMO(ID_PAGO, ID_PRESTAMO_PAGADO, MONTO_PAGADO) "
+						+ "VALUES (" + idTransaccion + "," + idPrestamo + "," + valor + ")";
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentencia1);
+				prepStmt = conexion.prepareStatement(sentencia1);
+				prepStmt.executeUpdate();
+				conexion.commit();
 			}
 
 		} 

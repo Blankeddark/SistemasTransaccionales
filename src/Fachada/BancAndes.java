@@ -134,11 +134,11 @@ public class BancAndes
 	 * requerimiento puedes usar el método debajo de este)
 	 * @param idEliminar
 	 */
-	public void cerrarPrestamoRF9(int idEliminar)
+	public void cerrarPrestamoRF9(int idEliminar, int oficinaGerenteActual)
 	{
 		try 
 		{
-			cerrarPrestamoDao.cerrarPrestamoExistentePagado(idEliminar);
+			cerrarPrestamoDao.cerrarPrestamoExistentePagado(idEliminar, oficinaGerenteActual);
 		}
 
 		catch (Exception e) 
@@ -162,6 +162,59 @@ public class BancAndes
 
 		catch (Exception e) 
 		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Este método se encarga de resolver el RF6
+	 * @param tipo
+	 * @param correo_cliente
+	 * @param id_cuenta
+	 * @param valor
+	 * @param puesto_atencion
+	 * @param cajero
+	 */
+	public void registrarOperacionSobreCuenta(String tipo, String correo_cliente, int id_cuenta,
+			int valor, int puesto_atencion, String cajero)
+	{
+		try 
+		{
+			registrarOperacionCuentaDAO.registrarOperacionSobreCuentaExistente(tipo, correo_cliente, 
+					id_cuenta, valor, puesto_atencion, cajero);
+		} 
+
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
+	/**
+	 * Dependiendo de la operación que se vaya a realizar son los campos a utilizar.
+	 * @param tipo 
+	 * @param correo_cliente 
+	 * @param id_cuenta
+	 * @param valor
+	 * @param puesto_atencion
+	 * @param cajero
+	 * @param tipo_prestamo
+	 * @param id_solicitud
+	 * @param numCuotas
+	 * @param idPrestamo
+	 */
+	public void registrarCuentaSobrePrestamoRF8(String tipo, String correo_cliente, int id_cuenta,
+			int valor, int puesto_atencion, String cajero, String tipo_prestamo, int id_solicitud,
+			int numCuotas, int idPrestamo)
+	{
+		try {
+			registrarOperacionPrestamoDAO.registrarOperacionSobrePrestamoExistente(tipo, 
+					correo_cliente, id_cuenta, valor, puesto_atencion, cajero, tipo_prestamo, 
+					id_solicitud, numCuotas, idPrestamo);
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -269,15 +269,31 @@ public class CerrarCuentaDAO
 				prepStmt = conexion.prepareStatement(sentencia1);
 				prepStmt.executeUpdate();
 				conexion.commit();
+			    
+				rs = s.executeQuery("SELECT ID_TRANSACCION FROM "
+						+ "( SELECT * FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC) "
+						+ "WHERE ROWNUM = 1");
+				
+				int idMax2 = rs.getInt("ID_TRANSACCION");
+			    idMax2++;
+			    
+				String sentencia3 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
+						+ " TIPO, FECHA_TRANSACCION, ID_PUNTO_ATENCION) "
+						+ "VALUES (" +  idMax + ","  + id_eliminar + "," + saldoActual + ")";
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentencia3);
+				prepStmt = conexion.prepareStatement(sentencia3);
+				prepStmt.executeUpdate();
+				conexion.commit();
 				
 				String sentencia2 = "INSERT INTO RETIROS(ID, ID_CUENTA_RETIRO, MONTO) "
 						+ "VALUES (" +  idMax + ","  + id_eliminar + "," + saldoActual + ")";
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia2);
-				prepStmt = conexion.prepareStatement(sentencia1);
+				prepStmt = conexion.prepareStatement(sentencia2);
 				prepStmt.executeUpdate();
 				conexion.commit();
-				
+			
 			}
 
 		} 
@@ -333,25 +349,56 @@ public class CerrarCuentaDAO
 			establecerConexion(cadenaConexion, usuario, clave);
 			//conexion.setAutoCommit(false);
 			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);			
-
+            
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = "
 					+ id_eliminar + "AND OFICINA = " + oficina);
 			int saldoActual = rs.getInt("SALDO");
 			
-			rs = s.executeQuery("SELECT ID FROM ( SELECT * FROM RETIROS ORDER BY ID DESC) "
+			rs = s.executeQuery("SELECT ID_TRANSACCION FROM ( SELECT * FROM TRANSACCIONES"
+					+ " ORDER BY ID_TRANSACCION DESC) "
 					+ "WHERE ROWNUM = 1");
 			
-			int idMax = rs.getInt("ID");
+			int idMax = rs.getInt("ID_TRANSACCION");
 		    idMax++;
 		    
 			if(saldoActual == 0)
 			{
+				rs = s.executeQuery("SELECT ID FROM PUNTOS_ATENCION WHERE OFICINA = "
+						+ oficina);
+				int idPuntoAtencion = rs.getInt("ID");
+				
+				rs = s.executeQuery("SELECT GERENTE FROM OFICINAS WHERE ID_OFICINA = "
+						+ oficina);
+				String correoGerente = rs.getString("GERENTE");
+				
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date = new Date();
+				String fecha_registro = dateFormat.format(date) ;
+				
+				String sentencia0 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
+						+ "TIPO , FECHA_TRANSACCION, ID_PUNTO_ATENCION )"
+						+ "VALUES(" + idMax + "," + "'" + correoGerente + "'" + ","
+						+  "'" + "CC" + "'" + "," + "TO_DATE (" + "'" + fecha_registro + "'" 
+						+ " , 'yyyy/mm/dd HH24-Mi-SS') " + "," + idPuntoAtencion +  ")";
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentencia0);
+				prepStmt = conexion.prepareStatement(sentencia0);
+				prepStmt.executeUpdate();
+				conexion.commit();
+				
+				String sentenciax = "INSERT INTO CIERRE_CUENTAS(ID, ID_CUENTA_CERRADA)"
+						+ "VALUES(" + idMax + "," + id_eliminar + ")";
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentenciax);
+				prepStmt = conexion.prepareStatement(sentenciax);
+				prepStmt.executeUpdate();
+				conexion.commit();
+				
 				String sentencia1 = "UPDATE CUENTAS SET ESTADO = 'Inactiva' "
 						+ "WHERE ID_CUENTA = " + id_eliminar + "AND OFICINA = " + oficina;
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia1);
-
 				prepStmt = conexion.prepareStatement(sentencia1);
 				prepStmt.executeUpdate();
 				conexion.commit();
@@ -360,12 +407,26 @@ public class CerrarCuentaDAO
 
 			else
 			{
-				String sentencia1 = "UPDATE CUENTAS SET ESTADO = 'Inactiva',"
-						+ "SALDO = 0  WHERE ID_CUENTA = "+ id_eliminar + " AND OFICINA = " 
-						+ oficina;
+				rs = s.executeQuery("SELECT ID FROM PUNTOS_ATENCION WHERE OFICINA = "
+						+ oficina);
+				int idPuntoAtencion = rs.getInt("ID");
+				
+				rs = s.executeQuery("SELECT GERENTE FROM OFICINAS WHERE ID_OFICINA = "
+						+ oficina);
+				String correoGerente = rs.getString("GERENTE");
+				
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date = new Date();
+				String fecha_registro = dateFormat.format(date) ;
+				
+				String sentencia3 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
+						+ "TIPO , FECHA_TRANSACCION, ID_PUNTO_ATENCION )"
+						+ "VALUES(" + idMax + "," + "'" + correoGerente + "'" + ","
+						+  "'" + "R" + "'" + "," + "TO_DATE (" + "'" + fecha_registro + "'" 
+						+ " , 'yyyy/mm/dd HH24-Mi-SS') " + "," + idPuntoAtencion +  ")";
 				System.out.println("--------------------------------------------------------------------------");
-				System.out.println(sentencia1);
-				prepStmt = conexion.prepareStatement(sentencia1);
+				System.out.println(sentencia3);
+				prepStmt = conexion.prepareStatement(sentencia3);
 				prepStmt.executeUpdate();
 				conexion.commit();
 				
@@ -373,6 +434,37 @@ public class CerrarCuentaDAO
 						+ "VALUES (" +  idMax + ","  + id_eliminar + "," + saldoActual + ")";
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia2);
+				prepStmt = conexion.prepareStatement(sentencia2);
+				prepStmt.executeUpdate();
+				conexion.commit();
+				
+				
+				idMax++;
+				
+				
+				String sentencia0 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
+						+ "TIPO , FECHA_TRANSACCION, ID_PUNTO_ATENCION )"
+						+ "VALUES(" + idMax + "," + "'" + correoGerente + "'" + ","
+						+  "'" + "CC" + "'" + "," + "TO_DATE (" + "'" + fecha_registro + "'" 
+						+ " , 'yyyy/mm/dd HH24-Mi-SS') " + "," + idPuntoAtencion +  ")";
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentencia0);
+				prepStmt = conexion.prepareStatement(sentencia0);
+				prepStmt.executeUpdate();
+				conexion.commit();
+				
+				String sentenciax = "INSERT INTO CIERRE_CUENTAS(ID, ID_CUENTA_CERRADA)"
+						+ "VALUES(" + idMax + "," + id_eliminar + ")";
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentenciax);
+				prepStmt = conexion.prepareStatement(sentenciax);
+				prepStmt.executeUpdate();
+				conexion.commit();
+				
+				String sentencia1 = "UPDATE CUENTAS SET ESTADO = 'Inactiva' "
+						+ "WHERE ID_CUENTA = " + id_eliminar + "AND OFICINA = " + oficina;
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentencia1);
 				prepStmt = conexion.prepareStatement(sentencia1);
 				prepStmt.executeUpdate();
 				conexion.commit();
