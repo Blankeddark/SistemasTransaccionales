@@ -13,6 +13,26 @@ import vos.UsuarioValues;
 
 public class ServletLogin extends ASServlet {
 
+	/**
+	 * Modela si el usuario es un cliente
+	 */
+	public final static String TIPO_USUARIO_CLIENTE = "Cliente";
+
+	/**
+	 * Modela si el usuario es un gerente de oficina
+	 */
+	public final static String TIPO_USUARIO_GERENTE_OFICINA = "GO";
+
+	/**
+	 * Modela si el empleado es un cajero
+	 */
+	public final static String TIPO_EMPLEADO_CAJERO = "C";
+
+	/**
+	 * Modela si el usuario es un gerente general
+	 */
+	public final static String TIPO_EMPLEADO_GERENTE_GENERAL = "GG";
+	
 	private UsuarioValues usuarioActual;
 
 	public ServletLogin()
@@ -38,7 +58,7 @@ public class ServletLogin extends ASServlet {
 		if ( iniciarSesion() ) //TODO quitar debug y agregar inicio de sesión real
 		{
 			ServletContext context= getServletContext();
-			RequestDispatcher rd= context.getRequestDispatcher("/gerenteOficina");
+			RequestDispatcher rd= context.getRequestDispatcher("/gerenteGeneral");
 			rd.forward(request, response);
 		}
 

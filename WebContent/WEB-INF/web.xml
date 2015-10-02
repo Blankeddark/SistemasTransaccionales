@@ -84,6 +84,32 @@
  
  </servlet>
  
+       <servlet>
+ 
+ 	<display-name>ServletIndexGerenteGeneral</display-name>
+ 	<servlet-name>ServletIndexGerenteGeneral</servlet-name>
+ 	<servlet-class>servlets.ServletIndexGerenteGeneral</servlet-class>
+ 
+ </servlet>
+ 
+        <servlet>
+ 
+ 	<display-name>ServletConsultarCuentaGeneral</display-name>
+ 	<servlet-name>ServletConsultarCuentaGeneral</servlet-name>
+ 	<servlet-class>servlets.ServletConsultarCuentaGeneral</servlet-class>
+ 
+ </servlet>
+ 
+ <servlet>
+ 
+ 	<display-name>ServletConsultarClienteGeneral</display-name>
+ 	<servlet-name>ServletConsultarClienteGeneral</servlet-name>
+ 	<servlet-class>servlets.ServletConsultarClienteGeneral</servlet-class>
+ 
+ </servlet>
+ 
+ 
+ 
  <servlet-mapping>
  
   <servlet-name>ServletPrincipal</servlet-name>
@@ -152,6 +178,27 @@
  
  	<servlet-name>ServletConsultarClienteOficina</servlet-name>
  	<url-pattern>/consultarClienteOficina</url-pattern>
+ 
+ </servlet-mapping>
+ 
+        <servlet-mapping>
+ 
+ 	<servlet-name>ServletIndexGerenteGeneral</servlet-name>
+ 	<url-pattern>/gerenteGeneral</url-pattern>
+ 
+ </servlet-mapping>
+ 
+ <servlet-mapping>
+ 
+ 	<servlet-name>ServletConsultarCuentaGeneral</servlet-name>
+ 	<url-pattern>/consultarCuentaGeneral</url-pattern>
+ 
+ </servlet-mapping>
+ 
+  <servlet-mapping>
+ 
+ 	<servlet-name>ServletConsultarClienteGeneral</servlet-name>
+ 	<url-pattern>/consultarClienteGeneral</url-pattern>
  
  </servlet-mapping>
  

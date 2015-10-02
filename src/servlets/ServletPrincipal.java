@@ -34,27 +34,6 @@ public class ServletPrincipal extends ASServlet {
 	 */
 	final static String ID_PASS_USUARIO = "passUsuario";
 
-	/**
-	 * Modela si el usuario es un cliente
-	 */
-	public final static String TIPO_USUARIO_CLIENTE = "Cliente";
-
-	/**
-	 * Modela si el usuario es un gerente de oficina
-	 */
-	public final static String TIPO_USUARIO_GERENTE_OFICINA = "GO";
-
-	/**
-	 * Modela si el empleado es un cajero
-	 */
-	public final static String TIPO_EMPLEADO_CAJERO = "C";
-
-	/**
-	 * Modela si el usuario es un gerente general
-	 */
-	public final static String TIPO_EMPLEADO_GERENTE_GENERAL = "GG";
-
-
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		PrintWriter pw = response.getWriter();
