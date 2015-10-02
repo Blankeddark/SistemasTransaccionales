@@ -196,7 +196,7 @@ public class ConsultarClienteDAO
 
 			while(rs.next())
 			{
-
+                   
 				String correo = rs.getString("CORREO");
 				String tipo = rs.getString("TIPO_PERSONA");
 				String nombre = rs.getString("NOMBRE");
@@ -233,6 +233,7 @@ public class ConsultarClienteDAO
 				int oficina = Integer.parseInt(idOficina);
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				Date date = new Date();
+				dateFormat.format(date);
 				String estado = rs.getString("ESTADO");
 				String monto = rs.getString("SALDO");
 				int saldo = Integer.parseInt(monto);
@@ -301,7 +302,7 @@ public class ConsultarClienteDAO
 				int diaPago = rs.getInt("DIA_PAGO_MENSUAL");
 				String estado = rs.getString("ESTADO");
 				int id = rs.getInt("ID");
-				Date fechaPrestamo = rs.getDate("FECHA_PRESTAMO");
+				Date fechaPrestamo = rs.getTimestamp("FECHA_PRESTAMO");
 				float interes = rs.getFloat("INTERES");
 				int montoPrestado = rs.getInt("MONTO_PRESTADO");
 				int numeroCuotas = rs.getInt("NUM_CUOTAS");
@@ -340,7 +341,7 @@ public class ConsultarClienteDAO
 				String correo = rs.getString("CORREO_USUARIO");
 				int idTransaccion = rs.getInt("ID_TRANSACCION");
 				String tipoTransaccion = rs.getString("TIPO");
-				Date fechaTransaccion = rs.getDate("FECHA_TRANSACCION");
+				Date fechaTransaccion = rs.getTimestamp("FECHA_TRANSACCION");
 				int idPuntoAtencion = rs.getInt("ID_PUNTO_ATENCION");
 				TransaccionValues transaccionActual = new 
 						TransaccionValues(idTransaccion, 

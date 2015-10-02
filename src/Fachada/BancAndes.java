@@ -1,5 +1,7 @@
 package Fachada;
 
+import java.util.ArrayList;
+
 import DAOS.CerrarCuentaDAO;
 import DAOS.CerrarPrestamoDAO;
 import DAOS.ConsultarClienteDAO;
@@ -192,7 +194,152 @@ public class BancAndes
 		}
 	}
 
+	public ArrayList consultarClienteEspecifico(String pCorreo, String ordenarPor, String descoasc, String agruparPor)
+	{
+		try 
+		{
+			ArrayList rta = consultarClienteDAO.darClienteEspecifico(pCorreo, ordenarPor, descoasc, agruparPor);
+			return rta;
+		}
+		
+		
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		return null;
+		
+	}
+	
+	public ArrayList darCuentasGerenteGeneral(String ordenarPor, String agruparPor, String descoasc)
+	{
+		try 
+		{
+		  return  consultarCuentasDAO.darCuentas(ordenarPor, agruparPor, descoasc);
+		} 
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 
+	public ArrayList darCuentasPorTipoGerenteGeneral(String tipo, String ordenarPor, String agruparPor, String descoasc)
+	{
+	   try 
+	   {
+		  return consultarCuentasDAO.darCuentasPorTipo(tipo, ordenarPor, agruparPor, descoasc);
+	    }
+	   
+	   catch (Exception e) 
+	   {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+    	}	
+	   
+	   return null;
+	}
+	
+	public ArrayList darCuentasPorRangoSaldoGerenteGeneral(int desde, int hasta, String ordenarPor, String agruparPor, String descoasc)
+	{
+	   try 
+	   {
+		  return consultarCuentasDAO.darCuentasPorRangoSaldo(desde, hasta, ordenarPor, agruparPor, descoasc);
+	    }
+	   
+	   catch (Exception e) 
+	   {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+    	}	
+	   
+	   return null;
+	}
+	
+	public ArrayList darCuentasPorFechaGerenteGeneral(String fecha, String ordenarPor, String agruparPor, String descoasc)
+	{
+	   try 
+	   {
+		  return consultarCuentasDAO.darCuentasPorFechaUltimoMovimiento(fecha, ordenarPor, agruparPor, descoasc);
+	    }
+	   
+	   catch (Exception e) 
+	   {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+    	}	
+	   
+	   return null;
+	}
+	
+	public ArrayList darCuentasPorTipoGerenteOficina(int idOficina, String tipo, String ordenarPor, String agruparPor, String descoasc)
+	{
+	   try 
+	   {
+		  return consultarCuentasDAO.darCuentasOficinaParticularPorTipoDeCuenta(idOficina, tipo, descoasc, agruparPor, ordenarPor);
+	    }
+	   
+	   catch (Exception e) 
+	   {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+    	}	
+	   
+	   return null;
+	}
+	
+	public ArrayList darCuentasGerenteOficina(int idOficina, String ordenarPor, String agruparPor, String descoasc)
+	{
+	   try 
+	   {
+		  return consultarCuentasDAO.darCuentasOficinaParticular(idOficina, ordenarPor, agruparPor, descoasc);
+	    }
+	   
+	   catch (Exception e) 
+	   {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+    	}	
+	   
+	   return null;
+	}
+	
+	public ArrayList darCuentasPorRangoSaldoGerenteOficina(int idOficina, int desde, int hasta, String ordenarPor, String agruparPor, String descoasc)
+	{
+	   try 
+	   {
+		  return consultarCuentasDAO.darCuentasOficinaParticularPorRangoDeSaldo(idOficina, desde, hasta, descoasc, ordenarPor, agruparPor);
+	    }
+	   
+	   catch (Exception e) 
+	   {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+    	}	
+	   
+	   return null;
+	}
+	
+	public ArrayList darCuentasPorRangoSaldoGerenteOficina(int idOficina, String fecha, String ordenarPor, String agruparPor, String descoasc)
+	{
+	   try 
+	   {
+		  return consultarCuentasDAO.darCuentasOficinaParticularPorFechaUltimoMovimiento(idOficina, fecha, descoasc, agruparPor, ordenarPor);
+	    }
+	   
+	   catch (Exception e) 
+	   {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+    	}	
+	   
+	   return null;
+	}
+	
 	/**
 	 * Dependiendo de la operación que se vaya a realizar son los campos a utilizar.
 	 * @param tipo 

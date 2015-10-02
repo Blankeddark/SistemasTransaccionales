@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import vos.CuentaValues;
+import vos.EmpleadoValues;
 import conexion.ConexionBd;
 
 public class CerrarCuentaDAO 
@@ -111,7 +112,7 @@ public class CerrarCuentaDAO
 		}
 	}
 
-	
+
 	/**
 	 * Método que retorna un arrayList con objetos de tipo CuentaValues
 	 * que contienen toda la información de las cuentas de un cliente especifico
@@ -127,7 +128,7 @@ public class CerrarCuentaDAO
 	 */
 	public ArrayList<CuentaValues> darCuentasDeUnClienteEnOficinaParticular(String numeroID, String tipoID, int idOficina) throws Exception
 	{   
-		
+
 		PreparedStatement prepStat = null;
 		ArrayList  cuentas = new ArrayList ();
 
@@ -139,23 +140,23 @@ public class CerrarCuentaDAO
 			ResultSet rs = s.executeQuery("SELECT CORREO FROM USUARIOS WHERE NUMERO_ID = "
 					+ "'" + numeroID + "'" + "AND TIPO_ID = " + "'" + tipoID + "'");
 			String correoCliente = rs.getString("CORREO");
-			
+
 			rs = s.executeQuery("SELECT * FROM CUENTAS WHERE CORREO = " + "'" + correoCliente + "'"
 					+ "AND OFICINA = " + "'" + idOficina + "'");
-			
+
 			while(rs.next())
 			{
-			   	int idCuenta = rs.getInt("ID_CUENTA");
-			   	String correo = rs.getString("CORREO");
-			   	String tipoCuenta = rs.getString("TIPO_CUENTA");
-			   	int oficina = rs.getInt("OFICINA");
-			   	Date fechaUltimoMovimiento = rs.getDate("FECHA_ULTIMO_MOVIMIENTO");
-			   	int saldo = rs.getInt("SALDO");
-			   	String estado = rs.getString("ESTADO");
-			   	CuentaValues cuentaActual = new CuentaValues(idCuenta, correo, tipoCuenta, oficina, fechaUltimoMovimiento, saldo, estado);
-			   	cuentas.add(cuentaActual);
+				int idCuenta = rs.getInt("ID_CUENTA");
+				String correo = rs.getString("CORREO");
+				String tipoCuenta = rs.getString("TIPO_CUENTA");
+				int oficina = rs.getInt("OFICINA");
+				Date fechaUltimoMovimiento = rs.getDate("FECHA_ULTIMO_MOVIMIENTO");
+				int saldo = rs.getInt("SALDO");
+				String estado = rs.getString("ESTADO");
+				CuentaValues cuentaActual = new CuentaValues(idCuenta, correo, tipoCuenta, oficina, fechaUltimoMovimiento, saldo, estado);
+				cuentas.add(cuentaActual);
 			}
-			
+
 		}
 
 		finally
@@ -164,7 +165,7 @@ public class CerrarCuentaDAO
 		}
 
 	}
-	
+
 	/**
 	 * Método que retorna un arrayList con objetos de tipo CuentaValues
 	 * que contienen toda la información de las cuentas de un cliente especifico.
@@ -177,7 +178,7 @@ public class CerrarCuentaDAO
 	 */
 	public ArrayList<CuentaValues> darCuentasDeUnCliente(String numeroID, String tipoID) throws Exception
 	{   
-		
+
 		PreparedStatement prepStat = null;
 		ArrayList  cuentas = new ArrayList ();
 
@@ -187,26 +188,26 @@ public class CerrarCuentaDAO
 
 			Statement s = conexion.createStatement();
 
-			
+
 			ResultSet rs = s.executeQuery("SELECT CORREO FROM USUARIOS WHERE NUMERO_ID = "
 					+ "'" + numeroID + "'" + "AND TIPO_ID = " + "'" + tipoID + "'");
 			String correoCliente = rs.getString("CORREO");
-			
+
 			rs = s.executeQuery("SELECT * FROM CUENTAS WHERE CORREO = " + "'" + correoCliente + "'");
-			
+
 			while(rs.next())
 			{
-			   	int idCuenta = rs.getInt("ID_CUENTA");
-			   	String correo = rs.getString("CORREO");
-			   	String tipoCuenta = rs.getString("TIPO_CUENTA");
-			   	int oficina = rs.getInt("OFICINA");
-			   	Date fechaUltimoMovimiento = rs.getDate("FECHA_ULTIMO_MOVIMIENTO");
-			   	int saldo = rs.getInt("SALDO");
-			   	String estado = rs.getString("ESTADO");
-			   	CuentaValues cuentaActual = new CuentaValues(idCuenta, correo, tipoCuenta, oficina, fechaUltimoMovimiento, saldo, estado);
-			   	cuentas.add(cuentaActual);
+				int idCuenta = rs.getInt("ID_CUENTA");
+				String correo = rs.getString("CORREO");
+				String tipoCuenta = rs.getString("TIPO_CUENTA");
+				int oficina = rs.getInt("OFICINA");
+				Date fechaUltimoMovimiento = rs.getDate("FECHA_ULTIMO_MOVIMIENTO");
+				int saldo = rs.getInt("SALDO");
+				String estado = rs.getString("ESTADO");
+				CuentaValues cuentaActual = new CuentaValues(idCuenta, correo, tipoCuenta, oficina, fechaUltimoMovimiento, saldo, estado);
+				cuentas.add(cuentaActual);
 			}
-			
+
 		}
 
 		finally
@@ -240,13 +241,13 @@ public class CerrarCuentaDAO
 			ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = "
 					+ id_eliminar);
 			int saldoActual = rs.getInt("SALDO");
-			
+
 			rs = s.executeQuery("SELECT ID FROM ( SELECT * FROM RETIROS ORDER BY ID DESC) "
 					+ "WHERE ROWNUM = 1");
-			
+
 			int idMax = rs.getInt("ID");
-		    idMax++;
-		    
+			idMax++;
+
 			if(saldoActual == 0)
 			{
 				String sentencia1 = "UPDATE CUENTAS SET ESTADO = 'Inactiva' "
@@ -269,14 +270,14 @@ public class CerrarCuentaDAO
 				prepStmt = conexion.prepareStatement(sentencia1);
 				prepStmt.executeUpdate();
 				conexion.commit();
-			    
+
 				rs = s.executeQuery("SELECT ID_TRANSACCION FROM "
 						+ "( SELECT * FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC) "
 						+ "WHERE ROWNUM = 1");
-				
+
 				int idMax2 = rs.getInt("ID_TRANSACCION");
-			    idMax2++;
-			    
+				idMax2++;
+
 				String sentencia3 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
 						+ " TIPO, FECHA_TRANSACCION, ID_PUNTO_ATENCION) "
 						+ "VALUES (" +  idMax + ","  + id_eliminar + "," + saldoActual + ")";
@@ -285,7 +286,7 @@ public class CerrarCuentaDAO
 				prepStmt = conexion.prepareStatement(sentencia3);
 				prepStmt.executeUpdate();
 				conexion.commit();
-				
+
 				String sentencia2 = "INSERT INTO RETIROS(ID, ID_CUENTA_RETIRO, MONTO) "
 						+ "VALUES (" +  idMax + ","  + id_eliminar + "," + saldoActual + ")";
 				System.out.println("--------------------------------------------------------------------------");
@@ -293,7 +294,7 @@ public class CerrarCuentaDAO
 				prepStmt = conexion.prepareStatement(sentencia2);
 				prepStmt.executeUpdate();
 				conexion.commit();
-			
+
 			}
 
 		} 
@@ -326,7 +327,7 @@ public class CerrarCuentaDAO
 
 		return true;
 	}
-	
+
 	/**
 	 * Método que se encarga de cerrar (deshabilitar) una cuenta dentro del sistema a petición
 	 * del cliente. Si el saldo que posee la cuenta es cero entonces simplemente se deshabilita
@@ -349,33 +350,33 @@ public class CerrarCuentaDAO
 			establecerConexion(cadenaConexion, usuario, clave);
 			//conexion.setAutoCommit(false);
 			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);			
-            
+
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = "
 					+ id_eliminar + "AND OFICINA = " + oficina);
 			int saldoActual = rs.getInt("SALDO");
-			
+
 			rs = s.executeQuery("SELECT ID_TRANSACCION FROM ( SELECT * FROM TRANSACCIONES"
 					+ " ORDER BY ID_TRANSACCION DESC) "
 					+ "WHERE ROWNUM = 1");
-			
+
 			int idMax = rs.getInt("ID_TRANSACCION");
-		    idMax++;
-		    
+			idMax++;
+
 			if(saldoActual == 0)
 			{
 				rs = s.executeQuery("SELECT ID FROM PUNTOS_ATENCION WHERE OFICINA = "
 						+ oficina);
 				int idPuntoAtencion = rs.getInt("ID");
-				
+
 				rs = s.executeQuery("SELECT GERENTE FROM OFICINAS WHERE ID_OFICINA = "
 						+ oficina);
 				String correoGerente = rs.getString("GERENTE");
-				
+
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				Date date = new Date();
 				String fecha_registro = dateFormat.format(date) ;
-				
+
 				String sentencia0 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
 						+ "TIPO , FECHA_TRANSACCION, ID_PUNTO_ATENCION )"
 						+ "VALUES(" + idMax + "," + "'" + correoGerente + "'" + ","
@@ -386,7 +387,7 @@ public class CerrarCuentaDAO
 				prepStmt = conexion.prepareStatement(sentencia0);
 				prepStmt.executeUpdate();
 				conexion.commit();
-				
+
 				String sentenciax = "INSERT INTO CIERRE_CUENTAS(ID, ID_CUENTA_CERRADA)"
 						+ "VALUES(" + idMax + "," + id_eliminar + ")";
 				System.out.println("--------------------------------------------------------------------------");
@@ -394,7 +395,7 @@ public class CerrarCuentaDAO
 				prepStmt = conexion.prepareStatement(sentenciax);
 				prepStmt.executeUpdate();
 				conexion.commit();
-				
+
 				String sentencia1 = "UPDATE CUENTAS SET ESTADO = 'Inactiva' "
 						+ "WHERE ID_CUENTA = " + id_eliminar + "AND OFICINA = " + oficina;
 				System.out.println("--------------------------------------------------------------------------");
@@ -410,15 +411,15 @@ public class CerrarCuentaDAO
 				rs = s.executeQuery("SELECT ID FROM PUNTOS_ATENCION WHERE OFICINA = "
 						+ oficina);
 				int idPuntoAtencion = rs.getInt("ID");
-				
+
 				rs = s.executeQuery("SELECT GERENTE FROM OFICINAS WHERE ID_OFICINA = "
 						+ oficina);
 				String correoGerente = rs.getString("GERENTE");
-				
+
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				Date date = new Date();
 				String fecha_registro = dateFormat.format(date) ;
-				
+
 				String sentencia3 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
 						+ "TIPO , FECHA_TRANSACCION, ID_PUNTO_ATENCION )"
 						+ "VALUES(" + idMax + "," + "'" + correoGerente + "'" + ","
@@ -429,7 +430,7 @@ public class CerrarCuentaDAO
 				prepStmt = conexion.prepareStatement(sentencia3);
 				prepStmt.executeUpdate();
 				conexion.commit();
-				
+
 				String sentencia2 = "INSERT INTO RETIROS(ID, ID_CUENTA_RETIRO, MONTO) "
 						+ "VALUES (" +  idMax + ","  + id_eliminar + "," + saldoActual + ")";
 				System.out.println("--------------------------------------------------------------------------");
@@ -437,11 +438,11 @@ public class CerrarCuentaDAO
 				prepStmt = conexion.prepareStatement(sentencia2);
 				prepStmt.executeUpdate();
 				conexion.commit();
-				
-				
+
+
 				idMax++;
-				
-				
+
+
 				String sentencia0 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
 						+ "TIPO , FECHA_TRANSACCION, ID_PUNTO_ATENCION )"
 						+ "VALUES(" + idMax + "," + "'" + correoGerente + "'" + ","
@@ -452,7 +453,7 @@ public class CerrarCuentaDAO
 				prepStmt = conexion.prepareStatement(sentencia0);
 				prepStmt.executeUpdate();
 				conexion.commit();
-				
+
 				String sentenciax = "INSERT INTO CIERRE_CUENTAS(ID, ID_CUENTA_CERRADA)"
 						+ "VALUES(" + idMax + "," + id_eliminar + ")";
 				System.out.println("--------------------------------------------------------------------------");
@@ -460,7 +461,7 @@ public class CerrarCuentaDAO
 				prepStmt = conexion.prepareStatement(sentenciax);
 				prepStmt.executeUpdate();
 				conexion.commit();
-				
+
 				String sentencia1 = "UPDATE CUENTAS SET ESTADO = 'Inactiva' "
 						+ "WHERE ID_CUENTA = " + id_eliminar + "AND OFICINA = " + oficina;
 				System.out.println("--------------------------------------------------------------------------");
@@ -468,7 +469,7 @@ public class CerrarCuentaDAO
 				prepStmt = conexion.prepareStatement(sentencia1);
 				prepStmt.executeUpdate();
 				conexion.commit();
-				
+
 			}
 
 		} 
@@ -502,4 +503,38 @@ public class CerrarCuentaDAO
 		return true;
 	}
 
+	/**
+	 * Este método retorna un empleadoValues a partir de su correo
+	 * @param correo
+	 * @return
+	 */
+	public EmpleadoValues darEmpleadoDAO(String correo)
+	{
+
+		try 
+		{  
+			Statement s = conexion.createStatement();
+			ResultSet rs = s.executeQuery("SELECT * FROM USUARIOS NATURAL JOIN EMPLEADOS WHERE "
+					+ "CORREO = " + correo);
+
+			String ciudad = rs.getString("CIUDAD");
+			String cod_postal = rs.getString("COS_POSTAL");
+			String contraseña = rs.getString("CONTRASEÑA");
+			String departamento = rs.getString("DEPARTAMENTO");
+			String direccion = rs.getString("DIRECCION");
+			int oficina = rs.getInt("OFICINA");
+			EmpleadoValues empleadoActual = new EmpleadoValues(correo, null, contraseña, null, null, null, null, direccion, null, oficina, null, ciudad, departamento, cod_postal, null);
+			return empleadoActual;
+
+
+		} 
+
+		catch (SQLException e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 }

@@ -128,41 +128,38 @@ public class ConsultarCuentasDAO
 
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT * FROM CUENTAS");
-			
+
 			if(agruparPor.equals("") && !ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS ORDER BY" + ordenarPor + descoasc);
 			}
-			
+
 			else if(!agruparPor.equals("") && ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS GROUP BY" + agruparPor);
 			}
-			
+
 			else if(!agruparPor.equals("") && !ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS GROUP BY" + agruparPor
 						+ "ORDER BY " + ordenarPor);
 			}
-			
+
 			while(rs.next())
 			{
-				String idCuenta = rs.getString("ID_CUENTA");
-				int idCuentax = Integer.parseInt(idCuenta);
+				int idCuenta = rs.getInt("ID_CUENTA");
 				String correo = rs.getString("CORREO");
 				String tipo = rs.getString("TIPO_CUENTA");
-				String idOficina = rs.getString("OFICINA");
-				int oficina = Integer.parseInt(idOficina);
-	            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    		Date date = new Date();
-	    		String estado = rs.getString("ESTADO");
-	    		String monto = rs.getString("SALDO");
-	    		int saldo = Integer.parseInt(monto);
-	    		CuentaValues cuentaActual = new CuentaValues(idCuentax, correo, tipo, oficina, date, saldo, estado);
+				int idOficina = rs.getInt("OFICINA");
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date = new Date();
+				String estado = rs.getString("ESTADO");
+				int saldo = rs.getInt("SALDO");
+				CuentaValues cuentaActual = new CuentaValues(idCuenta, correo, tipo, idOficina, date, saldo, estado);
 				cuentas.add(cuentaActual);
 				System.out.println("---------Usuarios-------");			
 			}
-			
+
 		}
 
 		finally
@@ -192,43 +189,42 @@ public class ConsultarCuentasDAO
 
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT * FROM CUENTAS WHERE TIPO_CUENTA = " + tipo);
-			
+
 			if(agruparPor.equals("") && !ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE TIPO_CUENTA = " + tipo 
 						+ " ORDER BY" + ordenarPor + descoasc);
 			}
-			
+
 			else if(!agruparPor.equals("") && ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE TIPO_CUENTA = " + tipo +
 						"GROUP BY" + agruparPor);
 			}
-			
+
 			else if(!agruparPor.equals("") && !ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE TIPO_CUENTA = " + tipo
 						+ "GROUP BY" + agruparPor + "ORDER BY " + ordenarPor);
 			}
-			
+
 			while(rs.next())
 			{
-				String idCuenta = rs.getString("ID_CUENTA");
-				int idCuentax = Integer.parseInt(idCuenta);
+
+				int idCuenta = rs.getInt("ID_CUENTA");
 				String correo = rs.getString("CORREO");
-				String tipox = rs.getString("TIPO_CUENTA");
-				String idOficina = rs.getString("OFICINA");
-				int oficina = Integer.parseInt(idOficina);
-	            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    		Date date = new Date();
-	    		String estado = rs.getString("ESTADO");
-	    		String monto = rs.getString("SALDO");
-	    		int saldo = Integer.parseInt(monto);
-	    		CuentaValues cuentaActual = new CuentaValues(idCuentax, correo, tipox, oficina, date, saldo, estado);
+				//String tipo = rs.getString("TIPO_CUENTA");
+				int idOficina = rs.getInt("OFICINA");
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date = new Date();
+				String estado = rs.getString("ESTADO");
+				int saldo = rs.getInt("SALDO");
+				CuentaValues cuentaActual = new CuentaValues(idCuenta, correo, tipo, idOficina, date, saldo, estado);
 				cuentas.add(cuentaActual);
 				System.out.println("---------Usuarios-------");			
+
 			}
-			
+
 		}
 
 		finally
@@ -238,7 +234,7 @@ public class ConsultarCuentasDAO
 
 	}
 
-	
+
 	/**
 	 * Método que retorna un arrayList con objetos tipo cuentaValues que contiene todas
 	 * las cuentas que se encuentran dentro de la base de datos
@@ -261,44 +257,43 @@ public class ConsultarCuentasDAO
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT * FROM CUENTAS WHERE SALDO BETWEEN "
 					+ desde + " AND" + hasta);
-			
+
 			if(agruparPor.equals("") && !ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE SALDO BETWEEN "
 						+ desde + " AND" + hasta  + " ORDER BY" + ordenarPor + descoasc);
 			}
-			
+
 			else if(!agruparPor.equals("") && ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE SALDO BETWEEN "
 						+ desde + " AND" + hasta + "GROUP BY" + agruparPor);
 			}
-			
+
 			else if(!agruparPor.equals("") && !ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE SALDO BETWEEN "
 						+ desde + " AND" + hasta + "GROUP BY" + agruparPor 
 						+ "ORDER BY " + ordenarPor);
 			}
-			
+
 			while(rs.next())
 			{
-				String idCuenta = rs.getString("ID_CUENTA");
-				int idCuentax = Integer.parseInt(idCuenta);
+
+				int idCuenta = rs.getInt("ID_CUENTA");
 				String correo = rs.getString("CORREO");
-				String tipox = rs.getString("TIPO_CUENTA");
-				String idOficina = rs.getString("OFICINA");
-				int oficina = Integer.parseInt(idOficina);
-	            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    		Date date = new Date();
-	    		String estado = rs.getString("ESTADO");
-	    		String monto = rs.getString("SALDO");
-	    		int saldo = Integer.parseInt(monto);
-	    		CuentaValues cuentaActual = new CuentaValues(idCuentax, correo, tipox, oficina, date, saldo, estado);
+				String tipo = rs.getString("TIPO_CUENTA");
+				int idOficina = rs.getInt("OFICINA");
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date = new Date();
+				String estado = rs.getString("ESTADO");
+				int saldo = rs.getInt("SALDO");
+				CuentaValues cuentaActual = new CuentaValues(idCuenta, correo, tipo, idOficina, date, saldo, estado);
 				cuentas.add(cuentaActual);
 				System.out.println("---------Usuarios-------");			
+
 			}
-			
+
 		}
 
 		finally
@@ -307,7 +302,7 @@ public class ConsultarCuentasDAO
 		}
 
 	}
-	
+
 	/**
 	 * Método que retorna un arrayList con objetos tipo cuentaValues que contiene todas
 	 * las cuentas que se encuentran dentro de la base de datos
@@ -330,21 +325,21 @@ public class ConsultarCuentasDAO
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT * FROM CUENTAS WHERE "
 					+ "FECHA_ULTIMO_MOVIMIENTO = " + "'" + fecha + "'");
-			
+
 			if(agruparPor.equals("") && !ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE "
 						+ "FECHA_ULTIMO_MOVIMIENTO = " + "'" + fecha + "'"
 						+ " ORDER BY" + ordenarPor + descoasc);
 			}
-			
+
 			else if(!agruparPor.equals("") && ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE "
 						+ "FECHA_ULTIMO_MOVIMIENTO = " + "'" + fecha + "'"
 						+ "GROUP BY" + agruparPor);
 			}
-			
+
 			else if(!agruparPor.equals("") && !ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE "
@@ -352,25 +347,24 @@ public class ConsultarCuentasDAO
 						+ "GROUP BY" + agruparPor 
 						+ "ORDER BY " + ordenarPor);
 			}
-			
+
 			while(rs.next())
 			{
-				String idCuenta = rs.getString("ID_CUENTA");
-				int idCuentax = Integer.parseInt(idCuenta);
+
+				int idCuenta = rs.getInt("ID_CUENTA");
 				String correo = rs.getString("CORREO");
-				String tipox = rs.getString("TIPO_CUENTA");
-				String idOficina = rs.getString("OFICINA");
-				int oficina = Integer.parseInt(idOficina);
-	            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    		Date date = new Date();
-	    		String estado = rs.getString("ESTADO");
-	    		String monto = rs.getString("SALDO");
-	    		int saldo = Integer.parseInt(monto);
-	    		CuentaValues cuentaActual = new CuentaValues(idCuentax, correo, tipox, oficina, date, saldo, estado);
+				String tipo = rs.getString("TIPO_CUENTA");
+				int idOficina = rs.getInt("OFICINA");
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date = new Date();
+				String estado = rs.getString("ESTADO");
+				int saldo = rs.getInt("SALDO");
+				CuentaValues cuentaActual = new CuentaValues(idCuenta, correo, tipo, idOficina, date, saldo, estado);
 				cuentas.add(cuentaActual);
 				System.out.println("---------Usuarios-------");			
+
 			}
-			
+
 		}
 
 		finally
@@ -379,7 +373,7 @@ public class ConsultarCuentasDAO
 		}
 
 	}
-	
+
 	/**
 	 * Método que retorna un arrayList con objetos tipo cuentaValues que contiene todas
 	 * las cuentas que se encuentran dentro de una oficina en particular. 
@@ -404,19 +398,19 @@ public class ConsultarCuentasDAO
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina
 						+ "GROUP BY" + agruparPor);
 			}
-			
+
 			else if(ordenarPor.equals("") && !agruparPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina
 						+ "ORDER BY" + ordenarPor + descoasc);
 			}
-			
+
 			else if(!ordenarPor.equals("") && !agruparPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina
 						+ "GROUP BY" + agruparPor + "ORDER BY" + ordenarPor + descoasc);
 			}
-			
+
 			while(rs.next())
 			{
 				String idCuenta = rs.getString("ID_CUENTA");
@@ -425,16 +419,16 @@ public class ConsultarCuentasDAO
 				String tipo = rs.getString("TIPO_CUENTA");
 				String idOficinax = rs.getString("OFICINA");
 				int oficina = Integer.parseInt(idOficinax);
-	            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    		Date date = new Date();
-	    		String estado = rs.getString("ESTADO");
-	    		String monto = rs.getString("SALDO");
-	    		int saldo = Integer.parseInt(monto);
-	    		CuentaValues cuentaActual = new CuentaValues(idCuentax, correo, tipo, oficina, date, saldo, estado);
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date = new Date();
+				String estado = rs.getString("ESTADO");
+				String monto = rs.getString("SALDO");
+				int saldo = Integer.parseInt(monto);
+				CuentaValues cuentaActual = new CuentaValues(idCuentax, correo, tipo, oficina, date, saldo, estado);
 				cuentas.add(cuentaActual);
 				System.out.println("---------Usuarios-------");			
 			}
-			
+
 		}
 
 		finally
@@ -443,7 +437,7 @@ public class ConsultarCuentasDAO
 		}
 
 	}
-	
+
 	/**
 	 * Método que retorna un arrayList con objetos tipo cuentaValues que contiene todas
 	 * las cuentas que se encuentran dentro de una oficina en particular
@@ -460,56 +454,55 @@ public class ConsultarCuentasDAO
 	{
 		PreparedStatement prepStat = null;
 		ArrayList<CuentaValues>  cuentas = new ArrayList<CuentaValues> ();
-            
+
 		try
 		{   
 			establecerConexion(cadenaConexion, usuario, clave);
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT * FROM CUENTAS WHERE ROWNUM = 1");
-			
+
 			if(ordenarPor.equals(" ") && agruparPor.equals(" "))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina 
 						+ " AND TIPO_CUENTA = " + tipo);	
 			}
-			
+
 			else if(ordenarPor.equals(" ") && !agruparPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina 
 						+ " AND TIPO_CUENTA = " + tipo + " GROUP BY " + agruparPor);
 			}
-			
+
 			else if(!ordenarPor.equals(" ") && agruparPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina 
 						+ " AND TIPO_CUENTA = " + tipo + " ORDER BY " + ordenarPor + descoasc);
 			}
-			
+
 			else
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina 
 						+ " AND TIPO_CUENTA = " + tipo + " GROUP BY " + agruparPor +  " ORDER BY " 
 						+ ordenarPor + descoasc );
 			}
-			
+
 			while(rs.next())
 			{
-				String idCuenta = rs.getString("ID_CUENTA");
-				int idCuentax = Integer.parseInt(idCuenta);
+
+				int idCuenta = rs.getInt("ID_CUENTA");
 				String correo = rs.getString("CORREO");
-				String tipoX = rs.getString("TIPO_CUENTA");
-				String idOficinax = rs.getString("OFICINA");
-				int oficina = Integer.parseInt(idOficinax);
-	            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    		Date date = new Date();
-	    		String estado = rs.getString("ESTADO");
-	    		String monto = rs.getString("SALDO");
-	    		int saldo = Integer.parseInt(monto);
-	    		CuentaValues cuentaActual = new CuentaValues(idCuentax, correo, tipoX, oficina, date, saldo, estado);
+				//String tipo = rs.getString("TIPO_CUENTA");
+				//int idOficina = rs.getInt("OFICINA");
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date = new Date();
+				String estado = rs.getString("ESTADO");
+				int saldo = rs.getInt("SALDO");
+				CuentaValues cuentaActual = new CuentaValues(idCuenta, correo, tipo, idOficina, date, saldo, estado);
 				cuentas.add(cuentaActual);
 				System.out.println("---------Usuarios-------");			
+
 			}
-			
+
 		}
 
 		finally
@@ -518,7 +511,7 @@ public class ConsultarCuentasDAO
 		}
 
 	}
-	
+
 	/**
 	 * Método que retorna un arrayList con objetos tipo cuentaValues que contiene todas
 	 * las cuentas que se encuentran dentro de una oficina en particular
@@ -542,52 +535,49 @@ public class ConsultarCuentasDAO
 			establecerConexion(cadenaConexion, usuario, clave);
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT * FROM CUENTAS WHERE ROWNUM = 1");
-			
+
 			if(agruparPor.equals("") && ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina
 						+ "AND SALDO BETWEEN " + desde + "AND " + hasta);
 			}
-			
+
 			else if(agruparPor.equals("") && !ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina
 						+ "AND SALDO BETWEEN " + desde + "AND " + hasta 
 						+ " GROUP BY " + agruparPor);
 			}
-			
+
 			else if(!agruparPor.equals("") && ordenarPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina
 						+ "AND SALDO BETWEEN " + desde + "AND " + hasta
 						+ " ORDER BY" + ordenarPor + descoasc);
 			}
-			
+
 			else
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina
 						+ "AND SALDO BETWEEN " + desde + "AND " + hasta
 						+  " GROUP BY " + agruparPor + " ORDER BY" + ordenarPor + descoasc);
 			}
-			
+
 			while(rs.next())
 			{
-				String idCuenta = rs.getString("ID_CUENTA");
-				int idCuentax = Integer.parseInt(idCuenta);
+				int idCuenta = rs.getInt("ID_CUENTA");
 				String correo = rs.getString("CORREO");
 				String tipo = rs.getString("TIPO_CUENTA");
-				String idOficinax = rs.getString("OFICINA");
-				int oficina = Integer.parseInt(idOficinax);
-	            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    		Date date = new Date();
-	    		String estado = rs.getString("ESTADO");
-	    		String monto = rs.getString("SALDO");
-	    		int saldo = Integer.parseInt(monto);
-	    		CuentaValues cuentaActual = new CuentaValues(idCuentax, correo, tipo, oficina, date, saldo, estado);
+				//int idOficina = rs.getInt("OFICINA");
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date = new Date();
+				String estado = rs.getString("ESTADO");
+				int saldo = rs.getInt("SALDO");
+				CuentaValues cuentaActual = new CuentaValues(idCuenta, correo, tipo, idOficina, date, saldo, estado);
 				cuentas.add(cuentaActual);
-				System.out.println("---------Usuarios-------");			
+				System.out.println("---------Usuarios-------");				
 			}
-			
+
 		}
 
 		finally
@@ -596,9 +586,9 @@ public class ConsultarCuentasDAO
 		}
 
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Método que retorna un arrayList con objetos tipo cuentaValues que contiene todas
 	 * las cuentas que se encuentran dentro de una oficina en particular
@@ -622,52 +612,49 @@ public class ConsultarCuentasDAO
 			establecerConexion(cadenaConexion, usuario, clave);
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT * FROM CUENTAS WHERE ROWNUM = 1");
-			
+
 			if(ordenarPor.equals("") && agruparPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina
 						+ "AND FECHA_ULTIMO_MOVIMIENTO = " +  "'" + fecha + "'" );
 			}
-			
+
 			else if(!ordenarPor.equals("") && agruparPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina
 						+ "AND FECHA_ULTIMO_MOVIMIENTO = " +  "'" + fecha + "'"  
 						+ " GROUP BY " + agruparPor);
 			}
-			
+
 			else if(ordenarPor.equals("") && !agruparPor.equals(""))
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina
 						+ "AND FECHA_ULTIMO_MOVIMIENTO = " +  "'" + fecha + "'" 
 						+ " ORDER BY" + ordenarPor + desoasc);
 			}
-			
+
 			else
 			{
 				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE OFICINA = " + idOficina
 						+ "AND FECHA_ULTIMO_MOVIMIENTO = " +  "'" + fecha + "'" 
 						+ " GROUP BY " + agruparPor + " ORDER BY " + ordenarPor + desoasc);
 			}
-			
+
 			while(rs.next())
 			{
-				String idCuenta = rs.getString("ID_CUENTA");
-				int idCuentax = Integer.parseInt(idCuenta);
+				int idCuenta = rs.getInt("ID_CUENTA");
 				String correo = rs.getString("CORREO");
 				String tipo = rs.getString("TIPO_CUENTA");
-				String idOficinax = rs.getString("OFICINA");
-				int oficina = Integer.parseInt(idOficinax);
-	            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    		Date date = new Date();
-	    		String estado = rs.getString("ESTADO");
-	    		String monto = rs.getString("SALDO");
-	    		int saldo = Integer.parseInt(monto);
-	    		CuentaValues cuentaActual = new CuentaValues(idCuentax, correo, tipo, oficina, date, saldo, estado);
+				//int idOficina = rs.getInt("OFICINA");
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date date = new Date();
+				String estado = rs.getString("ESTADO");
+				int saldo = rs.getInt("SALDO");
+				CuentaValues cuentaActual = new CuentaValues(idCuenta, correo, tipo, idOficina, date, saldo, estado);
 				cuentas.add(cuentaActual);
-				System.out.println("---------Usuarios-------");			
+				System.out.println("---------Usuarios-------");		
 			}
-			
+
 		}
 
 		finally
@@ -676,5 +663,5 @@ public class ConsultarCuentasDAO
 		}
 
 	}
-	
+
 }
