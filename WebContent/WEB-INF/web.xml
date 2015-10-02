@@ -12,15 +12,151 @@
   
  </servlet>
  
+  <servlet>
+ 
+  <display-name>ServletLogin</display-name>
+  <servlet-name>ServletLogin</servlet-name>
+  <servlet-class>servlets.ServletLogin</servlet-class>
+  
+ </servlet>
+ 
+ <servlet>
+ 
+ 	<display-name>ServletIndexGerenteOficina</display-name>
+ 	<servlet-name>ServletIndexGerenteOficina</servlet-name>
+ 	<servlet-class>servlets.ServletIndexGerenteOficina</servlet-class>
+ 
+ </servlet>
+ 
+  <servlet>
+ 
+ 	<display-name>ServletRegistrarCliente</display-name>
+ 	<servlet-name>ServletRegistrarCliente</servlet-name>
+ 	<servlet-class>servlets.ServletRegistrarCliente</servlet-class>
+ 
+ </servlet>
+ 
+  <servlet>
+ 
+ 	<display-name>ServletRegistrarCuenta</display-name>
+ 	<servlet-name>ServletRegistrarCuenta</servlet-name>
+ 	<servlet-class>servlets.ServletRegistrarCuenta</servlet-class>
+ 
+ </servlet>
+ 
+   <servlet>
+ 
+ 	<display-name>ServletCerrarCuenta</display-name>
+ 	<servlet-name>ServletCerrarCuenta</servlet-name>
+ 	<servlet-class>servlets.ServletCerrarCuenta</servlet-class>
+ 
+ </servlet>
+ 
+    <servlet>
+ 
+ 	<display-name>ServletRegistrarPrestamo</display-name>
+ 	<servlet-name>ServletRegistrarPrestamo</servlet-name>
+ 	<servlet-class>servlets.ServletRegistrarPrestamo</servlet-class>
+ 
+ </servlet>
+ 
+     <servlet>
+ 
+ 	<display-name>ServletCerrarPrestamo</display-name>
+ 	<servlet-name>ServletCerrarPrestamo</servlet-name>
+ 	<servlet-class>servlets.ServletCerrarPrestamo</servlet-class>
+ 
+ </servlet>
+ 
+      <servlet>
+ 
+ 	<display-name>ServletConsultarCuentaOficina</display-name>
+ 	<servlet-name>ServletConsultarCuentaOficina</servlet-name>
+ 	<servlet-class>servlets.ServletConsultarCuentaOficina</servlet-class>
+ 
+ </servlet>
+ 
+       <servlet>
+ 
+ 	<display-name>ServletConsultarClienteOficina</display-name>
+ 	<servlet-name>ServletConsultarClienteOficina</servlet-name>
+ 	<servlet-class>servlets.ServletConsultarClienteOficina</servlet-class>
+ 
+ </servlet>
+ 
  <servlet-mapping>
  
   <servlet-name>ServletPrincipal</servlet-name>
-  <url-pattern>/main.html</url-pattern>
+  <url-pattern>/main</url-pattern>
   
  </servlet-mapping>
  
+  <servlet-mapping>
+ 
+  <servlet-name>ServletLogin</servlet-name>
+  <url-pattern>/login</url-pattern>
+  
+ </servlet-mapping>
+ 
+ <servlet-mapping>
+ 
+ 	<servlet-name>ServletIndexGerenteOficina</servlet-name>
+ 	<url-pattern>/gerenteOficina</url-pattern>
+ 
+ </servlet-mapping>
+ 
+  <servlet-mapping>
+ 
+ 	<servlet-name>ServletRegistrarCliente</servlet-name>
+ 	<url-pattern>/registrarCliente</url-pattern>
+ 
+ </servlet-mapping>
+ 
+ 
+   <servlet-mapping>
+ 
+ 	<servlet-name>ServletRegistrarCuenta</servlet-name>
+ 	<url-pattern>/registrarCuenta</url-pattern>
+ 
+ </servlet-mapping>
+ 
+    <servlet-mapping>
+ 
+ 	<servlet-name>ServletCerrarCuenta</servlet-name>
+ 	<url-pattern>/cerrarCuenta</url-pattern>
+ 
+ </servlet-mapping>
+ 
+    <servlet-mapping>
+ 
+ 	<servlet-name>ServletRegistrarPrestamo</servlet-name>
+ 	<url-pattern>/registrarPrestamo</url-pattern>
+ 
+ </servlet-mapping>
+ 
+     <servlet-mapping>
+ 
+ 	<servlet-name>ServletCerrarPrestamo</servlet-name>
+ 	<url-pattern>/cerrarPrestamo</url-pattern>
+ 
+ </servlet-mapping>
+ 
+      <servlet-mapping>
+ 
+ 	<servlet-name>ServletConsultarCuentaOficina</servlet-name>
+ 	<url-pattern>/consultarCuentaOficina</url-pattern>
+ 
+ </servlet-mapping>
+ 
+       <servlet-mapping>
+ 
+ 	<servlet-name>ServletConsultarClienteOficina</servlet-name>
+ 	<url-pattern>/consultarClienteOficina</url-pattern>
+ 
+ </servlet-mapping>
+ 
    <welcome-file-list>
-	<welcome-file>main.html</welcome-file>
+	<welcome-file>main</welcome-file>
     <welcome-file>index.html</welcome-file>
     <welcome-file>index.htm</welcome-file>
     <welcome-file>index.jsp</welcome-file>

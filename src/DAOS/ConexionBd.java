@@ -1,4 +1,4 @@
-package daos;
+package DAOS;
 
 import java.io.File;
 import java.io.FileInputStream;

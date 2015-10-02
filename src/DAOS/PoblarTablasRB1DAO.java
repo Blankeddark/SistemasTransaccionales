@@ -106,7 +106,7 @@ public class PoblarTablasRB1DAO
 		}
 	}
 
-	public boolean insertarUsuario (String tipo_usuario, String correo, String login, String contraseÃ±a, String numero_id, String tipo_id, String nombre, String nacionalidad, String direccion, String telefono, String ciudad, String departamento, String cod_postal,
+	public boolean insertarUsuario (String tipo_usuario, String correo, String login, String contraseña, String numero_id, String tipo_id, String nombre, String nacionalidad, String direccion, String telefono, String ciudad, String departamento, String cod_postal,
 			String tipoPersona, String tipoEmpleado, int oficina) throws Exception
 	{
 		PreparedStatement prepStmt = null;
@@ -125,7 +125,7 @@ public class PoblarTablasRB1DAO
 					+ "NUMERO_ID, TIPO_ID, NOMBRE, NACIONALIDAD, DIRECCION, TELEFONO,"
 					+ "CIUDAD, DEPARTAMENTO, COD_POSTAL, FECHA_REGISTRO, TIPO_USUARIO) "+
 					"VALUES (" + "'" + correo + "'" + "," + "'" + login + "'" + "," + 
-					"'" + contraseÃ±a + "'" + ","  + "'" + numero_id + "'"   + ","
+					"'" + contraseña + "'" + ","  + "'" + numero_id + "'"   + ","
 					+  "'" + tipo_id + "'" + "," + "'" + nombre + "'" + "," + 
 					"'" + nacionalidad + "'" + "," + "'" + direccion + "'" + ","
 					+ "'" + telefono + "'" + "," + "'" + ciudad + "'" +  "," + 

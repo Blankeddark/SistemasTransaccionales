@@ -199,7 +199,7 @@ public class RegistrarClienteDAO
 	     * @return
 	     * @throws Exception
 	     */
-	    public boolean registrarClienteNoExistente (String correo, String login, String contrase√±a, String numero_id, String tipo_id, String nombre, String nacionalidad, String direccion, String telefono, String ciudad, String departamento, String cod_postal, String tipo_persona) throws Exception
+	    public boolean registrarClienteNoExistente (String correo, String login, String contraseÒa, String numero_id, String tipo_id, String nombre, String nacionalidad, String direccion, String telefono, String ciudad, String departamento, String cod_postal, String tipo_persona) throws Exception
 	    {
 	        PreparedStatement prepStmt = null;
 	        
@@ -214,7 +214,7 @@ public class RegistrarClienteDAO
 	    		String fecha_registro = dateFormat.format(date) ;
 	            
 	            String sentencia = "insert into usuarios (correo, login, contrase√±a, numero_id, tipo_id, nombre, nacionalidad, direccion, telefono, ciudad, departamento, cod_postal, fecha_registro) "+
-	                    "values ('"+correo+"', "+login+", "+contrase√±a+","+numero_id+","+tipo_id+", "+(nombre.equals("")?"null":"'"+nombre+"'" )+", "+(nacionalidad.equals("")?"null":"'"+nacionalidad+"'" )+", "+(direccion.equals("")?"null":"'"+direccion+"'" )+", "+(telefono.equals("")?"null":"'"+telefono+"'" )+","
+	                    "values ('"+correo+"', "+login+", "+contraseÒa+","+numero_id+","+tipo_id+", "+(nombre.equals("")?"null":"'"+nombre+"'" )+", "+(nacionalidad.equals("")?"null":"'"+nacionalidad+"'" )+", "+(direccion.equals("")?"null":"'"+direccion+"'" )+", "+(telefono.equals("")?"null":"'"+telefono+"'" )+","
 	                    		+ ""+(ciudad.equals("")?"null":"'"+ciudad+"'" )+",  "+(departamento.equals("")?"null":"'"+departamento+"'" )+" , "+(cod_postal.equals("")?"null":"'"+cod_postal+"'" )+", "+fecha_registro+")";
 	            System.out.println("--------------------------------------------------------------------------");
 	            System.out.println(sentencia);

@@ -22,18 +22,18 @@ public class ServletPrincipal extends ASServlet {
 	/**
 	 * La id del botón iniciar en el HTML del login
 	 */
-	private final static String ID_BOTON_INICIAR = "botonIniciarSesion";
-	
+	public final static String ID_BOTON_INICIAR = "botonIniciarSesion";
+
 	/**
 	 * id del input de usuario en el HTML del login
 	 */
-	private final static String ID_INPUT_USUARIO = "cuentaUsuario";
-	
+	public final static String ID_INPUT_USUARIO = "cuentaUsuario";
+
 	/**
 	 * id del input del usuario en el HTML del login
 	 */
-	private final static String ID_PASS_USUARIO = "passUsuario";
-	
+	final static String ID_PASS_USUARIO = "passUsuario";
+
 	/**
 	 * Modela si el usuario es un cliente
 	 */
@@ -53,18 +53,7 @@ public class ServletPrincipal extends ASServlet {
 	 * Modela si el usuario es un gerente general
 	 */
 	public final static String TIPO_EMPLEADO_GERENTE_GENERAL = "GG";
-	
-	/**
-	 * Modela el usuario actualmente logueado en la página.
-	 */
-	private UsuarioValues usuarioActual;
-	
-	//Métodos
 
-	public ServletPrincipal()
-	{
-		usuarioActual = null;
-	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
@@ -85,7 +74,7 @@ public class ServletPrincipal extends ASServlet {
 		pw.println("<h3 class=\"panel-title\">Por favor inicie sesi&oacute;n</h3>");
 		pw.println("</div>");
 		pw.println("<div class=\"panel-body\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"main.html\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"login\">");
 		pw.println("<fieldset>");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<input id=\""+ID_INPUT_USUARIO + "\" class=\"form-control\" placeholder=\"Nombre de usuario\" name=\"email\" type=\"email\" autofocus>");
@@ -124,51 +113,11 @@ public class ServletPrincipal extends ASServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		System.out.println("doPost en ServletPrincipal");
-		String botonIniciar = request.getParameter(ID_BOTON_INICIAR);
-
-		PrintWriter pw = response.getWriter();
-		
-		System.out.println(botonIniciar);
-		if (botonIniciar != null)
-		{
-			if (usuarioActual != null)
-			{
-				imprimirYaHayUsuario(pw);
-				return;
-			}
-			
-			String cuentaUsuario = request.getParameter(ID_BOTON_INICIAR);
-			String passUsuario = request.getParameter(ID_PASS_USUARIO);
-			
-			//Sólo para probar:
-			
-			paraProbarGerente();
-			
-			//TODO UsuarioValues usuarioConCuenta =  agregar método que verifica que la cuenta exista
-
-			
-			//TODO agregar método que verifica que la pass es correcta para la cuenta
-			//TODO
-			
-			imprimirEncabezado(pw);
-			if( usuarioActual.getTipo_usuario().equals(TIPO_USUARIO_GERENTE_OFICINA) )
-			ServletIndexGerenteOficina.imprimirCuerpoInicialGerenteOficina(pw);
-			
-		}
-	}
-	
-	private void paraProbarGerente()
-	{
-		usuarioActual = new UsuarioValues("algo@algo.com", "log", "in", "123", "CC", "GO");
-	}
-	
-	private void imprimirYaHayUsuario(PrintWriter pw)
-	{
-		pw.println("Ya hay un usuario conectado.");
 	}
 
-	public String darTituloPagina() 
-	{
-		return "BancAndes";
+	@Override
+	public String darTituloPagina() {
+		return "BancAndes - Iniciar Sesión";
 	}
+
 }

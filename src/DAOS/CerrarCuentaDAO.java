@@ -519,11 +519,11 @@ public class CerrarCuentaDAO
 
 			String ciudad = rs.getString("CIUDAD");
 			String cod_postal = rs.getString("COS_POSTAL");
-			String contraseña = rs.getString("CONTRASEÑA");
+			String contrase�a = rs.getString("CONTRASEÑA");
 			String departamento = rs.getString("DEPARTAMENTO");
 			String direccion = rs.getString("DIRECCION");
 			int oficina = rs.getInt("OFICINA");
-			EmpleadoValues empleadoActual = new EmpleadoValues(correo, null, contraseña, null, null, null, null, direccion, null, oficina, null, ciudad, departamento, cod_postal, null);
+			EmpleadoValues empleadoActual = new EmpleadoValues(correo, null, contrase�a, null, null, null, null, direccion, null, oficina, null, ciudad, departamento, cod_postal, null);
 			return empleadoActual;
 
 
