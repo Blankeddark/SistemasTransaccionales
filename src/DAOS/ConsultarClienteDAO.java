@@ -19,6 +19,7 @@ import vos.CuentaValues;
 import vos.OficinaValues;
 import vos.PrestamoValues;
 import vos.TransaccionValues;
+import vos.UsuarioValues;
 
 public class ConsultarClienteDAO 
 {
@@ -41,9 +42,8 @@ public class ConsultarClienteDAO
 	{
 		try
 		{
-			File arch = new File(path+ARCHIVO_CONEXION);
 			Properties prop = new Properties();
-			FileInputStream in = new FileInputStream (arch);
+			FileInputStream in = new FileInputStream ("C:/Users/Sergio/Documents/Sistrans/Project Sistrans/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/PROJECT_Sistrans3/conexion.properties");
 
 			prop.load(in);
 			in.close();
@@ -159,6 +159,77 @@ public class ConsultarClienteDAO
 
 	}
 
+	/**
+	 * Método que retorna un usuarioValues a partir del correo con el que 
+	 * inicia sesión en el sistema.
+	 * @param correo
+	 * @return
+	 * @throws Exception
+	 */
+	public UsuarioValues darUsuarioInicioSesion (String correo) throws Exception
+	{
+		PreparedStatement prepStat = null;
+		ArrayList<CuentaValues>  cuentas = new ArrayList<CuentaValues> ();
+        UsuarioValues usuarioRetorno = null;
+        
+		try
+		{
+			establecerConexion(cadenaConexion, usuario, clave);
+
+			Statement s = conexion.createStatement();
+			ResultSet rs = s.executeQuery("SELECT * FROM USUARIOS WHERE CORREO = " + correo );
+			String ciudad = rs.getString("CIUDAD");
+			String codPostal = rs.getString("COS_POSTAL");
+			String contraseña = rs.getString("CONTRASEÑA");
+			String departamento = rs.getString("DEPARTAMENTO");
+			String direccion = rs.getString("DIRECCION");
+			Date fecha_registro = rs.getTimestamp("FECHA_REGISTRO");
+			String login = rs.getString("LOGIN");
+			String nacionalidad = rs.getString("NACIONALIDAD");
+			String nombre = rs.getString("NOMBRE");
+			String numeroID = rs.getString("NUMERO_ID");
+			String telefono = rs.getString("TELEFONO");
+			String tipo_id = rs.getString("TIPO_ID");
+            String tipo_usuario = rs.getString("TIPO_USUARIO");
+            UsuarioValues usuarioActual = new UsuarioValues(correo, login, 
+            		contraseña, numeroID, tipo_id, nombre, nacionalidad, 
+            		direccion, telefono, ciudad, departamento, codPostal,
+            		fecha_registro, tipo_usuario);
+            
+            return usuarioActual; 
+		}
+		
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return null;
+
+	}
+
+public int darOficinaEmpleado (String correo) throws Exception
+	{
+		PreparedStatement prepStat = null;
+        
+		try
+		{
+			establecerConexion(cadenaConexion, usuario, clave);
+
+			Statement s = conexion.createStatement();
+			ResultSet rs = s.executeQuery("SELECT OFICINA FROM EMPLEADOS WHERE CORREO = " + correo );
+			int oficina = rs.getInt("OFICINA");
+            return oficina; 
+		}
+		
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		return 0;
+
+	}
 
 	/**
 	 * Este método retorna un arrayList que contiene 5 ArrayList.

@@ -7,6 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import Fachada.BancAndes;
+
 /**
  * url-pattern: /registrarPrestamo
  */
@@ -21,6 +23,16 @@ public class ServletRegistrarPrestamo extends ASServlet {
 		imprimirSidebarGO(pw);
 		imprimirRegistrarPrestamoInicial(pw);
 		imprimirWrapper(pw);
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
+		String correoCliente = request.getParameter("correoCliente");
+		String tipo = request.getParameter("tipo");
+		String montoPrestado = request.getParameter("montoPrestado");
+		String interes = request.getParameter("interes");
+		String numCuotas = request.getParameter("numCuotas");
+		//TODO
 	}
 
 	private void imprimirRegistrarPrestamoInicial(PrintWriter pw)
@@ -42,31 +54,31 @@ public class ServletRegistrarPrestamo extends ASServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-6\">");
-		pw.println("<form role=\"form\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"registrarPrestamo\">");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Correo Cliente:</label>");
-		pw.println("<input class=\"form-control\">");
+		pw.println("<input class=\"form-control\" name=\"correoCliente\">");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Tipo:</label>");
-		pw.println("<input class=\"form-control\">");
+		pw.println("<input class=\"form-control\" name=\"tipo\">");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Monto prestado:</label>");
-		pw.println("<input class=\"form-control\">");
+		pw.println("<input class=\"form-control\" name=\"montoPrestado\">");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Inter&eacute;s:</label>");
-		pw.println("<input class=\"form-control\">");
+		pw.println("<input class=\"form-control\" name=\"interes\">");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>N&uacute;mero de cuotas:</label>");
-		pw.println("<input class=\"form-control\">");
+		pw.println("<input class=\"form-control\" name=\"numCuotas\">");
 		pw.println("</div>");
 
 		pw.println("<br>");
 
-		pw.println("<button type=\"button\" class=\"btn btn-primary\">Registrar</button>");
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\">Registrar</button>");
 
 		pw.println("</form>");
 		pw.println("</div>");

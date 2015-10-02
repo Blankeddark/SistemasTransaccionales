@@ -14,6 +14,14 @@
  
   <servlet>
  
+  <display-name>ServletIndexCajero</display-name>
+  <servlet-name>ServletIndexCajero</servlet-name>
+  <servlet-class>servlets.ServletIndexCajero</servlet-class>
+  
+ </servlet>
+ 
+  <servlet>
+ 
   <display-name>ServletLogin</display-name>
   <servlet-name>ServletLogin</servlet-name>
   <servlet-class>servlets.ServletLogin</servlet-class>
@@ -199,6 +207,13 @@
  
  	<servlet-name>ServletConsultarClienteGeneral</servlet-name>
  	<url-pattern>/consultarClienteGeneral</url-pattern>
+ 
+ </servlet-mapping>
+ 
+  <servlet-mapping>
+ 
+ 	<servlet-name>ServletIndexCajero</servlet-name>
+ 	<url-pattern>/cajero</url-pattern>
  
  </servlet-mapping>
  

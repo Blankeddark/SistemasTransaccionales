@@ -33,7 +33,7 @@ public class ServletLogin extends ASServlet {
 	 */
 	public final static String TIPO_EMPLEADO_GERENTE_GENERAL = "GG";
 	
-	private UsuarioValues usuarioActual;
+	private static UsuarioValues usuarioActual;
 
 	public ServletLogin()
 	{
@@ -58,7 +58,7 @@ public class ServletLogin extends ASServlet {
 		if ( iniciarSesion() ) //TODO quitar debug y agregar inicio de sesión real
 		{
 			ServletContext context= getServletContext();
-			RequestDispatcher rd= context.getRequestDispatcher("/gerenteGeneral");
+			RequestDispatcher rd= context.getRequestDispatcher("/cajero");
 			rd.forward(request, response);
 		}
 
@@ -84,5 +84,10 @@ public class ServletLogin extends ASServlet {
 		pw.println("Ya hay un usuario conectado. En este momento la aplicación sólo permite que"
 				+ " un usuario ingrese al tiempo.");
 	}
-
+	
+	public static UsuarioValues darUsuarioActual()
+	{
+		return usuarioActual;
+	}
+	
 }

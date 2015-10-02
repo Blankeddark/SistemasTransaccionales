@@ -32,6 +32,11 @@ public class ConexionBd
 		inicializar("./Conexion/conexion.properties");
 	}
 	
+	public Connection darConexion()
+	{
+		return conexion;
+	}
+	
 	public void inicializar(String path)
 	{
 		try

@@ -1,5 +1,6 @@
 package vos;
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class UsuarioValues 
@@ -28,12 +29,12 @@ public class UsuarioValues
 
 	private String cod_postal;
 
-	private GregorianCalendar fecha_registro;
+	private Date fecha_registro;
 
 	private String tipo_usuario;
 
 	public UsuarioValues(String correo, String login, String contraseña,String numero_id, String tipo_id, String nombre, String nacionalidad,
-			String direccion, String telefono, String ciudad, String departamento,String cod_postal, GregorianCalendar fecha_registro, String tipo_usuario) 
+			String direccion, String telefono, String ciudad, String departamento,String cod_postal, Date fecha_registro, String tipo_usuario) 
 	{
 		super();
 		this.correo = correo;
@@ -192,12 +193,12 @@ public class UsuarioValues
 		this.cod_postal = cod_postal;
 	}
 
-	public GregorianCalendar getFecha_registro() 
+	public Date getFecha_registro() 
 	{
 		return fecha_registro;
 	}
 
-	public void setFecha_registro(GregorianCalendar fecha_registro) 
+	public void setFecha_registro(Date fecha_registro) 
 	{
 		this.fecha_registro = fecha_registro;
 	}

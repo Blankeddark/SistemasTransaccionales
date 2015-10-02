@@ -37,7 +37,7 @@ public class CerrarPrestamoDAO
 	{
 		try
 		{
-			File arch = new File(path+ARCHIVO_CONEXION);
+			File arch = new File("C:/Users/Sergio/Documents/Sistrans/Project Sistrans/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/PROJECT_Sistrans3/conexion.properties");
 			Properties prop = new Properties();
 			FileInputStream in = new FileInputStream (arch);
 
@@ -323,10 +323,20 @@ public class CerrarPrestamoDAO
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT SALDO_PENDIENTE FROM PRESTAMOS WHERE ID = "
 					+ id_eliminar );
-			int saldoPendiente = rs.getInt("SALDO_PENDIENTE");
+			int saldoPendiente = 0;
+			while(rs.next())
+			{
+				saldoPendiente = rs.getInt("SALDO_PENDIENTE");
+			}
+			
 			rs = s.executeQuery("SELECT ID_TRANSACCION FROM(SELECT * FROM TRANSACCIONES"
-					+ "ORDER BY ID_TRANSACCION DESC) WHERE ROWNUM = 1");
-			int idTransaccionMax = rs.getInt("ID_TRANSACCION");
+					+ " ORDER BY ID_TRANSACCION DESC) WHERE ROWNUM = 1");
+			int idTransaccionMax = 0;
+			while(rs.next())
+			{
+				idTransaccionMax = rs.getInt("ID_TRANSACCION");
+			}
+		
 			idTransaccionMax++;
 			
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -336,15 +346,25 @@ public class CerrarPrestamoDAO
 			
 			if(saldoPendiente != 0)
 			{
-				throw new Exception("Este prestamo no puede ser cerrado, aún se debe dinero");
+				throw new Exception("Este prestamo no puede ser cerrado, a&uacute;n se debe dinero");
 			}
 			
 			else if (saldoPendiente == 0)
 			{
 				rs = s.executeQuery("SELECT CORREO_CLIENTE FROM PRESTAMOS WHERE ID = " + id_eliminar);
-				String correo_cliente = rs.getString("CORREO_USUARIO");
+				String correo_cliente = "";
+				while(rs.next())
+				{
+					correo_cliente = rs.getString("CORREO_CLIENTE");
+				}
+				
 				rs = s.executeQuery("SELECT ID FROM PUNTOS_ATENCION WHERE OFICINA = " + oficina);
-				int puesto_atencion = rs.getInt("ID");
+				int puesto_atencion = 0;
+				while(rs.next())
+				{
+					puesto_atencion = rs.getInt("ID");
+				}
+				
 				String sentencia = "INSERT INTO TRANSACCIONES (ID_TRANSACCION, CORREO_USUARIO, TIPO, FECHA_TRANSACCION, ID_PUNTO_ATENCION) "+
 						"VALUES (" + idTransaccionMax + "," + "'" + correo_cliente + "'"  + "," + 
 						"'" + "CP" + "'" + "," + "TO_DATE ("+
@@ -364,7 +384,7 @@ public class CerrarPrestamoDAO
 				prepStmt.executeUpdate();
 				conexion.commit();	
 				
-				String sentencia1 = "UPDATE PRESTAMOS SET ESTADO = 'CERRADO' WHERE ID = "
+				String sentencia1 = "UPDATE PRESTAMOS SET ESTADO = 'Cerrado' WHERE ID = "
 						+ id_eliminar;
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia1);

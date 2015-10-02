@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
 
+import servlets.ServletLogin;
 import vos.CuentaValues;
 import vos.EmpleadoValues;
 import conexion.ConexionBd;
@@ -34,12 +35,17 @@ public class CerrarCuentaDAO
 	{
 		inicializar("./Conexion/conexion.properties");
 	}
+	
+	public void main(String[] args)
+	{
+		
+	}
 
 	public void inicializar(String path)
 	{
 		try
 		{
-			File arch = new File(path+ARCHIVO_CONEXION);
+			File arch = new File("C:/Users/Sergio/git/PROJECT_Sistrans/SistemasTransaccionales/Conexion/conexion.properties"); //TODO
 			Properties prop = new Properties();
 			FileInputStream in = new FileInputStream (arch);
 
@@ -62,7 +68,8 @@ public class CerrarCuentaDAO
 	private void establecerConexion (String url, String usuario, String clave) throws SQLException
 	{
 		System.out.println("------- Oracle Connection Testing ------- ");
-		try{
+		try
+		{
 			Class.forName("oracle.jdbc.OracleDriver");
 
 		}
@@ -218,11 +225,11 @@ public class CerrarCuentaDAO
 	}
 
 	/**
-	 * Método que se encarga de cerrar (deshabilitar) una cuenta dentro del sistema a petición
+	 * M�todo que se encarga de cerrar (deshabilitar) una cuenta dentro del sistema a petici�n
 	 * del cliente. Si el saldo que posee la cuenta es cero entonces simplemente se deshabilita
 	 * la cuenta. Sin embargo en el caso de que la cuenta posea un saldo > 0 entonces no solamente
-	 * se deshabilita la cuenta y se coloca el saldo de esta en cero, sino que además se
-	 * registra un retiro con el fin de actualizar la información de la cuenta deshabilitada.
+	 * se deshabilita la cuenta y se coloca el saldo de esta en cero, sino que adem�s se
+	 * registra un retiro con el fin de actualizar la informaci�n de la cuenta deshabilitada.
 	 * @param id_eliminar
 	 * @return
 	 * @throws Exception
@@ -230,6 +237,9 @@ public class CerrarCuentaDAO
 	public boolean registrarCerrarCuentaExistente (int id_eliminar) throws Exception
 	{
 		PreparedStatement prepStmt = null;
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = new Date();
+		String fecha_registro = dateFormat.format(date) ;
 
 		try
 		{
@@ -238,14 +248,55 @@ public class CerrarCuentaDAO
 			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);			
 
 			Statement s = conexion.createStatement();
-			ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = "
+			ResultSet rs = s.executeQuery("SELECT CORREO FROM CUENTAS WHERE ID_CUENTA = "
 					+ id_eliminar);
-			int saldoActual = rs.getInt("SALDO");
+			String correoTemp = "";
+		    if(rs.next())
+		    {
+		    	while(rs.next())
+				{
+					correoTemp = rs.getString("CORREO");
+				}
+		    }
+		    
+		    else
+		    {
+		    	throw new Exception("No existe una cuenta con el ID ingresado");	
+		    	
+		    }
+			
+		    String correo =  ServletLogin.darUsuarioActual().getCorreo();
+			
+			s = conexion.createStatement();
+			rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = "
+					+ id_eliminar);
+			int saldoActual = 0;
+			while(rs.next())
+			{
+				saldoActual = rs.getInt("SALDO");
+			}
+			
 
+			rs = s.executeQuery("SELECT ESTADO FROM CUENTAS WHERE ID_CUENTA = " + id_eliminar);
+			String estado = "";
+			while(rs.next())
+			{
+				estado = rs.getString("ESTADO");
+			}
+			
+			if(estado.equals("Inactiva"))
+			{
+				throw new Exception("no se pueden cerrar cuentas ya cerradas");
+			}
+			
 			rs = s.executeQuery("SELECT ID FROM ( SELECT * FROM RETIROS ORDER BY ID DESC) "
 					+ "WHERE ROWNUM = 1");
-
-			int idMax = rs.getInt("ID");
+			int idMax = 0;
+			while(rs.next())
+			{
+			    idMax = rs.getInt("ID");
+			}
+			
 			idMax++;
 
 			if(saldoActual == 0)
@@ -274,13 +325,22 @@ public class CerrarCuentaDAO
 				rs = s.executeQuery("SELECT ID_TRANSACCION FROM "
 						+ "( SELECT * FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC) "
 						+ "WHERE ROWNUM = 1");
-
-				int idMax2 = rs.getInt("ID_TRANSACCION");
+				
+				int idMax2 = 0;
+				
+                while(rs.next())
+                {
+                	idMax2 = rs.getInt("ID_TRANSACCION");
+                }
+				
 				idMax2++;
 
 				String sentencia3 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
 						+ " TIPO, FECHA_TRANSACCION, ID_PUNTO_ATENCION) "
-						+ "VALUES (" +  idMax + ","  + id_eliminar + "," + saldoActual + ")";
+						+ "VALUES (" +  idMax2 + "," + "'" + correo + "'" + "," + "'CC'" + ","
+						+ "TO_DATE ("+
+						"'" + fecha_registro + "' , 'yyyy/mm/dd HH24-Mi-SS')" + "," 
+						+ "'3'" + ")";
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia3);
 				prepStmt = conexion.prepareStatement(sentencia3);
@@ -288,7 +348,7 @@ public class CerrarCuentaDAO
 				conexion.commit();
 
 				String sentencia2 = "INSERT INTO RETIROS(ID, ID_CUENTA_RETIRO, MONTO) "
-						+ "VALUES (" +  idMax + ","  + id_eliminar + "," + saldoActual + ")";
+						+ "VALUES (" +  idMax2 + ","  + id_eliminar + "," + saldoActual + ")";
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia2);
 				prepStmt = conexion.prepareStatement(sentencia2);
@@ -318,7 +378,7 @@ public class CerrarCuentaDAO
 				catch (SQLException exception) 
 				{
 
-					throw new Exception("ERROR: RegistroDePaquetesDAO: loadRow() =  cerrando una conexiÔøΩÔøΩÔøΩn.");
+					throw new Exception("ERROR: RegistroDePaquetesDAO: loadRow() =  cerrando una conexi�n");
 				}
 			}
 
@@ -329,13 +389,13 @@ public class CerrarCuentaDAO
 	}
 
 	/**
-	 * Método que se encarga de cerrar (deshabilitar) una cuenta dentro del sistema a petición
+	 * M�todo que se encarga de cerrar (deshabilitar) una cuenta dentro del sistema a petici�n
 	 * del cliente. Si el saldo que posee la cuenta es cero entonces simplemente se deshabilita
 	 * la cuenta. Sin embargo en el caso de que la cuenta posea un saldo > 0 entonces no solamente
-	 * se deshabilita la cuenta y se coloca el saldo de esta en cero, sino que además se
-	 * registra un retiro con el fin de actualizar la información de la cuenta deshabilitada.
-	 * Además en este método se incluye como parámetro el id de la oficina, lo anterior
-	 * con el fin de preservar la seguridad en la manipulación de los datos de tal forma
+	 * se deshabilita la cuenta y se coloca el saldo de esta en cero, sino que adem�s se
+	 * registra un retiro con el fin de actualizar la informaci�n de la cuenta deshabilitada.
+	 * Adem�s en este m�todo se incluye como par�metro el id de la oficina, lo anterior
+	 * con el fin de preservar la seguridad en la manipulaci�n de los datos de tal forma
 	 * que un gerente solo pueda tener acceso a las cuentas de la oficina de la cual es gerente.
 	 * @param id_eliminar
 	 * @return
@@ -355,7 +415,14 @@ public class CerrarCuentaDAO
 			ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = "
 					+ id_eliminar + "AND OFICINA = " + oficina);
 			int saldoActual = rs.getInt("SALDO");
-
+            
+			rs = s.executeQuery("SELECT ESTADO FROM CUENTAS WHERE ID_CUENTA = " + id_eliminar);
+			String estado = rs.getString("ESTADO");
+			if(estado.equals("Inactiva"))
+			{
+				throw new Exception("no se pueden cerrar cuentas ya cerradas");
+			}
+			
 			rs = s.executeQuery("SELECT ID_TRANSACCION FROM ( SELECT * FROM TRANSACCIONES"
 					+ " ORDER BY ID_TRANSACCION DESC) "
 					+ "WHERE ROWNUM = 1");
@@ -493,7 +560,7 @@ public class CerrarCuentaDAO
 				catch (SQLException exception) 
 				{
 
-					throw new Exception("ERROR: RegistroDePaquetesDAO: loadRow() =  cerrando una conexiÔøΩÔøΩÔøΩn.");
+					throw new Exception("ERROR: RegistroDePaquetesDAO: loadRow() =  cerrando una conexi�n");
 				}
 			}
 
@@ -502,6 +569,8 @@ public class CerrarCuentaDAO
 
 		return true;
 	}
+
+	
 
 	/**
 	 * Este método retorna un empleadoValues a partir de su correo

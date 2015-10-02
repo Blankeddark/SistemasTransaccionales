@@ -7,27 +7,25 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet que se encarga del caso de uso de desplegar el index del Gerente Oficina.
- * 
- * url-pattern: /gerenteOficina 
- *
- */
-public class ServletIndexGerenteOficina extends ASServlet {
+public class ServletIndexCajero extends ASServlet {
 
-	/**
-	 * Imprime el cuerpo del HTML que contiene el index inicial para el 
-	 * Gerente de Oficina.
-	 * @param pw
-	 */
-	private void imprimirCuerpoIndexGerenteOficina(PrintWriter pw)
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		imprimirSidebarGO(pw);
+		System.out.println("doGet en ServletIndexCajero");
 
+		PrintWriter pw = response.getWriter();
+		imprimirEncabezado(pw);
+		imprimirSidebarCajero(pw);
+		imprimirIndexCajeroInicial(pw);
+		imprimirWrapper(pw);
+	}
+
+	private void imprimirIndexCajeroInicial(PrintWriter pw)
+	{
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<h1 class=\"page-header\">Men&uacute; de gerente</h1>");
+		pw.println("<h1 class=\"page-header\">Men&uacute; de cajero</h1>");
 		pw.println("</div>");
 		pw.println("<!-- /.col-lg-12 -->");
 		pw.println("</div>");
@@ -40,6 +38,8 @@ public class ServletIndexGerenteOficina extends ASServlet {
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-6\">");
 		pw.println("<form role=\"form\">");
+
+
 
 		pw.println("</form>");
 		pw.println("</div>");
@@ -58,25 +58,12 @@ public class ServletIndexGerenteOficina extends ASServlet {
 		pw.println("<!-- /#page-wrapper -->");
 
 		pw.println("</div>");
-		
-		imprimirWrapper(pw);
 
-		pw.println("</body>");
-
-		pw.println("</html>");
-
-	}
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
-	{
-		System.out.println("En doPost de ServletIndexGerenteOficina");
-		PrintWriter pw = response.getWriter();
-		imprimirEncabezado(pw);
-		imprimirCuerpoIndexGerenteOficina(pw);
 	}
 
 	public String darTituloPagina() 
 	{
-		return "BancAndes - Gerente Oficina";
+		return "BancAndes - Cajero";
 	}
+
 }

@@ -2,6 +2,7 @@ package Fachada;
 
 import java.util.ArrayList;
 
+import vos.UsuarioValues;
 import DAOS.CerrarCuentaDAO;
 import DAOS.CerrarPrestamoDAO;
 import DAOS.ConsultarClienteDAO;
@@ -21,8 +22,8 @@ public class BancAndes
 	private CerrarCuentaDAO cerrarCuentaDao;
 	private CerrarPrestamoDAO cerrarPrestamoDao;
 	private ConsultarClienteDAO consultarClienteDAO;
-	private ConsultarCuentasDAO consultarCuentasDAO;
 	private PoblarTablasRB1DAO poblarDAO;
+	private ConsultarCuentasDAO consultarCuentasDAO;
 	private RegistrarOperacionCuentaDAO registrarOperacionCuentaDAO;
 	private RegistrarOperacionSobrePrestamoDAO registrarOperacionPrestamoDAO;
 
@@ -93,17 +94,53 @@ public class BancAndes
 	 * de datos cuyo ID entra por parámetro.
 	 * @param idCuenta
 	 */
-	public void cerrarCuenta(int idCuenta)
+	public void cerrarCuenta(int idCuenta) throws Exception
+	{
+	cerrarCuentaDao.registrarCerrarCuentaExistente(idCuenta);
+		
+	}
+	
+	public static void main(String[] args) throws NumberFormatException, Exception
+	{
+		 BancAndes.darInstancia().cerrarCuenta(1);
+	}
+
+	/**
+	 * Este método devuelve un objeto de tipo usuariosValues a partir del inicio de sesión de un usuario
+	 */
+	public UsuarioValues darUsuarioInicioSesion(String correo)
 	{
 		try 
 		{
-			cerrarCuentaDao.registrarCerrarCuentaExistente(idCuenta);
+			return consultarClienteDAO.darUsuarioInicioSesion(correo);
 		}
 
 		catch (Exception e) 
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Método que retorna la oficina del empleado que se logueó
+	 * @param correo
+	 * @return
+	 * @throws Exception 
+	 */
+	public int darOficinaEmpleado(String correo) throws Exception
+	{
+		int oficina = consultarClienteDAO.darOficinaEmpleado(correo);
+		if(oficina == 0)
+		{
+			throw new Exception("La oficina no existe");
+		}
+
+		else
+		{
+			return oficina;
 		}
 	}
 
@@ -201,145 +238,145 @@ public class BancAndes
 			ArrayList rta = consultarClienteDAO.darClienteEspecifico(pCorreo, ordenarPor, descoasc, agruparPor);
 			return rta;
 		}
-		
-		
+
+
 		catch (Exception e) 
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+
 		return null;
-		
+
 	}
-	
+
 	public ArrayList darCuentasGerenteGeneral(String ordenarPor, String agruparPor, String descoasc)
 	{
 		try 
 		{
-		  return  consultarCuentasDAO.darCuentas(ordenarPor, agruparPor, descoasc);
+			return  consultarCuentasDAO.darCuentas(ordenarPor, agruparPor, descoasc);
 		} 
 		catch (Exception e) 
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
 	public ArrayList darCuentasPorTipoGerenteGeneral(String tipo, String ordenarPor, String agruparPor, String descoasc)
 	{
-	   try 
-	   {
-		  return consultarCuentasDAO.darCuentasPorTipo(tipo, ordenarPor, agruparPor, descoasc);
-	    }
-	   
-	   catch (Exception e) 
-	   {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-    	}	
-	   
-	   return null;
+		try 
+		{
+			return consultarCuentasDAO.darCuentasPorTipo(tipo, ordenarPor, agruparPor, descoasc);
+		}
+
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+
+		return null;
 	}
-	
+
 	public ArrayList darCuentasPorRangoSaldoGerenteGeneral(int desde, int hasta, String ordenarPor, String agruparPor, String descoasc)
 	{
-	   try 
-	   {
-		  return consultarCuentasDAO.darCuentasPorRangoSaldo(desde, hasta, ordenarPor, agruparPor, descoasc);
-	    }
-	   
-	   catch (Exception e) 
-	   {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-    	}	
-	   
-	   return null;
+		try 
+		{
+			return consultarCuentasDAO.darCuentasPorRangoSaldo(desde, hasta, ordenarPor, agruparPor, descoasc);
+		}
+
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+
+		return null;
 	}
-	
+
 	public ArrayList darCuentasPorFechaGerenteGeneral(String fecha, String ordenarPor, String agruparPor, String descoasc)
 	{
-	   try 
-	   {
-		  return consultarCuentasDAO.darCuentasPorFechaUltimoMovimiento(fecha, ordenarPor, agruparPor, descoasc);
-	    }
-	   
-	   catch (Exception e) 
-	   {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-    	}	
-	   
-	   return null;
+		try 
+		{
+			return consultarCuentasDAO.darCuentasPorFechaUltimoMovimiento(fecha, ordenarPor, agruparPor, descoasc);
+		}
+
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+
+		return null;
 	}
-	
+
 	public ArrayList darCuentasPorTipoGerenteOficina(int idOficina, String tipo, String ordenarPor, String agruparPor, String descoasc)
 	{
-	   try 
-	   {
-		  return consultarCuentasDAO.darCuentasOficinaParticularPorTipoDeCuenta(idOficina, tipo, descoasc, agruparPor, ordenarPor);
-	    }
-	   
-	   catch (Exception e) 
-	   {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-    	}	
-	   
-	   return null;
+		try 
+		{
+			return consultarCuentasDAO.darCuentasOficinaParticularPorTipoDeCuenta(idOficina, tipo, descoasc, agruparPor, ordenarPor);
+		}
+
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+
+		return null;
 	}
-	
+
 	public ArrayList darCuentasGerenteOficina(int idOficina, String ordenarPor, String agruparPor, String descoasc)
 	{
-	   try 
-	   {
-		  return consultarCuentasDAO.darCuentasOficinaParticular(idOficina, ordenarPor, agruparPor, descoasc);
-	    }
-	   
-	   catch (Exception e) 
-	   {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-    	}	
-	   
-	   return null;
+		try 
+		{
+			return consultarCuentasDAO.darCuentasOficinaParticular(idOficina, ordenarPor, agruparPor, descoasc);
+		}
+
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+
+		return null;
 	}
-	
+
 	public ArrayList darCuentasPorRangoSaldoGerenteOficina(int idOficina, int desde, int hasta, String ordenarPor, String agruparPor, String descoasc)
 	{
-	   try 
-	   {
-		  return consultarCuentasDAO.darCuentasOficinaParticularPorRangoDeSaldo(idOficina, desde, hasta, descoasc, ordenarPor, agruparPor);
-	    }
-	   
-	   catch (Exception e) 
-	   {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-    	}	
-	   
-	   return null;
+		try 
+		{
+			return consultarCuentasDAO.darCuentasOficinaParticularPorRangoDeSaldo(idOficina, desde, hasta, descoasc, ordenarPor, agruparPor);
+		}
+
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+
+		return null;
 	}
-	
+
 	public ArrayList darCuentasPorRangoSaldoGerenteOficina(int idOficina, String fecha, String ordenarPor, String agruparPor, String descoasc)
 	{
-	   try 
-	   {
-		  return consultarCuentasDAO.darCuentasOficinaParticularPorFechaUltimoMovimiento(idOficina, fecha, descoasc, agruparPor, ordenarPor);
-	    }
-	   
-	   catch (Exception e) 
-	   {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-    	}	
-	   
-	   return null;
+		try 
+		{
+			return consultarCuentasDAO.darCuentasOficinaParticularPorFechaUltimoMovimiento(idOficina, fecha, descoasc, agruparPor, ordenarPor);
+		}
+
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+
+		return null;
 	}
-	
+
 	/**
 	 * Dependiendo de la operación que se vaya a realizar son los campos a utilizar.
 	 * @param tipo 
