@@ -58,7 +58,7 @@ public class ServletLogin extends ASServlet {
 		if ( iniciarSesion() ) //TODO quitar debug y agregar inicio de sesión real
 		{
 			ServletContext context= getServletContext();
-			RequestDispatcher rd= context.getRequestDispatcher("/cajero");
+			RequestDispatcher rd= context.getRequestDispatcher("/gerenteGeneral");
 			rd.forward(request, response);
 		}
 

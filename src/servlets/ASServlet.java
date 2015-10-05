@@ -103,10 +103,10 @@ public abstract class ASServlet extends HttpServlet {
 		pw.println("<ul class=\"nav nav-second-level\">");
 
 		pw.println("<li>");
-		pw.println("<a href=\"registrarOperacionCuentaCajero.html\">Registrar Operacion Sobre Cuenta</a>");
+		pw.println("<a href=\"operacionesCuentas\">Registrar Operacion Sobre Cuenta</a>");
 		pw.println("</li>");
 		pw.println("<li>");
-		pw.println("<a href=\"registrarOperacionPrestamo.html\">Registrar Operacion Sobre Prestamo</a>");
+		pw.println("<a href=\"operacionesPrestamos\">Registrar Operacion Sobre Prestamo</a>");
 		pw.println("</li>");
 		pw.println("</ul>                 ");
 		pw.println("<!-- /.nav-second-level -->");

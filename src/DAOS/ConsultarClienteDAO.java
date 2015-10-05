@@ -247,7 +247,7 @@ public int darOficinaEmpleado (String correo) throws Exception
 	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList<ClienteValues> darClienteEspecifico(String pCorreo, String ordenarPor, String descoasc, String agruparPor) throws Exception
+	public ArrayList darClienteEspecifico(String pCorreo, String ordenarPor, String descoasc, String agruparPor) throws Exception
 	{
 		PreparedStatement prepStat = null;
 		ArrayList clientes = new ArrayList();
@@ -424,9 +424,9 @@ public int darOficinaEmpleado (String correo) throws Exception
 
 			informacionCliente.add(clientes);
 			informacionCliente.add(cuentas);
-			informacionCliente.addAll(oficinas);
+			informacionCliente.add(oficinas);
 			informacionCliente.add(prestamos);
-			informacionCliente.addAll(operaciones);
+			informacionCliente.add(operaciones);
 
 
 		}

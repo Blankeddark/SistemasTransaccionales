@@ -37,8 +37,7 @@ public class ServletIndexCajero extends ASServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-6\">");
-		pw.println("<form role=\"form\">");
-
+		pw.println("<form role=\"form\" >");
 
 
 		pw.println("</form>");

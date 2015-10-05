@@ -109,7 +109,7 @@ public class ServletCerrarPrestamo extends ASServlet {
 		pw.println("</div>");
 		pw.println("<br>");
 
-		pw.println("<input type=\"submit\" class=\"btn btn-danger\">Cerrar</button> <br>");
+		pw.println("<input type=\"submit\" class=\"btn btn-danger\" value=\"Cerrar\"></input> <br>");
 		pw.println("<font color=\"red\">Hubo un error cerrando el prestamo. <br> Error: " + error +"</font>");
 
 		pw.println("</form>");

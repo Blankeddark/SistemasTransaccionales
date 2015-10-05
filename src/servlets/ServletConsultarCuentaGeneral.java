@@ -22,6 +22,34 @@ public class ServletConsultarCuentaGeneral extends ASServlet {
 		imprimirConsultarCuentasGeneralInicial(pw);
 		imprimirWrapper(pw);
 	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
+		System.out.println("doPost en ServletCOnsultarCuentaGeneral");
+		PrintWriter pw = response.getWriter();
+		
+		String ordenarPor = request.getParameter("ordenarPor");
+		String agruparPor = request.getParameter("agruparPor");
+		
+		if(ordenarPor == null)
+		{
+			ordenarPor = "";
+		}
+		
+		if(agruparPor == null)
+		{
+			agruparPor = "";
+		}
+		
+		String tipoCuenta = request.getParameter("tipoCuenta");
+		String rangoSaldoInicial = request.getParameter("rangoSaldoInicial");
+		String rangoSalgoFinal = request.getParameter("rangoSalgoFinal");
+		
+		//Fechas
+		String fechaApertura = request.getParameter("fechaApertura");
+		String fechaUltimoMovimiento = request.getParameter("fechaUltimoMovimiento");
+		String correoCliente = request.getParameter("correoCliente");
+	}
 
 	private void imprimirConsultarCuentasGeneralInicial(PrintWriter pw)
 	{
@@ -46,7 +74,7 @@ public class ServletConsultarCuentaGeneral extends ASServlet {
 		pw.println("<div class=\"form-group\">");
 
 		pw.println("<label>Tipo:</label>");
-		pw.println("<select class=\"form-control\">");
+		pw.println("<select name=\"tipoCuenta\" class=\"form-control\">");
 		pw.println("<option> </option>");
 		pw.println("<option>Ahorros</option>");
 		pw.println("<option>Corriente</option>");
@@ -55,27 +83,28 @@ public class ServletConsultarCuentaGeneral extends ASServlet {
 		pw.println("</div>");
 
 		pw.println("<label>Desde:</label>");
-		pw.println("<input class=\"form-control\"> ");
+		pw.println("<input name=\"rangoSaldoInicial\" class=\"form-control\"> ");
+		
 		pw.println("<label>Hasta:</label>");
-		pw.println("<input class=\"form-control\"></div>");
+		pw.println("<input name=\"rangoSalgoFinal\" class=\"form-control\"></div>");
 		pw.println("</div>");
 
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Fecha de apertura:</label>");
-		pw.println("<input class=\"form-control\" placeholder=\"AAAA/MM/DD\" name=\"password\" type=\"password\" value=\"\">");
+		pw.println("<input name=\"fechaApertura\" class=\"form-control\" placeholder=\"AAAA/MM/DD\" name=\"password\" type=\"password\" value=\"\">");
 		pw.println("</div>");
 
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Fecha de &uacute;ltimo movimiento:</label>");
-		pw.println("<input class=\"form-control\" placeholder=\"AAAA/MM/DD\" name=\"password\" type=\"password\" value=\"\">");
+		pw.println("<input name=\"fechaUltimoMovimiento\" class=\"form-control\" placeholder=\"AAAA/MM/DD\" name=\"password\" type=\"password\" value=\"\">");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Correo Cliente:</label>");
-		pw.println("<div><input class=\"form-control\"> ");
+		pw.println("<div><input name=\"correoCliente\" class=\"form-control\"> ");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Ordenar por:</label>");
-		pw.println("<select class=\"form-control\">");
+		pw.println("<select name=\"ordenarPor\" class=\"form-control\">");
 		pw.println("<option> </option>");
 		pw.println("<option>Tipo de cuenta</option>");
 		pw.println("<option>Saldo</option>");
@@ -86,7 +115,7 @@ public class ServletConsultarCuentaGeneral extends ASServlet {
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Agrupar por:</label>");
-		pw.println("<select class=\"form-control\">");
+		pw.println("<select name=\"agruparPor\" class=\"form-control\">");
 		pw.println("<option> </option>");
 		pw.println("<option>Tipo de cuenta</option>");
 		pw.println("<option>Fecha de apertura</option>");
@@ -96,7 +125,7 @@ public class ServletConsultarCuentaGeneral extends ASServlet {
 		pw.println("</div>");
 		pw.println("<br>");
 
-		pw.println("<button type=\"button\" class=\"btn btn-primary\">Consultar</button>");
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Consultar\"></input>");
 
 
 
@@ -158,7 +187,7 @@ public class ServletConsultarCuentaGeneral extends ASServlet {
 		pw.println("<td class=\"center\">2</td>");
 		pw.println("<td>2014/11/13</td>");
 		pw.println("<td class=\"center\">400000</td>");
-		pw.println("<td>Activa</td> ");
+		pw.println("<td>Activa</td>");
 
 		pw.println("</tr>");
 		pw.println("</tbody>");

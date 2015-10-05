@@ -116,7 +116,29 @@
  
  </servlet>
  
+  <servlet>
  
+ 	<display-name>ServletRegistrarOperacionesPrestamos</display-name>
+ 	<servlet-name>ServletRegistrarOperacionesPrestamos</servlet-name>
+ 	<servlet-class>servlets.ServletRegistrarOperacionesPrestamos</servlet-class>
+ 
+ </servlet>
+ 
+   <servlet>
+ 
+ 	<display-name>ServletRegistrarOperacionesCuentas</display-name>
+ 	<servlet-name>ServletRegistrarOperacionesCuentas</servlet-name>
+ 	<servlet-class>servlets.ServletRegistrarOperacionesCuentas</servlet-class>
+ 
+ </servlet>
+ 
+    <servlet>
+ 
+ 	<display-name>ServletTop10Oficina</display-name>
+ 	<servlet-name>ServletTop10Oficina</servlet-name>
+ 	<servlet-class>servlets.ServletTop10Oficina</servlet-class>
+ 
+ </servlet>
  
  <servlet-mapping>
  
@@ -214,6 +236,27 @@
  
  	<servlet-name>ServletIndexCajero</servlet-name>
  	<url-pattern>/cajero</url-pattern>
+ 
+ </servlet-mapping>
+ 
+   <servlet-mapping>
+ 
+ 	<servlet-name>ServletRegistrarOperacionesPrestamos</servlet-name>
+ 	<url-pattern>/operacionesPrestamos</url-pattern>
+ 
+ </servlet-mapping>
+ 
+    <servlet-mapping>
+ 
+ 	<servlet-name>ServletRegistrarOperacionesCuentas</servlet-name>
+ 	<url-pattern>/operacionesCuentas</url-pattern>
+ 
+ </servlet-mapping>
+ 
+     <servlet-mapping>
+ 
+ 	<servlet-name>ServletTop10Oficina</servlet-name>
+ 	<url-pattern>/top10Oficina</url-pattern>
  
  </servlet-mapping>
  
