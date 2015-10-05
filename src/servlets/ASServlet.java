@@ -250,10 +250,10 @@ public abstract class ASServlet extends HttpServlet {
 		pw.println("<a href=\"consultarClienteOficina\">Consultar cliente</a>");
 		pw.println("</li>");
 		pw.println("<li>");
-		pw.println("<a href=\"login.html\">Top 10</a>");
+		pw.println("<a href=\"top10Oficina\">Top 10</a>");
 		pw.println("</li>");
 		pw.println("<li>");
-		pw.println("<a href=\"login.html\">Usuario m&aacute;s activo</a>");
+		pw.println("<a href=\"usuarioMasActivoOficina\">Usuario m&aacute;s activo</a>");
 		pw.println("</li>");
 		pw.println("</ul>");
 		pw.println("<!-- /.nav-second-level -->");
@@ -331,10 +331,10 @@ public abstract class ASServlet extends HttpServlet {
 		pw.println("<a href=\"consultarClienteGeneral\">Consultar cliente</a>");
 		pw.println("</li>");
 		pw.println("<li>");
-		pw.println("<a href=\"login.html\">Top 10</a>");
+		pw.println("<a href=\"top10General\">Top 10</a>"); //TODO crear el de general
 		pw.println("</li>");
 		pw.println("<li>");
-		pw.println("<a href=\"login.html\">Usuario m&aacute;s activo</a>");
+		pw.println("<a href=\"usuarioMasActivoGeneral\">Usuario m&aacute;s activo</a>"); //TODO crear el de oficina
 		pw.println("</li>");
 		pw.println("</ul>");
 		pw.println("<!-- /.nav-second-level -->");

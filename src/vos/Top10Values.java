@@ -1,6 +1,6 @@
 package vos;
 
-public class top10Values 
+public class Top10Values 
 {
 
 	int puesto;
@@ -11,7 +11,7 @@ public class top10Values
 	
 	int promedio;
 
-	public top10Values(int puesto, String tipo, int vecesUsada, int promedio) {
+	public Top10Values(int puesto, String tipo, int vecesUsada, int promedio) {
 		super();
 		this.puesto = puesto;
 		this.tipo = tipo;

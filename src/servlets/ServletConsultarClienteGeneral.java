@@ -149,6 +149,26 @@ public class ServletConsultarClienteGeneral extends ASParsingServlet {
 			}
 		}
 		
+		if (saldoCuenta != null)
+		{
+			if(!saldoCuenta.trim().equals(""))
+			{
+				try
+				{
+					Integer.parseInt(saldoCuenta);
+				}
+				
+				catch(Exception e)
+				{
+					imprimirInformacionError(pw, "Lo ingresado para el saldo de la cuenta no es un n&uacute;mero v&aacute;lido");
+					imprimirWrapper(pw);
+					return;
+				}
+				
+				filtrarCuentasPorSaldo(Integer.parseInt(saldoCuenta), cuentas);
+			}
+		}
+		
 		//Información transacción. TODO, filtros aún no funcionando.
 		String fechaInicialTransaccion = request.getParameter("fechaInicialTransaccion");
 		String fechaFinalTransaccion = request.getParameter("fechaFinalTransaccion");

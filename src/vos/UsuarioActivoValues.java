@@ -18,27 +18,35 @@ public class UsuarioActivoValues
 		this.tipoUsuario = tipoUsuario;
 		this.correo = correo;
 	}
+	
 	public String getNombre() {
 		return nombre;
 	}
+	
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+	
 	public String getNumeroID() {
 		return numeroID;
 	}
+	
 	public void setNumeroID(String numeroID) {
 		this.numeroID = numeroID;
 	}
+	
 	public String getTipoID() {
 		return tipoID;
 	}
+	
 	public void setTipoID(String tipoID) {
 		this.tipoID = tipoID;
 	}
+	
 	public int getNumTransacciones() {
 		return numTransacciones;
 	}
+	
 	public void setNumTransacciones(int numTransacciones) {
 		this.numTransacciones = numTransacciones;
 	}

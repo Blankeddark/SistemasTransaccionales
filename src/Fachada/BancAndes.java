@@ -2,14 +2,18 @@ package Fachada;
 
 import java.util.ArrayList;
 
+import vos.UsuarioActivoValues;
 import vos.UsuarioValues;
+import vos.Top10Values;
 import DAOS.CerrarCuentaDAO;
 import DAOS.CerrarPrestamoDAO;
+import DAOS.ConsultaUsuarioMasActivoDAO;
 import DAOS.ConsultarClienteDAO;
 import DAOS.ConsultarCuentasDAO;
 import DAOS.PoblarTablasRB1DAO;
 import DAOS.RegistrarOperacionCuentaDAO;
 import DAOS.RegistrarOperacionSobrePrestamoDAO;
+import DAOS.Top10ActividadesDAO;
 
 
 /**
@@ -26,6 +30,8 @@ public class BancAndes
 	private ConsultarCuentasDAO consultarCuentasDAO;
 	private RegistrarOperacionCuentaDAO registrarOperacionCuentaDAO;
 	private RegistrarOperacionSobrePrestamoDAO registrarOperacionPrestamoDAO;
+	private ConsultaUsuarioMasActivoDAO consultarActivoDAO;
+	private Top10ActividadesDAO top10;
 
 	// -----------------------------------------------------------------
 	// Singleton
@@ -63,6 +69,8 @@ public class BancAndes
 		poblarDAO = new PoblarTablasRB1DAO();
 		registrarOperacionCuentaDAO = new RegistrarOperacionCuentaDAO();
 		registrarOperacionPrestamoDAO = new RegistrarOperacionSobrePrestamoDAO();
+		consultarActivoDAO = new ConsultaUsuarioMasActivoDAO();
+				top10 = new Top10ActividadesDAO();
 	}
 
 	/**
@@ -403,5 +411,55 @@ public class BancAndes
 			e.printStackTrace();
 		}
 	}
+	
+	public ArrayList<UsuarioActivoValues> darUsuarioActivoGeneral(String tipoTransaccion)
+	{
+		try {
+			return consultarActivoDAO.darUsuarioActivoGeneral(tipoTransaccion);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public ArrayList<UsuarioActivoValues> darUsuarioActivoOficina(String tipoTransaccion, int oficina)
+	{
+		try {
+			return consultarActivoDAO.darUsuarioActivoOficina(tipoTransaccion, oficina);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	
+	public ArrayList<Top10Values> darTop10TransaccionesGeneral()
+	{
+		try {
+			return top10.darTop10TransaccionesGerenteGeneral();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	public ArrayList<Top10Values> darTop10TransaccionesOficina(int oficina)
+	{
+		try {
+			return top10.darTop10TransaccionesGerenteOficina(oficina);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 
 }

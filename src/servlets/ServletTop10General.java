@@ -12,13 +12,13 @@ import Fachada.BancAndes;
 import vos.Top10Values;
 
 /**
- * url-pattern: /top10Oficina
+ * url-pattern: /top10General
  */
-public class ServletTop10Oficina extends ASParsingServlet {
+public class ServletTop10General extends ASParsingServlet {
 
 	ArrayList<Top10Values> valuesTop10;
 
-	public ServletTop10Oficina()
+	public ServletTop10General()
 	{
 		valuesTop10 = new ArrayList<Top10Values>();
 	}
@@ -29,24 +29,23 @@ public class ServletTop10Oficina extends ASParsingServlet {
 		PrintWriter pw = response.getWriter();
 
 		imprimirEncabezado(pw);
-		imprimirSidebarGO(pw);
-		imprimirTop10InicialOficina(pw);
+		imprimirSidebarGG(pw);
+		imprimirTop10InicialGeneral(pw);
 		imprimirWrapper(pw);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		PrintWriter pw = response.getWriter();
-		valuesTop10 = BancAndes.darInstancia().darTop10TransaccionesOficina(
-				ServletLogin.darEmpleadoActual().getOficina());
+		valuesTop10 = BancAndes.darInstancia().darTop10TransaccionesGeneral();
 		
 		imprimirEncabezado(pw);
-		imprimirSidebarGO(pw);
-		imprimirTop10ResultadoOficina(pw);
+		imprimirSidebarGG(pw);
+		imprimirTop10ResultadoGeneral(pw);
 		imprimirWrapper(pw);
 	}
 
-	private void imprimirTop10InicialOficina(PrintWriter pw)
+	private void imprimirTop10InicialGeneral(PrintWriter pw)
 	{
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
@@ -110,7 +109,7 @@ public class ServletTop10Oficina extends ASParsingServlet {
 	}
 
 
-	private void imprimirTop10ResultadoOficina(PrintWriter pw)
+	private void imprimirTop10ResultadoGeneral(PrintWriter pw)
 	{
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
@@ -146,7 +145,7 @@ public class ServletTop10Oficina extends ASParsingServlet {
 		pw.println("</thead>");
 		pw.println("<tbody>");
 
-		parsearTablaResultadoOficina(pw);
+		parsearTablaResultadoGeneral(pw);
 		
 		pw.println("</tbody>");
 		pw.println("</table>");
@@ -165,7 +164,7 @@ public class ServletTop10Oficina extends ASParsingServlet {
 
 	}
 
-	private void parsearTablaResultadoOficina(PrintWriter pw)
+	private void parsearTablaResultadoGeneral(PrintWriter pw)
 	{
 		for(Top10Values actual : valuesTop10)
 		{

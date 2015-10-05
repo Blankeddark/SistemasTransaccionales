@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import vos.EmpleadoValues;
 import vos.UsuarioValues;
 
 public class ServletLogin extends ASServlet {
@@ -34,10 +35,16 @@ public class ServletLogin extends ASServlet {
 	public final static String TIPO_EMPLEADO_GERENTE_GENERAL = "GG";
 	
 	private static UsuarioValues usuarioActual;
-
+	
+	/**
+	 * Null si el usuario actual no es un empleado.
+	 */
+	private static EmpleadoValues empleadoActual;
+	
 	public ServletLogin()
 	{
 		usuarioActual = null;
+		empleadoActual = null;
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
@@ -71,6 +78,7 @@ public class ServletLogin extends ASServlet {
 	public void paraProbarGerenteOficina()
 	{
 		usuarioActual = new UsuarioValues("algun@gerenteof.com", "algun", "gerenteof", "123", "CC", "GO");
+		empleadoActual = new EmpleadoValues(usuarioActual, 1);
 	}
 
 	public boolean iniciarSesion()
@@ -88,6 +96,11 @@ public class ServletLogin extends ASServlet {
 	public static UsuarioValues darUsuarioActual()
 	{
 		return usuarioActual;
+	}
+	
+	public static EmpleadoValues darEmpleadoActual()
+	{
+		return empleadoActual;
 	}
 	
 }

@@ -140,6 +140,30 @@
  
  </servlet>
  
+     <servlet>
+ 
+ 	<display-name>ServletUsuarioMasActivoOficina</display-name>
+ 	<servlet-name>ServletUsuarioMasActivoOficina</servlet-name>
+ 	<servlet-class>servlets.ServletUsuarioMasActivoOficina</servlet-class>
+ 
+ </servlet>
+ 
+      <servlet>
+ 
+ 	<display-name>ServletUsuarioMasActivoGeneral</display-name>
+ 	<servlet-name>ServletUsuarioMasActivoGeneral</servlet-name>
+ 	<servlet-class>servlets.ServletUsuarioMasActivoGeneral</servlet-class>
+ 
+ </servlet>
+ 
+       <servlet>
+ 
+ 	<display-name>ServletTop10General</display-name>
+ 	<servlet-name>ServletTop10General</servlet-name>
+ 	<servlet-class>servlets.ServletTop10General</servlet-class>
+ 
+ </servlet>
+ 
  <servlet-mapping>
  
   <servlet-name>ServletPrincipal</servlet-name>
@@ -257,6 +281,27 @@
  
  	<servlet-name>ServletTop10Oficina</servlet-name>
  	<url-pattern>/top10Oficina</url-pattern>
+ 
+ </servlet-mapping>
+ 
+      <servlet-mapping>
+ 
+ 	<servlet-name>ServletUsuarioMasActivoOficina</servlet-name>
+ 	<url-pattern>/usuarioMasActivoOficina</url-pattern>
+ 
+ </servlet-mapping>
+ 
+       <servlet-mapping>
+ 
+ 	<servlet-name>ServletUsuarioMasActivoGeneral</servlet-name>
+ 	<url-pattern>/usuarioMasActivoGeneral</url-pattern>
+ 
+ </servlet-mapping>
+ 
+        <servlet-mapping>
+ 
+ 	<servlet-name>ServletTop10General</servlet-name>
+ 	<url-pattern>/top10General</url-pattern>
  
  </servlet-mapping>
  

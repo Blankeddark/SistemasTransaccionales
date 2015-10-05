@@ -55,6 +55,24 @@ public class EmpleadoValues
 		this.cod_postal = cod_postal;
 		this.fecha_registro = fecha_registro;
 	}
+	
+	public EmpleadoValues(UsuarioValues usuario, int oficina)
+	{
+		this.oficina = oficina;
+		tipo = usuario.getTipo_usuario();
+		correo = usuario.getCorreo();
+		login = usuario.getLogin();
+		contraseña = usuario.getContraseña();
+		numero_id = usuario.getNumero_id();
+		nombre = usuario.getNombre();
+		nacionalidad = usuario.getNacionalidad();
+		direccion = usuario.getNacionalidad();
+		telefono = usuario.getTelefono();
+		ciudad = usuario.getCiudad();
+		departamento = usuario.getDepartamento();
+		cod_postal = usuario.getCod_postal();
+		fecha_registro = usuario.getFecha_registro();
+	}
 
 	public String getCorreo() {
 		return correo;

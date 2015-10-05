@@ -144,5 +144,43 @@ public abstract class ASParsingServlet extends ASServlet {
 		}
 	}
 	
+	public void filtrarCuentasPorCorreoCliente(String correoCliente, ArrayList<CuentaValues> cuentas)
+	{
+		CuentaValues cuentaActual = null;
+		for(int i = 0; i< cuentas.size(); i++)
+		{
+			cuentaActual = cuentas.get(i);
+			if ( !cuentaActual.getCorreo().equals(correoCliente) )
+			{
+				cuentas.remove(i);
+			}
+		}
+	}
+	
+	public void filtrarCuentasPorRangoSaldo(int rangoSaldoInicial, int rangoSaldoFinal, ArrayList<CuentaValues> cuentas)
+	{
+		CuentaValues cuentaActual = null;
+		for(int i = 0; i< cuentas.size(); i++)
+		{
+			cuentaActual = cuentas.get(i);
+			if ( cuentaActual.getSaldo() < rangoSaldoInicial || cuentaActual.getSaldo() > rangoSaldoFinal)
+			{
+				cuentas.remove(i);
+			}
+		}
+	}
+	
+	public void filtrarCuentasPorOficina(int oficina, ArrayList<CuentaValues> cuentas)
+	{
+		CuentaValues cuentaActual = null;
+		for(int i = 0; i< cuentas.size(); i++)
+		{
+			cuentaActual = cuentas.get(i);
+			if ( cuentaActual.getOficina() != oficina)
+			{
+				cuentas.remove(i);
+			}
+		}
+	}
 	
 }
