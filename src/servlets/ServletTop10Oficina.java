@@ -25,7 +25,7 @@ public class ServletTop10Oficina extends ASParsingServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		System.out.println("en doGet de ServletTop10");
+		System.out.println("en doGet de ServletTop10Oficina");
 		PrintWriter pw = response.getWriter();
 
 		imprimirEncabezado(pw);
@@ -37,8 +37,9 @@ public class ServletTop10Oficina extends ASParsingServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		PrintWriter pw = response.getWriter();
-		valuesTop10 = BancAndes.darInstancia().darTop10TransaccionesOficina(
-				ServletLogin.darEmpleadoActual().getOficina());
+		valuesTop10 = BancAndes.darInstancia().darTop10TransaccionesOficina(1);
+		
+		System.out.println(valuesTop10.size());
 		
 		imprimirEncabezado(pw);
 		imprimirSidebarGO(pw);
@@ -57,12 +58,13 @@ public class ServletTop10Oficina extends ASParsingServlet {
 		pw.println("</div>");
 		pw.println("<!-- /.row -->");
 		pw.println("<div class=\"row\">");
+		pw.println("<form method=\"post\" action=\"top10Oficina\">");
 		pw.println("<div><label>Desde:</label>");
 		pw.println("<input class=\"form-control\"> </div>");
 		pw.println("<div><label>Hasta:</label>");
 		pw.println("<input class=\"form-control\"></div> ");
-		pw.println("<button type=\"button\" class=\"btn btn-primary\">Consultar Top 10</button>");
-
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Consultar Top 10\"></input>");
+		pw.println("</form>");
 		pw.println("<div class=\"col-lg-9\">");
 		pw.println("<div class=\"panel panel-default\">");
 		pw.println("<div class=\"panel-heading\">");
@@ -145,7 +147,7 @@ public class ServletTop10Oficina extends ASParsingServlet {
 		pw.println("</tr>");
 		pw.println("</thead>");
 		pw.println("<tbody>");
-
+		pw.println("Resultado: <br><br>");
 		parsearTablaResultadoOficina(pw);
 		
 		pw.println("</tbody>");

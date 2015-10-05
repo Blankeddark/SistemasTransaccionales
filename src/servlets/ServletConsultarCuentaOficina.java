@@ -17,50 +17,59 @@ import vos.CuentaValues;
 public class ServletConsultarCuentaOficina extends ASParsingServlet {
 
 	ArrayList<CuentaValues> cuentas;
-	
+
 	public ServletConsultarCuentaOficina()
 	{
 		cuentas = new ArrayList<CuentaValues>();
 	}
-	
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		System.out.println("en doGet de ServletConsultarCuentaGerente");
 
 		PrintWriter pw = response.getWriter();
 		imprimirEncabezado(pw);
-		imprimirSidebarGG(pw);
+		imprimirSidebarGO(pw);
 		imprimirConsultarCuentasOficinaInicial(pw);
 		imprimirWrapper(pw);
 	}
-	
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		System.out.println("doPost en ServletConsultarCuentaOficina");
 		PrintWriter pw = response.getWriter();
-		
+
+		imprimirEncabezado(pw);
+		imprimirSidebarGO(pw);
+
 		BancAndes bancAndes = BancAndes.darInstancia();
-		
-		
+
+
 		String ordenarPor = request.getParameter("ordenarPor");
 		String agruparPor = request.getParameter("agruparPor");
-		
+
 		if(ordenarPor == null)
 		{
 			ordenarPor = "";
 		}
-		
+
 		if(agruparPor == null)
 		{
 			agruparPor = "";
 		}
-		
+
 		int idOficina = ServletLogin.darEmpleadoActual().getOficina();
-		
+
 		cuentas = bancAndes.darCuentasGerenteOficina(idOficina, ordenarPor, agruparPor, "DESC");
-		
+		System.out.println(cuentas);
+
+		for(int i = 0; i < cuentas.size(); i++)
+		{
+			System.out.println(cuentas.get(i));
+		}
+
 		String tipoCuenta = request.getParameter("tipoCuenta");
-		
+
 		if (tipoCuenta != null)
 		{
 			if ( !tipoCuenta.trim().equals(""))
@@ -68,9 +77,9 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 				filtrarCuentasPorTipoCuenta(tipoCuenta, cuentas);
 			}
 		}
-		
+
 		String correoCliente = request.getParameter("correoCliente");
-		
+
 		if (correoCliente != null)
 		{
 			if( !correoCliente.trim().equals(""))
@@ -78,46 +87,60 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 				filtrarCuentasPorCorreoCliente(correoCliente, cuentas);
 			}
 		}
-		
+
 		String rangoSaldoInicial = request.getParameter("rangoSaldoInicial");
 		String rangoSaldoFinal = request.getParameter("rangoSalgoFinal");
 		
+		boolean haySaldoInicial = false;
+		boolean haySaldoFinal = false;
+		
 		if(rangoSaldoInicial != null)
 		{
-			try
+			if( !rangoSaldoInicial.trim().equals(""))
 			{
-				Integer.parseInt(rangoSaldoInicial);
-			}
-			catch(Exception e)
-			{
-				imprimirConsultarCuentasOficinaError(pw, "El valor ingresado en Desde (saldoInicial) no es un n&uacute;mero v&aacute;lido");
-				imprimirWrapper(pw);
-				return;
+				try
+				{
+					Integer.parseInt(rangoSaldoInicial);
+					haySaldoInicial = true;
+				}
+				catch(Exception e)
+				{
+					imprimirConsultarCuentasOficinaError(pw, "El valor ingresado en Desde (saldoInicial) no es un n&uacute;mero v&aacute;lido");
+					imprimirWrapper(pw);
+					return;
+				}
 			}
 		}
-		
+
 		if(rangoSaldoFinal != null)
 		{
-			try
+			if( !rangoSaldoFinal.trim().equals(""))
 			{
-				Integer.parseInt(rangoSaldoFinal);
-			}
-			catch(Exception e)
-			{
-				imprimirConsultarCuentasOficinaError(pw, "El valor ingresado en Hasta (saldoFinal) no es un n&uacute;mero v&aacute;lido");
-				imprimirWrapper(pw);
-				return;
+				try
+				{
+					Integer.parseInt(rangoSaldoFinal);
+					haySaldoFinal = true;
+				}
+				catch(Exception e)
+				{
+					imprimirConsultarCuentasOficinaError(pw, "El valor ingresado en Hasta (saldoFinal) no es un n&uacute;mero v&aacute;lido");
+					imprimirWrapper(pw);
+					return;
+				}
 			}
 		}
-		
-		filtrarCuentasPorRangoSaldo(
-				Integer.parseInt(rangoSaldoInicial),
-				Integer.parseInt(rangoSaldoFinal), cuentas);
-		
+
+		if(haySaldoInicial && haySaldoFinal)
+		{
+			filtrarCuentasPorRangoSaldo(
+					Integer.parseInt(rangoSaldoInicial),
+					Integer.parseInt(rangoSaldoFinal), cuentas);
+		}
+
 		//Fechas, no sirven.
 		String fechaApertura = request.getParameter("fechaApertura");
 		String fechaUltimoMovimiento = request.getParameter("fechaUltimoMovimiento");
-		
+
 		imprimirConsultarCuentasOficinaResultado(pw);
 		imprimirWrapper(pw);
 	}
@@ -141,7 +164,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"consultarCuentaOficina\">");
 		pw.println("<div class=\"form-group\">");
 
 		pw.println("<label>Tipo:</label>");
@@ -155,7 +178,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 
 		pw.println("<label>Desde:</label>");
 		pw.println("<input name=\"rangoSaldoInicial\" class=\"form-control\"> ");
-		
+
 		pw.println("<label>Hasta:</label>");
 		pw.println("<input name=\"rangoSalgoFinal\" class=\"form-control\"></div>");
 		pw.println("</div>");
@@ -276,7 +299,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 
 		pw.println("</div>");
 	}
-	
+
 	private void imprimirConsultarCuentasOficinaResultado(PrintWriter pw)
 	{
 		pw.println("<div id=\"page-wrapper\">");
@@ -296,7 +319,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"consultarCuentaOficina\">");
 		pw.println("<div class=\"form-group\">");
 
 		pw.println("<label>Tipo:</label>");
@@ -310,7 +333,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 
 		pw.println("<label>Desde:</label>");
 		pw.println("<input name=\"rangoSaldoInicial\" class=\"form-control\"> ");
-		
+
 		pw.println("<label>Hasta:</label>");
 		pw.println("<input name=\"rangoSalgoFinal\" class=\"form-control\"></div>");
 		pw.println("</div>");
@@ -388,9 +411,9 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("</tr>");
 		pw.println("</thead>");
 		pw.println("<tbody>");
-		
+
 		parsearTablaCuentasTipo2(cuentas, pw);
-		
+
 		pw.println("</tbody>");
 		pw.println("</table>");
 		pw.println("</div>");
@@ -406,7 +429,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 
 		pw.println("</div>");
 	}
-	
+
 	private void imprimirConsultarCuentasOficinaError(PrintWriter pw, String error)
 	{
 		pw.println("<div id=\"page-wrapper\">");
@@ -426,9 +449,9 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"consultarCuentaOficina\">");
 		pw.println("<div class=\"form-group\">");
-		pw.println("<font color=\red\">" + error + "</font>");
+		pw.println("<font color=\"red\">" + error + "</font>");
 		pw.println("<label>Tipo:</label>");
 		pw.println("<select name=\"tipoCuenta\" class=\"form-control\">");
 		pw.println("<option> </option>");
@@ -440,7 +463,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 
 		pw.println("<label>Desde:</label>");
 		pw.println("<input name=\"rangoSaldoInicial\" class=\"form-control\"> ");
-		
+
 		pw.println("<label>Hasta:</label>");
 		pw.println("<input name=\"rangoSalgoFinal\" class=\"form-control\"></div>");
 		pw.println("</div>");

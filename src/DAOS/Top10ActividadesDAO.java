@@ -73,7 +73,8 @@ public class Top10ActividadesDAO
 			establecerConexion(cadenaConexion, usuario, clave);
 
 			Statement s = conexion.createStatement();
-			ResultSet rs = s.executeQuery("SELECT TIPO, COUNT(TIPO) AS VECES_USADA  FROM TRANSACCIONES GROUP BY TIPO "
+			ResultSet rs = s.executeQuery("SELECT TIPO, COUNT(TIPO) AS VECES_USADA  "
+					+ "FROM TRANSACCIONES GROUP BY TIPO "
 					+ "ORDER BY COUNT(TIPO) DESC");
 
 			while(rs.next())
@@ -82,12 +83,12 @@ public class Top10ActividadesDAO
 				int usada = rs.getInt("VECES_USADA");
 				if(tipo.equalsIgnoreCase("R"))
 				{
-					promedio = 224000;
+					promedio = (int) (Math.random() * 150000);
 				}
 
 				else if(tipo.equalsIgnoreCase("C"))
 				{
-					promedio = 525600;
+					promedio = (int) (Math.random() * 500000);
 				}
 
 				Top10Values topActual = new Top10Values(posicion, tipo, usada, promedio);
@@ -116,33 +117,43 @@ public class Top10ActividadesDAO
 		try
 		{
 			establecerConexion(cadenaConexion, usuario, clave);
-
 			Statement s = conexion.createStatement();
-			ResultSet rs = s.executeQuery("SELECT TIPO, COUNT(TIPO) FROM TRANSACCIONES t JOIN PUNTOS_ATENCION p "
-					+ "ON (t.id_punto_atencion = p.id) WHERE OFICINA = " + oficina
+			System.out.println("A punto de eejecutar la transacción en Top10ActividadesDHAO");
+			
+			ResultSet rs = s.executeQuery("SELECT TIPO, COUNT(TIPO) AS VECES_USADA "
+					+ "FROM (SELECT TIPO, "
+					+ "ID_PUNTO_ATENCION AS ID FROM TRANSACCIONES) t JOIN "
+					+ "(SELECT ID, OFICINA FROM PUNTOS_ATENCION) p"
+					+ " ON (t.id = p.id)  WHERE OFICINA = 1"
 					+ " GROUP BY TIPO ORDER BY COUNT(TIPO) DESC");
-
+			System.out.println(rs);
+			System.out.println("llegó hasta antes del while en Top10Actividades");
 			while(rs.next())
 			{
 				String tipo = rs.getString("TIPO");
 				int usada = rs.getInt("VECES_USADA");
+				System.out.println(usada);
 				if(tipo.equalsIgnoreCase("R"))
 				{
-					promedio = 224000;
+					promedio = (int) (Math.random() * 150000);
 				}
 
 				else if(tipo.equalsIgnoreCase("C"))
 				{
-					promedio = 525600;
+					promedio = (int) (Math.random() * 500000);
 				}
 
 				Top10Values topActual = new Top10Values(posicion, tipo, usada, promedio);
 				cuentas.add(topActual);
 
 				posicion++;
-				System.out.println("---------Usuarios-------");		
+				System.out.println("---------" + tipo + "-------");		
 			}
 
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 
 		finally

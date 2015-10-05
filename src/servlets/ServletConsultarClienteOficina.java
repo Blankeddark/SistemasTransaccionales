@@ -96,7 +96,11 @@ public class ServletConsultarClienteOficina extends ASParsingServlet {
 				rtaClientes = bancAndes.consultarClienteEspecifico(correoCliente, ordenarPor, "DESC", agruparPor);
 				System.out.println("¿Es null? ---- " + rtaClientes);
 				System.out.println("Tamaño: " + rtaClientes.size());
-				System.out.println("Primer elemento: " + rtaClientes.get(0)); //TODO
+				
+				for(int i = 0; i < rtaClientes.size(); i++)
+				{
+					System.out.println( rtaClientes.get(i) );
+				}
 				
 				if ( rtaClientes.isEmpty() )
 				{

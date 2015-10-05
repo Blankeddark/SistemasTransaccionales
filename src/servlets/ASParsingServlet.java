@@ -147,7 +147,7 @@ public abstract class ASParsingServlet extends ASServlet {
 	public void filtrarCuentasPorCorreoCliente(String correoCliente, ArrayList<CuentaValues> cuentas)
 	{
 		CuentaValues cuentaActual = null;
-		for(int i = 0; i< cuentas.size(); i++)
+		for(int i = 0; i< cuentas.size() + 1; i++)
 		{
 			cuentaActual = cuentas.get(i);
 			if ( !cuentaActual.getCorreo().equals(correoCliente) )

@@ -208,7 +208,7 @@ public class ServletUsuarioMasActivoGeneral extends ASServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"usuarioMasActivo\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"usuarioMasActivoGeneral\">");
 		pw.println("<div class=\"form-group\">");
 
 		pw.println("<label>Tipo:</label>");
@@ -305,7 +305,7 @@ public class ServletUsuarioMasActivoGeneral extends ASServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"usuarioMasActivo\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"usuarioMasActivoGeneral\">");
 		pw.println("<div class=\"form-group\">");
 
 		pw.println("<label>Tipo:</label>");

@@ -102,11 +102,15 @@ public class ServletUsuarioMasActivoOficina extends ASServlet {
 		
 		usuariosMasActivos = BancAndes.darInstancia().darUsuarioActivoOficina(
 				tipoTransaccion, ServletLogin.darEmpleadoActual().getOficina());
+
+		System.out.println("Size usuariosMasActivos: " + usuariosMasActivos.size());
+		for(int i = 0; i < usuariosMasActivos.size(); i++)
+		{
+			System.out.println( usuariosMasActivos.get(i) );
+		}
 		
 		imprimirUsuarioMasActivoRespuesta(pw);
 		imprimirWrapper(pw);
-		
-				
 	}
 	
 	private void imprimirUsuarioMasActivoError(PrintWriter pw, String error)
@@ -209,7 +213,7 @@ public class ServletUsuarioMasActivoOficina extends ASServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"usuarioMasActivo\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"usuarioMasActivoOficina\">");
 		pw.println("<div class=\"form-group\">");
 
 		pw.println("<label>Tipo:</label>");
@@ -306,7 +310,7 @@ public class ServletUsuarioMasActivoOficina extends ASServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"usuarioMasActivo\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"usuarioMasActivoOficina\">");
 		pw.println("<div class=\"form-group\">");
 
 		pw.println("<label>Tipo:</label>");
