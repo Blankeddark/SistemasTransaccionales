@@ -112,12 +112,12 @@ public class ConsultarClienteDAO
 
 		catch (SQLException exception)
 		{
-			throw new Exception("ERROR: ConsultaDAO: closeConnection() = cerrando una conexi√≥n.");
+			throw new Exception("ERROR: ConsultaDAO: closeConnection() = cerrando una conexi√É¬≥n.");
 		}
 	}
 
 	/**
-	 * MÈtodo que retorna la informaciÛn b·sica de todos los clientes que se 
+	 * M√©todo que retorna la informaci√≥n b√°sica de todos los clientes que se 
 	 * encuentran dentro de la base de datos.
 	 * @param ordenarPor
 	 * @param agruparPor
@@ -160,8 +160,8 @@ public class ConsultarClienteDAO
 	}
 
 	/**
-	 * MÈtodo que retorna un usuarioValues a partir del correo con el que 
-	 * inicia sesiÛn en el sistema.
+	 * M√©todo que retorna un usuarioValues a partir del correo con el que 
+	 * inicia sesi√≥n en el sistema.
 	 * @param correo
 	 * @return
 	 * @throws Exception
@@ -180,7 +180,7 @@ public class ConsultarClienteDAO
 			ResultSet rs = s.executeQuery("SELECT * FROM USUARIOS WHERE CORREO = " + correo );
 			String ciudad = rs.getString("CIUDAD");
 			String codPostal = rs.getString("COS_POSTAL");
-			String contraseÒa = rs.getString("CONTRASE—A");
+			String contrase√±a = rs.getString("CONTRASE√ëA");
 			String departamento = rs.getString("DEPARTAMENTO");
 			String direccion = rs.getString("DIRECCION");
 			Date fecha_registro = rs.getTimestamp("FECHA_REGISTRO");
@@ -192,7 +192,7 @@ public class ConsultarClienteDAO
 			String tipo_id = rs.getString("TIPO_ID");
             String tipo_usuario = rs.getString("TIPO_USUARIO");
             UsuarioValues usuarioActual = new UsuarioValues(correo, login, 
-            		contraseÒa, numeroID, tipo_id, nombre, nacionalidad, 
+            		contrase√±a, numeroID, tipo_id, nombre, nacionalidad, 
             		direccion, telefono, ciudad, departamento, codPostal,
             		fecha_registro, tipo_usuario);
             
@@ -232,18 +232,18 @@ public int darOficinaEmpleado (String correo) throws Exception
 	}
 
 	/**
-	 * Este mÈtodo retorna un arrayList que contiene 5 ArrayList.
-	 * El primer arrayList contiene la informaciÛn del cliente en forma de un objeto clienteValues.
-	 * El segundo arrayList contiene la informaciÛn de las cuentas del cliente en forma
+	 * Este m√©todo retorna un arrayList que contiene 5 ArrayList.
+	 * El primer arrayList contiene la informaci√≥n del cliente en forma de un objeto clienteValues.
+	 * El segundo arrayList contiene la informaci√≥n de las cuentas del cliente en forma
 	 * de cuentaValues.
-	 * El tercero contiene la informaciÛn de las oficinas donde tiene una cuenta el usuario
+	 * El tercero contiene la informaci√≥n de las oficinas donde tiene una cuenta el usuario
 	 * en forma de oficinaValue.
-	 * El cuarto contiene informaciÛn de los prestamos del cliente en forma de
+	 * El cuarto contiene informaci√≥n de los prestamos del cliente en forma de
 	 * prestamoValue.
-	 * Y el quinto contiene la informaciÛn de las operaciones del cliente en forma
+	 * Y el quinto contiene la informaci√≥n de las operaciones del cliente en forma
 	 * de transaccionValue.
-	 * El cliente se busca a partir de su correo el cual entra por par·metro.
-	 * La informaciÛn que es retornada no est· sujetada a ning˙n tipo de filtro
+	 * El cliente se busca a partir de su correo el cual entra por par√°metro.
+	 * La informaci√≥n que es retornada no est√° sujetada a ning√∫n tipo de filtro
 	 * @return
 	 * @throws Exception
 	 */
@@ -262,8 +262,8 @@ public int darOficinaEmpleado (String correo) throws Exception
 			establecerConexion(cadenaConexion, usuario, clave);
 
 			Statement s = conexion.createStatement();
-			ResultSet rs = s.executeQuery("SELECT * FROM (SELECT * FROM USUARIOS u JOIN CLIENTES c "
-					+ "ON (u.correo = c.correo) ) WHERE CORREO = " + pCorreo);
+			ResultSet rs = s.executeQuery("SELECT CORREO, TIPO_PERSONA, NOMBRE FROM USUARIOS NATURAL JOIN CLIENTES "
+			+ " WHERE CORREO = " + "'" + pCorreo + "'");
 
 			while(rs.next())
 			{
@@ -279,18 +279,18 @@ public int darOficinaEmpleado (String correo) throws Exception
 			ClienteValues temp = (ClienteValues) clientes.get(0);
 			if(ordenarPor.equalsIgnoreCase("CUENTA"))
 			{
-				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE CORREO = " +  temp.getCorreo() 
+				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE CORREO = " +  "'" temp.getCorreo() + "'"
 						+ "ORDER BY " + ordenarPor);
 			}
 
-			else if(!agruparPor.equalsIgnoreCase("CUENTA"))
+			else if(!agruparPor.equalsIgnoreCase("CUENTA") )
 			{
-				rs = s.executeQuery("SELECT COUNT(*) FROM CUENTAS WHERE CORREO = " +  temp.getCorreo() );
+				rs = s.executeQuery("SELECT COUNT(*) FROM CUENTAS WHERE CORREO = " + "'" + temp.getCorreo() + "'" );
 			}
 			
 			else
 			{
-				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE CORREO = " +  temp.getCorreo() );
+				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE CORREO = " +  "'" + temp.getCorreo() + "'");
 			}
 
 
@@ -315,8 +315,9 @@ public int darOficinaEmpleado (String correo) throws Exception
 
 			if(ordenarPor.equalsIgnoreCase("OFICINA"))
 			{
-				rs = s.executeQuery("  SELECT  * FROM ( (SELECT * FROM CUENTAS WHERE CORREO = " +  temp.getCorreo() + ")"
-						+ "b JOIN OFICINAS c ON (b.oficina = c.id_oficina) ) ORDER BY "
+				rs = s.executeQuery("SELECT  DIRECCION, GERENTE, c.ID_OFICINA, NOMBRE, c.TELEFONO FROM "
+				+ " (SELECT * FROM CUENTAS WHERE CORREO = " +  "'" + temp.getCorreo() + "')"  
+				+ "b JOIN OFICINAS c ON (b.oficina = c.id_oficina)" + " ORDER BY "
 						+ ordenarPor);
 			}
 
@@ -328,8 +329,9 @@ public int darOficinaEmpleado (String correo) throws Exception
 			
 			else
 			{
-				rs = s.executeQuery("  SELECT  * FROM ( (SELECT * FROM CUENTAS WHERE CORREO = " +  temp.getCorreo() + ")"
-						+ "b JOIN OFICINAS c ON (b.oficina = c.id_oficina) )" );
+				rs = s.executeQuery("SELECT  DIRECCION, GERENTE, c.ID_OFICINA, NOMBRE, c.TELEFONO FROM "
+				+ " (SELECT * FROM CUENTAS WHERE CORREO = " +  "'" + temp.getCorreo() + "')"  
+				+ "b JOIN OFICINAS c ON (b.oficina = c.id_oficina)");
 			}
 
 
@@ -347,9 +349,9 @@ public int darOficinaEmpleado (String correo) throws Exception
 
 			if(ordenarPor.equalsIgnoreCase("PRESTAMO"))
 			{
-				rs = s.executeQuery(" SELECT * FROM ( (SELECT CORREO FROM CUENTAS WHERE CORREO = " +  temp.getCorreo() 
-						+ ") a JOIN PRESTAMOS p ON (a.correo = p.correo_cliente) ) ORDER BY "
-						+ ordenarPor);
+				rs = s.executeQuery("SELECT * FROM  (SELECT CORREO FROM CUENTAS WHERE CORREO = " 
+				+ "'" + temp.getCorreo() + "' )"
+                                + " a JOIN PRESTAMOS p ON (a.correo = p.correo_cliente) ORDER BY " + ordenarPor);
 			}
 
 			else if(!agruparPor.equalsIgnoreCase("PRESTAMO"))
@@ -360,8 +362,9 @@ public int darOficinaEmpleado (String correo) throws Exception
 			
 			else
 			{
-				rs = s.executeQuery(" SELECT * FROM ( (SELECT CORREO FROM CUENTAS WHERE CORREO = " +  temp.getCorreo() 
-						+ ") a JOIN PRESTAMOS p ON (a.correo = p.correo_cliente) )");
+				rs = s.executeQuery("SELECT * FROM  (SELECT CORREO FROM CUENTAS WHERE CORREO = " 
+				+ "'" + temp.getCorreo() + "' )"
+                                + " a JOIN PRESTAMOS p ON (a.correo = p.correo_cliente)");
 			}
 
 
@@ -389,8 +392,8 @@ public int darOficinaEmpleado (String correo) throws Exception
             
 			if(ordenarPor.equalsIgnoreCase("OPERACION"))
 			{
-				rs = s.executeQuery("  SELECT  * FROM ( (SELECT CORREO FROM CUENTAS WHERE CORREO = " +  temp.getCorreo() + ")"
-						+ "b JOIN TRANSACCIONES t ON (b.correo = t.correo_usuario) ) ORDER BY"
+				rs = s.executeQuery(SELECT  * FROM  (SELECT CORREO AS CORREO_USUARIO FROM CUENTAS WHERE CORREO = " 
+				+ "'" + temp.getCorreo() + "'  ) NATURAL JOIN TRANSACCIONES  ORDER BY "
 						+ ordenarPor );
 			}
 			
@@ -402,8 +405,8 @@ public int darOficinaEmpleado (String correo) throws Exception
 			
 			else
 			{
-				rs = s.executeQuery("  SELECT  * FROM ( (SELECT CORREO FROM CUENTAS WHERE CORREO = " +  temp.getCorreo() + ")"
-						+ "b JOIN TRANSACCIONES t ON (b.correo = t.correo_usuario) )" );
+				rs = s.executeQuery("SELECT  * FROM  (SELECT CORREO AS CORREO_USUARIO FROM CUENTAS WHERE CORREO = " 
+				+ "'" + temp.getCorreo() + "'  ) NATURAL JOIN TRANSACCIONES" );
 			}
 			
 
