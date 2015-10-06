@@ -41,6 +41,9 @@ public class ServletConsultarClienteGeneral extends ASParsingServlet {
 		System.out.println("en doPost de ServletConsultaClienteGeneral");
 		PrintWriter pw = response.getWriter();
 		
+		imprimirEncabezado(pw);
+		imprimirSidebarGG(pw);
+		
 		//Información ordenar
 		String ordenarPor = request.getParameter("ordenarPor");
 		String agruparPor = request.getParameter("agruparPor");

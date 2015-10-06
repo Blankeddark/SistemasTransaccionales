@@ -40,6 +40,7 @@ public class ServletRegistrarOperacionesCuentas extends ASServlet {
 		pw.println("<option>Abrir</option>");
 		pw.println("<option>Consignar</option>");
 		pw.println("<option>Retirar</option>");
+		
 		if(tipo.equals("Consignar"))
 		{
 			tipo = "C";

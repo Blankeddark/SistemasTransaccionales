@@ -151,22 +151,26 @@ public class RegistrarOperacionSobrePrestamoDAO
 
 			int idTransaccion = 0;
 			Statement state = conexion.createStatement();
-			ResultSet rs1 = state.executeQuery("SELECT ID_TRANSACCION"
-					+ "FROM (SELECT ID_TRANSACCION FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC)"
+			ResultSet rs1 = state.executeQuery("SELECT ID_TRANSACCION "
+					+ "FROM (SELECT ID_TRANSACCION FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC) "
 					+ "WHERE ROWNUM = 1");
 
-			idTransaccion = rs1.getInt("ID_TRANSACCION");
+			while(rs1.next())
+			{
+				idTransaccion = rs1.getInt("ID_TRANSACCION");
+			}
+
 			idTransaccion++;
-            
-            String tipoX = "";
-			
-            if(tipo.equals("Solicitar")) tipoX = "SP";
-            else if(tipo.equals("Aprobar")) tipoX = "AP";
-            else if(tipo.equals("Rechazar")) tipoX = "RP";
-            else if(tipo.equals("Pagar cuota")) tipoX = "PP";
-            else if(tipo.equals("Pagar cuota extraordinaria")) tipoX = "PPE";
-            
-                
+
+			String tipoX = "";
+
+			if(tipo.equals("Solicitar")) tipoX = "SP";
+			else if(tipo.equals("Aprobar")) tipoX = "AP";
+			else if(tipo.equals("Rechazar")) tipoX = "RP";
+			else if(tipo.equals("Pagar cuota")) tipoX = "PP";
+			else if(tipo.equals("Pagar cuota extraordinaria")) tipoX = "PPE";
+
+
 			String sentencia = "INSERT INTO TRANSACCIONES (ID_TRANSACCION, CORREO_USUARIO, TIPO, FECHA_TRANSACCION, ID_PUNTO_ATENCION) "+
 					"VALUES (" + idTransaccion + "," + "'" + correo_cliente + "'"  + "," 
 					+ "'" + tipoX + "'"  + "," + "TO_DATE (" + "'" + fecha_registro 
@@ -206,9 +210,9 @@ public class RegistrarOperacionSobrePrestamoDAO
 				prepStmt = conexion.prepareStatement(sentencia1);
 				prepStmt.executeUpdate();
 				conexion.commit();
-				
-				
-				
+
+
+
 
 				sentencia1 = "UPDATE SOLICITUDES_PRESTAMO SET ESTADO = 'Aprobada' "
 						+ "WHERE ID = " + idTransaccion;
@@ -220,7 +224,7 @@ public class RegistrarOperacionSobrePrestamoDAO
 
 				int idPrestamoMax = 0;
 				s = conexion.createStatement();
-			    ResultSet rs = s.executeQuery("SELECT ID"
+				ResultSet rs = s.executeQuery("SELECT ID"
 						+ "FROM (SELECT ID FROM PRESTAMOS ORDER BY ID DESC)"
 						+ "WHERE ROWNUM = 1");
 
@@ -233,9 +237,9 @@ public class RegistrarOperacionSobrePrestamoDAO
 				{
 					random= Math.random();
 				}
-				
+
 				int diaPago = (int) random*29;
-				
+
 				sentencia1 = "INSERT INTO PRESTAMOS (ID, CORREO_CLIENTE, MONTO_PRESTADO, "
 						+ "TIPO, FECHA_PRESTAMO, DIA_PAGO_MENSUAL, CUOTA, SALDO_PENDIENTE,"
 						+ "ESTADO, NUM_CUOTAS, INTERES, CUOTAS_EFECTIVAS) VALUES ("
@@ -256,7 +260,7 @@ public class RegistrarOperacionSobrePrestamoDAO
 			{
 				int idMax = 0;
 				Statement s = conexion.createStatement();
-				
+
 
 				String sentencia1 = "INSERT INTO RECHAZOS_PRESTAMO"
 						+ " (ID, SOLICITUD_RECHAZADA) "+
@@ -266,7 +270,7 @@ public class RegistrarOperacionSobrePrestamoDAO
 				prepStmt = conexion.prepareStatement(sentencia1);
 				prepStmt.executeUpdate();
 				conexion.commit();
-			
+
 				sentencia1 = "UPDATE SOLICITUDES_PRESTAMO SET ESTADO = 'Rechazada' "
 						+ "WHERE ID = " + idMax;
 				System.out.println("--------------------------------------------------------------------------");
@@ -281,13 +285,23 @@ public class RegistrarOperacionSobrePrestamoDAO
 			{
 				Statement s = conexion.createStatement();
 				ResultSet rs = s.executeQuery("SELECT SALDO_PENDIENTE FROM PRESTAMOS WHERE ID = " + idPrestamo);
-				int saldoPendiente = rs.getInt("SALDO_PENDIENTE");
-				saldoPendiente -= (valor/numCuotas);
+				int saldoPendiente = 0;
+				while(rs.next())
+				{
+					saldoPendiente = rs.getInt("SALDO_PENDIENTE");
+				}
+
+				saldoPendiente -= valor;
 				rs = s.executeQuery("SELECT CUOTAS_EFECTIVAS FROM PRESTAMOS WHERE ID = " + idPrestamo);
-				int cuotasEfectivas = rs.getInt("CUOTAS_EFECTIVAS");
+
+				int cuotasEfectivas = 0;
+				while(rs.next())
+				{
+					cuotasEfectivas = rs.getInt("CUOTAS_EFECTIVAS");
+				}
 				cuotasEfectivas++;
 				String sentencia1 = "UPDATE PRESTAMOS SET SALDO_PENDIENTE = " + saldoPendiente + "," 
-						+ " CUOTAS_EFECTIVAS = " + cuotasEfectivas + "WHERE ID = " + idPrestamo;
+						+ " CUOTAS_EFECTIVAS = " + cuotasEfectivas + " WHERE ID = " + idPrestamo;
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia1);
 				prepStmt = conexion.prepareStatement(sentencia1);
@@ -306,10 +320,21 @@ public class RegistrarOperacionSobrePrestamoDAO
 			{
 				Statement s = conexion.createStatement();
 				ResultSet rs = s.executeQuery("SELECT SALDO_PENDIENTE FROM PRESTAMOS WHERE ID = " + idPrestamo);
-				int saldoPendiente = rs.getInt("SALDO_PENDIENTE");
+				int  saldoPendiente = 0;
+
+				while(rs.next())
+				{
+					saldoPendiente= rs.getInt("SALDO_PENDIENTE");
+				}
+				
 				saldoPendiente -= valor;
 				rs = s.executeQuery("SELECT CUOTAS_EFECTIVAS FROM PRESTAMOS WHERE ID = " + idPrestamo);
-				int cuotasEfectivas = rs.getInt("CUOTAS_EFECTIVAS");
+				int cuotasEfectivas = 0;
+				
+				while(rs.next())
+				{
+					cuotasEfectivas = rs.getInt("CUOTAS_EFECTIVAS");
+				}
 				cuotasEfectivas++;
 				String sentencia1 = "UPDATE PRESTAMOS SET SALDO_PENDIENTE = " + saldoPendiente + "," 
 						+ " CUOTAS_EFECTIVAS = " + cuotasEfectivas + "WHERE ID = " + idPrestamo;

@@ -23,13 +23,15 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 		imprimirOperacionesPrestamosInicial(pw);
 		imprimirWrapper(pw);
 	}
-	
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		PrintWriter pw = response.getWriter();
 		imprimirEncabezado(pw);
 		imprimirSidebarCajero(pw);
-		
+
+
+
 		String tipoOperacion = request.getParameter("tipoOperacion");
 		String correoCliente = request.getParameter("correoCliente");
 		int idCuenta = 0;
@@ -40,7 +42,7 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 		int idPuntoAtencion = 0;
 		String correoCajero = request.getParameter("idCajero");
 		String tipoPrestamo = request.getParameter("tipoPrestamo");
-		
+
 		try
 		{
 			idCuenta = Integer.parseInt ( request.getParameter("idCuenta") );
@@ -51,7 +53,15 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 			imprimirWrapper(pw);
 			return;
 		}
-		
+
+		//		pw.println("<option>Solicitar</option>");
+		//		pw.println("<option>Aprobar</option>");
+		//		pw.println("<option>Rechazar</option>");
+		//		pw.println("<option>Pagar cuota</option>");
+		//		pw.println("<option>Pagar cuota extraordinaria</option>");
+
+		//		if(tipoOperacion.equals("Pagar cuota") || tipoOperacion.equals("Pagar cuota extraordinaria"))
+		//		{
 		try
 		{
 			monto = Integer.parseInt ( request.getParameter("monto") );
@@ -62,7 +72,8 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 			imprimirWrapper(pw);
 			return;
 		}
-		
+		//}
+
 		try
 		{
 			idPuntoAtencion = Integer.parseInt ( request.getParameter("idPuntoAtencion"));
@@ -73,15 +84,25 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 			imprimirWrapper(pw);
 			return;
 		}
-		try
+		//		pw.println("<option>Solicitar</option>");
+		//		pw.println("<option>Aprobar</option>");
+		//		pw.println("<option>Rechazar</option>");
+		//		pw.println("<option>Pagar cuota</option>");
+		//		pw.println("<option>Pagar cuota extraordinaria</option>");
+
+		if(! (tipoOperacion.equals("Pagar cuota") || tipoOperacion.equals("Pagar cuota extraordinaria") ))
 		{
-			idSolicitud = Integer.parseInt ( request.getParameter("idSolicitud") );
-		}
-		catch (Exception e)
-		{
-			imprimirOperacionesPrestamosError(pw, "Lo ingresado en idSolicitud no es un n&uacute;mero v&aacute;lido");
-			imprimirWrapper(pw);
-			return;
+			try
+			{
+				idSolicitud = Integer.parseInt ( request.getParameter("idSolicitud") );
+			}
+			catch (Exception e)
+			{
+				imprimirOperacionesPrestamosError(pw, "Lo ingresado en idSolicitud no es un n&uacute;mero v&aacute;lido");
+				imprimirWrapper(pw);
+				return;
+			}
+
 		}
 		try
 		{
@@ -93,6 +114,7 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 			imprimirWrapper(pw);
 			return;
 		}
+		
 		try
 		{
 			idPrestamo = Integer.parseInt ( request.getParameter("idPrestamo") );
@@ -103,9 +125,9 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 			imprimirWrapper(pw);
 			return;
 		}
-		
+
 		RegistrarOperacionSobrePrestamoDAO rospd = new RegistrarOperacionSobrePrestamoDAO();
-		
+
 		try {
 			rospd.registrarOperacionSobrePrestamoExistente(tipoOperacion, correoCliente, idCuenta, monto, 
 					idPuntoAtencion, correoCajero, tipoPrestamo, idSolicitud, numCuotas, idPrestamo);
@@ -117,11 +139,11 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		imprimirOperacionesPrestamosExito(pw);
 		imprimirWrapper(pw);
 	}
-	
+
 	private void imprimirOperacionesPrestamosExito(PrintWriter pw)
 	{
 		pw.println("<div id=\"page-wrapper\">");
@@ -216,7 +238,7 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 
 		pw.println("</div>");
 	}
-	
+
 	private void imprimirOperacionesPrestamosError(PrintWriter pw, String error)
 	{
 		pw.println("<div id=\"page-wrapper\">");

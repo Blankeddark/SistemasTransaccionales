@@ -31,7 +31,7 @@ public class ServletConsultarClienteOficina extends ASParsingServlet {
 
 		PrintWriter pw = response.getWriter();
 		imprimirEncabezado(pw);
-		imprimirSidebarGG(pw);
+		imprimirSidebarGO(pw);
 		imprimirConsultarClienteOficinaInicial(pw);
 		imprimirWrapper(pw);
 	}
@@ -40,6 +40,9 @@ public class ServletConsultarClienteOficina extends ASParsingServlet {
 	{
 		System.out.println("en doPost de ServletConsultaClienteOficina");
 		PrintWriter pw = response.getWriter();
+		
+		imprimirEncabezado(pw);
+		imprimirSidebarGO(pw);
 		
 		//Información ordenar
 		String ordenarPor = request.getParameter("ordenarPor");
