@@ -35,7 +35,7 @@ public class PoblarTablasRB1DAO
 		{
 			File arch = new File(path+ARCHIVO_CONEXION);
 			Properties prop = new Properties();
-			FileInputStream in = new FileInputStream ("C:/Users/Sergio/Documents/Sistrans/Project Sistrans/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/PROJECT_Sistrans3/conexion.properties");
+			FileInputStream in = new FileInputStream (arch);
 
 			prop.load(in);
 			in.close();
@@ -106,8 +106,7 @@ public class PoblarTablasRB1DAO
 		}
 	}
 
-	public boolean insertarUsuario (String tipo_usuario, String correo, String login, String contrase�a, String numero_id, String tipo_id, String nombre, String nacionalidad, String direccion, String telefono, String ciudad, String departamento, String cod_postal,
-			String tipoPersona, String tipoEmpleado, int oficina) throws Exception
+	public boolean insertarUsuario (String tipo_usuario, String correo, String login, String contraseña, String numero_id, String tipo_id, String nombre, String nacionalidad, String direccion, String telefono, String ciudad, String departamento, String cod_postal) throws Exception
 	{
 		PreparedStatement prepStmt = null;
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -125,42 +124,18 @@ public class PoblarTablasRB1DAO
 					+ "NUMERO_ID, TIPO_ID, NOMBRE, NACIONALIDAD, DIRECCION, TELEFONO,"
 					+ "CIUDAD, DEPARTAMENTO, COD_POSTAL, FECHA_REGISTRO, TIPO_USUARIO) "+
 					"VALUES (" + "'" + correo + "'" + "," + "'" + login + "'" + "," + 
-					"'" + contrase�a + "'" + ","  + "'" + numero_id + "'"   + ","
+					"'" + contraseña + "'" + ","  + "'" + numero_id + "'"   + ","
 					+  "'" + tipo_id + "'" + "," + "'" + nombre + "'" + "," + 
 					"'" + nacionalidad + "'" + "," + "'" + direccion + "'" + ","
 					+ "'" + telefono + "'" + "," + "'" + ciudad + "'" +  "," + 
 					"'" + departamento + "'" + "," 
 					+ "'" + cod_postal + "'" +"," + "TO_DATE ("+
-					"'" + fecha_registro + "' , 'yyyy/mm/dd HH24-Mi-SS')" + "," + "'" + tipo_usuario + "'" + ")";
+					"'" + fecha_registro + "' , 'yyyy/mm/dd HH24-Mi-SS')" + "," + "'" + "C" + "'" + ")";
 			System.out.println("--------------------------------------------------------------------------");
 			System.out.println(sentencia);
 			prepStmt = conexion.prepareStatement(sentencia);
 			prepStmt.executeUpdate();
 			conexion.commit();
-			
-			if(tipo_usuario.equals("Cliente"))
-			{
-				String sentencia1 = "INSERT INTO CLIENTES(CORREO, TIPO_PERSONA) "
-						+ "VALUES (" + "'" + correo + "'" + "," + "'" + tipoPersona + "'" + ")";
-				System.out.println("--------------------------------------------------------------------------");
-				System.out.println(sentencia1);
-				prepStmt = conexion.prepareStatement(sentencia1);
-				prepStmt.executeUpdate();
-				conexion.commit();
-			}
-			
-			else
-			{
-				String sentencia1 = "INSERT INTO EMPLEADOS (CORREO, TIPO, OFICINA) "
-						+ "VALUES (" + "'" + correo + "'" + "," + "'" + tipoEmpleado + "'" + ","
-						+ oficina + ")";
-				System.out.println("--------------------------------------------------------------------------");
-				System.out.println(sentencia1);
-				prepStmt = conexion.prepareStatement(sentencia1);
-				prepStmt.executeUpdate();
-				conexion.commit();
-			}
-			
 		} 
 
 		catch (Exception e) 
@@ -191,6 +166,55 @@ public class PoblarTablasRB1DAO
 
 		return true;
 	}
+
+	public boolean insertarCliente (String correo, String tipo) throws Exception
+	{
+		PreparedStatement prepStmt = null;
+		try
+		{
+			establecerConexion(cadenaConexion, usuario, clave);
+			//conexion.setAutoCommit(false);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);			
+
+			Statement state = conexion.createStatement();
+			String sentencia = "INSERT INTO CLIENTES (CORREO, TIPO_PERSONA) "+
+					"VALUES ("  + "'" + correo + "'" + "," + "'" + tipo.charAt(0) 	+ "'"  + ")";
+			prepStmt = conexion.prepareStatement(sentencia);
+			System.out.println("--------------------------------------------------------------------------");
+			System.out.println(sentencia);
+			prepStmt.executeUpdate();
+			conexion.commit();
+		} 
+
+		catch (Exception e) 
+		{
+			conexion.rollback();
+			e.printStackTrace();
+			throw new Exception("ERROR = DAO: loadRowsBy(..) Agregando parametros y executando el statement!!!");
+		}
+
+		finally
+		{
+			if (prepStmt != null) 
+			{
+				try 
+				{
+					prepStmt.close();
+				}
+
+				catch (SQLException exception) 
+				{
+
+					throw new Exception("ERROR: RegistroDePaquetesDAO: loadRow() =  cerrando una conexiÃ”Ã¸Î©Ã”Ã¸Î©Ã”Ã¸Î©n.");
+				}
+			}
+
+			closeConnection(conexion);
+		} 
+
+		return true;
+	}
+
 
 	public boolean insertarOficina (String nombre, String direccion, String telefono, String gerente, String ciudad, String departamento) throws Exception
 	{
@@ -277,19 +301,35 @@ public class PoblarTablasRB1DAO
 			}
 
 
+			if(!correoCajero.equals(" "))
+			{
+				Statement state = conexion.createStatement();
+				String sentencia = "INSERT INTO PUNTOS_ATENCION (ID, TIPO, OFICINA,"
+						+ "CORREO_CAJERO, DIRECCION, CIUDAD, DEPARTAMENTO) " +
+						"VALUES ("  + idMax + "," +  "'" + tipo + "'" + "," 
+						+  oficina + "," + "'" + correoCajero + "'" + "," 
+						+  "'" + direccion + "'" + "," + "'" + ciudad + "'" + "," 
+						+  "'" + departamento + "'" + ")";
+				prepStmt = conexion.prepareStatement(sentencia);
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentencia);
+				prepStmt.executeUpdate();
+				conexion.commit();	
+			}
 
-			Statement state = conexion.createStatement();
-			String sentencia = "INSERT INTO PUNTOS_ATENCION (ID, TIPO, OFICINA,"
-					+ "CORREO_CAJERO, DIRECCION, CIUDAD, DEPARTAMENTO) " +
-					"VALUES ("  + idMax + "," +  "'" + tipo + "'" + "," 
-					+  oficina + "," + "'" + correoCajero + "'" + "," 
-					+  "'" + direccion + "'" + "," + "'" + ciudad + "'" + "," 
-					+  "'" + departamento + "'" + ")";
-			prepStmt = conexion.prepareStatement(sentencia);
-			System.out.println("--------------------------------------------------------------------------");
-			System.out.println(sentencia);
-			prepStmt.executeUpdate();
-			conexion.commit();
+			else
+			{
+				Statement state = conexion.createStatement();
+				String sentencia = "INSERT INTO PUNTOS_ATENCION (ID, TIPO, OFICINA) " +
+						"VALUES ("  + idMax + "," +  "'" + tipo + "'" + "," 
+						+  oficina  + ")";
+				prepStmt = conexion.prepareStatement(sentencia);
+				System.out.println("--------------------------------------------------------------------------");
+				System.out.println(sentencia);
+				prepStmt.executeUpdate();
+				conexion.commit();
+			}
+
 
 
 		} 
@@ -455,6 +495,78 @@ public class PoblarTablasRB1DAO
 				{
 
 					throw new Exception("ERROR: RegistroDePaquetesDAO: loadRow() =  cerrando una conexiÔøΩÔøΩÔøΩn.");
+				}
+			}
+
+			closeConnection(conexion);
+		} 
+
+		return true;
+	}
+
+	public boolean insertarTransacciones (String correoUsuario, String tipo, 
+			int idPuntoAtencion) throws Exception
+	{
+		PreparedStatement prepStmt = null;
+		try
+		{
+			establecerConexion(cadenaConexion, usuario, clave);
+			//conexion.setAutoCommit(false);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);			
+
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date date = new Date();
+			String fecha_transaccion = dateFormat.format(date) ;
+
+			int idMax = 0;
+			Statement s = conexion.createStatement();
+
+			ResultSet rs = s.executeQuery("SELECT ID_TRANSACCION "
+					+ "FROM (SELECT * FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC) WHERE ROWNUM = 1");
+
+			while(rs.next())
+			{
+				idMax = rs.getInt("ID_TRANSACCION");
+     		}
+			
+			idMax++;
+			
+			Statement state = conexion.createStatement();
+			String sentencia = "INSERT INTO TRANSACCIONES (ID_TRANSACCION, CORREO_USUARIO, "
+					+ "TIPO, FECHA_TRANSACCION, ID_PUNTO_ATENCION) " +
+					"VALUES ("  + idMax + "," +  "'" + correoUsuario + "'" + "," 
+					+  "'" + tipo + "'" + ","  + "TO_DATE ("+
+					"'" + fecha_transaccion + "' , 'yyyy/mm/dd HH24-Mi-SS')" + "," 
+					+  idPuntoAtencion + ")";
+			prepStmt = conexion.prepareStatement(sentencia);
+			System.out.println("--------------------------------------------------------------------------");
+			System.out.println(sentencia);
+			prepStmt.executeUpdate();
+			conexion.commit();		
+
+
+		} 
+
+		catch (Exception e) 
+		{
+			conexion.rollback();
+			e.printStackTrace();
+			throw new Exception("ERROR = DAO: loadRowsBy(..) Agregando parametros y executando el statement!!!");
+		}
+
+		finally
+		{
+			if (prepStmt != null) 
+			{
+				try 
+				{
+					prepStmt.close();
+				}
+
+				catch (SQLException exception) 
+				{
+
+					throw new Exception("ERROR: RegistroDePaquetesDAO: loadRow() =  cerrando una conexiÃ”Ã¸Î©Ã”Ã¸Î©Ã”Ã¸Î©n.");
 				}
 			}
 

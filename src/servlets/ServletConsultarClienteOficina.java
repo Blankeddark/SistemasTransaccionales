@@ -182,6 +182,8 @@ public class ServletConsultarClienteOficina extends ASParsingServlet {
 		String fechaFinalTransaccion = request.getParameter("fechaFinalTransaccion");
 		String valorTransaccion = request.getParameter("valorTransaccion");
 		
+		imprimirInformacionRespuesta(pw);
+		imprimirWrapper(pw);
 	}
 	
 	private void imprimirConsultarClienteOficinaInicial(PrintWriter pw)

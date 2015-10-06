@@ -16,5 +16,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="Conexion/ojdbc6.jar"/>
 	<classpathentry kind="lib" path="lib/ojdbc6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Sergio/git/PROJECT_Sistrans/SistemasTransaccionales/lib/json-simple-1.1.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

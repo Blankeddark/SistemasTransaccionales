@@ -2,6 +2,9 @@ package Test;
 
 import java.util.ArrayList;
 
+import DAOS.PoblarTablasRB1DAO;
+import Fachada.BancAndes;
+import JSonParser.Principal;
 import junit.framework.TestCase;
 
 
@@ -751,6 +754,100 @@ public class DatabaseTests extends TestCase
 		setupScenario2();
 		assertTrue(errores == 12);
 
+	}
+	
+	public void testJson()
+	{
+		PoblarTablasRB1DAO  poblarDAO = new PoblarTablasRB1DAO();
+		Principal parser = new Principal();
+		ArrayList<String> clientes = parser.darClientes();
+		System.out.println("Paso por aquí");
+		for (int i = 0; i < clientes.size(); i++) 
+		{
+			String[] temp = clientes.get(i).split(",");
+			String Correo = temp[0];
+			String TipoPersona = temp[1];
+			String Login = temp[2];
+			String Password = temp[3];
+			String NumeroId = temp[4];
+			String TipoId = temp[5];
+			String Nombre = temp[6];
+			String Nacionalidad = temp[7];
+			String Direccion = temp[8];
+			String Telefono = temp[9];
+			String Ciudad = temp[10];
+			String Departamento = temp[11];
+			String CodPostal = temp[12];
+			String FechaRegistro = temp[13];
+			String TipoUsuario = temp[14];
+
+			try 
+			{
+				poblarDAO.insertarUsuario(TipoUsuario, Correo, Login, Password, NumeroId, TipoId, Nombre, Nacionalidad, Direccion, Telefono, Ciudad, Departamento, CodPostal);
+				poblarDAO.insertarCliente(Correo, TipoPersona);
+			}
+
+			catch (Exception e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+		ArrayList<String> cuentas = parser.darCuentas();
+		for (int i = 0; i < cuentas.size(); i++) 
+		{   
+			String[] arreglo = cuentas.get(i).split(",");
+			String Correo = arreglo[0];
+			String TipoCuenta = arreglo[1];
+			int Oficina	 = Integer.parseInt(arreglo[2]);
+			String FechaUltimoMovimiento = arreglo[3];
+			int Saldo= Integer.parseInt(arreglo[4]);
+			String Estado = arreglo[5];
+			try 
+			{
+				poblarDAO.insertarCuenta(Correo, TipoCuenta, Oficina, Saldo, Estado);
+			}
+
+			catch (Exception e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		try 
+		{
+			poblarDAO.insertarOficina("HQ", "CALLE 44 # 56 - 22", "343526", 
+					"worker1@bancandes.com", "Bogotá", "Cundinamarca");
+			poblarDAO.insertarPuntosAtencion("ATM", 1, "", "", "", "");
+		}
+
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		ArrayList<String> operaciones = parser.darTransacciones();
+		for (int i = 0; i < operaciones.size(); i++) 
+		{
+			String[] arreglo = operaciones.get(i).split(",");
+			String CorreoUsuario = arreglo[0];
+			String Tipo = arreglo[1];
+			//String FechaTransaccion = arreglo[2];
+			int IdPuntoAtencion = Integer.parseInt(arreglo[3]);
+			try 
+			{
+				poblarDAO.insertarTransacciones(CorreoUsuario, Tipo, IdPuntoAtencion);
+			} 
+			catch (Exception e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

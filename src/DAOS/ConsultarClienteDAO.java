@@ -170,8 +170,8 @@ public class ConsultarClienteDAO
 	{
 		PreparedStatement prepStat = null;
 		ArrayList<CuentaValues>  cuentas = new ArrayList<CuentaValues> ();
-        UsuarioValues usuarioRetorno = null;
-        
+		UsuarioValues usuarioRetorno = null;
+
 		try
 		{
 			establecerConexion(cadenaConexion, usuario, clave);
@@ -180,7 +180,7 @@ public class ConsultarClienteDAO
 			ResultSet rs = s.executeQuery("SELECT * FROM USUARIOS WHERE CORREO = " + correo );
 			String ciudad = rs.getString("CIUDAD");
 			String codPostal = rs.getString("COS_POSTAL");
-			String contraseña = rs.getString("CONTRASEÑA");
+			String contrase�a= rs.getString("CONTRASEÑA");
 			String departamento = rs.getString("DEPARTAMENTO");
 			String direccion = rs.getString("DIRECCION");
 			Date fecha_registro = rs.getTimestamp("FECHA_REGISTRO");
@@ -190,28 +190,28 @@ public class ConsultarClienteDAO
 			String numeroID = rs.getString("NUMERO_ID");
 			String telefono = rs.getString("TELEFONO");
 			String tipo_id = rs.getString("TIPO_ID");
-            String tipo_usuario = rs.getString("TIPO_USUARIO");
-            UsuarioValues usuarioActual = new UsuarioValues(correo, login, 
-            		contraseña, numeroID, tipo_id, nombre, nacionalidad, 
-            		direccion, telefono, ciudad, departamento, codPostal,
-            		fecha_registro, tipo_usuario);
-            
-            return usuarioActual; 
+			String tipo_usuario = rs.getString("TIPO_USUARIO");
+			UsuarioValues usuarioActual = new UsuarioValues(correo, login, 
+					contrase�a, numeroID, tipo_id, nombre, nacionalidad, 
+					direccion, telefono, ciudad, departamento, codPostal,
+					fecha_registro, tipo_usuario);
+
+			return usuarioActual; 
 		}
-		
+
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-		
+
 		return null;
 
 	}
 
-public int darOficinaEmpleado (String correo) throws Exception
+	public int darOficinaEmpleado (String correo) throws Exception
 	{
 		PreparedStatement prepStat = null;
-        
+
 		try
 		{
 			establecerConexion(cadenaConexion, usuario, clave);
@@ -219,14 +219,14 @@ public int darOficinaEmpleado (String correo) throws Exception
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT OFICINA FROM EMPLEADOS WHERE CORREO = " + correo );
 			int oficina = rs.getInt("OFICINA");
-            return oficina; 
+			return oficina; 
 		}
-		
+
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-		
+
 		return 0;
 
 	}
@@ -263,11 +263,12 @@ public int darOficinaEmpleado (String correo) throws Exception
 
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT CORREO, TIPO_PERSONA, NOMBRE FROM USUARIOS NATURAL JOIN CLIENTES "
-			+ " WHERE CORREO = " + "'" + pCorreo + "'");
+					+ " WHERE CORREO = " + "'" + pCorreo + "'");
 
+			System.out.println("LLego antes del while 1");
 			while(rs.next())
 			{
-                   
+
 				String correo = rs.getString("CORREO");
 				String tipo = rs.getString("TIPO_PERSONA");
 				String nombre = rs.getString("NOMBRE");
@@ -276,24 +277,15 @@ public int darOficinaEmpleado (String correo) throws Exception
 				System.out.println("---------Usuarios-------");			
 			}
 
+			System.out.println("Paso despues del 1mer while");
 			ClienteValues temp = (ClienteValues) clientes.get(0);
-			if(ordenarPor.equalsIgnoreCase("CUENTA"))
-			{
-				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE CORREO = " +  "'" temp.getCorreo() + "'"
-						+ "ORDER BY " + ordenarPor);
-			}
-
-			else if(!agruparPor.equalsIgnoreCase("CUENTA") )
-			{
-				rs = s.executeQuery("SELECT COUNT(*) FROM CUENTAS WHERE CORREO = " + "'" + temp.getCorreo() + "'" );
-			}
-			
-			else
-			{
-				rs = s.executeQuery("SELECT * FROM CUENTAS WHERE CORREO = " +  "'" + temp.getCorreo() + "'");
-			}
+			System.out.println(temp.getCorreo());
 
 
+			rs = s.executeQuery("SELECT * FROM CUENTAS WHERE CORREO = " +  "'" + temp.getCorreo() + "'");
+
+
+            
 			while(rs.next())
 			{
 				String idCuenta = rs.getString("ID_CUENTA");
@@ -312,27 +304,12 @@ public int darOficinaEmpleado (String correo) throws Exception
 				cuentas.add(cuentaActual);
 
 			}
+            System.out.println(cuentas.size());
 
-			if(ordenarPor.equalsIgnoreCase("OFICINA"))
-			{
-				rs = s.executeQuery("SELECT  DIRECCION, GERENTE, c.ID_OFICINA, NOMBRE, c.TELEFONO FROM "
-				+ " (SELECT * FROM CUENTAS WHERE CORREO = " +  "'" + temp.getCorreo() + "')"  
-				+ "b JOIN OFICINAS c ON (b.oficina = c.id_oficina)" + " ORDER BY "
-						+ ordenarPor);
-			}
+			rs = s.executeQuery("SELECT  DIRECCION, GERENTE, c.ID_OFICINA, NOMBRE, c.TELEFONO FROM "
+					+ " (SELECT * FROM CUENTAS WHERE CORREO = " +  "'" + temp.getCorreo() + "')"  
+					+ "b JOIN OFICINAS c ON (b.oficina = c.id_oficina)");
 
-			else if(!agruparPor.equalsIgnoreCase("OFICINA"))
-			{
-				rs = s.executeQuery("  SELECT  COUNT(*) FROM ( (SELECT * FROM CUENTAS WHERE CORREO = " +  temp.getCorreo() + ")"
-						+ "b JOIN OFICINAS c ON (b.oficina = c.id_oficina) )" );
-			}
-			
-			else
-			{
-				rs = s.executeQuery("SELECT  DIRECCION, GERENTE, c.ID_OFICINA, NOMBRE, c.TELEFONO FROM "
-				+ " (SELECT * FROM CUENTAS WHERE CORREO = " +  "'" + temp.getCorreo() + "')"  
-				+ "b JOIN OFICINAS c ON (b.oficina = c.id_oficina)");
-			}
 
 
 
@@ -347,25 +324,13 @@ public int darOficinaEmpleado (String correo) throws Exception
 				oficinas.add(oficinaActual);
 			}
 
-			if(ordenarPor.equalsIgnoreCase("PRESTAMO"))
-			{
-				rs = s.executeQuery("SELECT * FROM  (SELECT CORREO FROM CUENTAS WHERE CORREO = " 
-				+ "'" + temp.getCorreo() + "' )"
-                                + " a JOIN PRESTAMOS p ON (a.correo = p.correo_cliente) ORDER BY " + ordenarPor);
-			}
+            System.out.println(oficinas.size());
 
-			else if(!agruparPor.equalsIgnoreCase("PRESTAMO"))
-			{
-				rs = s.executeQuery(" SELECT COUNT( *) FROM ( (SELECT CORREO FROM CUENTAS WHERE CORREO = " +  temp.getCorreo() 
-						+ ") a JOIN PRESTAMOS p ON (a.correo = p.correo_cliente) )");
-			}
-			
-			else
-			{
-				rs = s.executeQuery("SELECT * FROM  (SELECT CORREO FROM CUENTAS WHERE CORREO = " 
-				+ "'" + temp.getCorreo() + "' )"
-                                + " a JOIN PRESTAMOS p ON (a.correo = p.correo_cliente)");
-			}
+
+			rs = s.executeQuery("SELECT * FROM  (SELECT CORREO FROM CUENTAS WHERE CORREO = " 
+					+ "'" + temp.getCorreo() + "' )"
+					+ " a JOIN PRESTAMOS p ON (a.correo = p.correo_cliente)");
+
 
 
 			while(rs.next())
@@ -389,26 +354,14 @@ public int darOficinaEmpleado (String correo) throws Exception
 						numeroCuotas, interes, cuotasEfectivas);
 				prestamos.add(prestamoActual);
 			}
-            
-			if(ordenarPor.equalsIgnoreCase("OPERACION"))
-			{
-				rs = s.executeQuery(SELECT  * FROM  (SELECT CORREO AS CORREO_USUARIO FROM CUENTAS WHERE CORREO = " 
-				+ "'" + temp.getCorreo() + "'  ) NATURAL JOIN TRANSACCIONES  ORDER BY "
-						+ ordenarPor );
-			}
-			
-			else if(!agruparPor.equalsIgnoreCase("OPERACION"))
-			{
-				rs = s.executeQuery("  SELECT  COUNT (*) FROM ( (SELECT CORREO FROM CUENTAS WHERE CORREO = " +  temp.getCorreo() + ")"
-						+ "b JOIN TRANSACCIONES t ON (b.correo = t.correo_usuario) )" );
-			}
-			
-			else
-			{
-				rs = s.executeQuery("SELECT  * FROM  (SELECT CORREO AS CORREO_USUARIO FROM CUENTAS WHERE CORREO = " 
-				+ "'" + temp.getCorreo() + "'  ) NATURAL JOIN TRANSACCIONES" );
-			}
-			
+
+            System.out.println(prestamos.size());
+
+
+			rs = s.executeQuery("SELECT  * FROM  (SELECT CORREO AS CORREO_USUARIO FROM CUENTAS WHERE CORREO = " 
+					+ "'" + temp.getCorreo() + "'  ) NATURAL JOIN TRANSACCIONES" );
+
+
 
 			while(rs.next())
 			{
@@ -424,7 +377,8 @@ public int darOficinaEmpleado (String correo) throws Exception
 
 				operaciones.add(transaccionActual);
 			}
-
+            
+			System.out.println(operaciones.size());
 			informacionCliente.add(clientes);
 			informacionCliente.add(cuentas);
 			informacionCliente.add(oficinas);
