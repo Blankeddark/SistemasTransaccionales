@@ -220,8 +220,6 @@ public class ServletConsultarCuentaGeneral extends ASParsingServlet {
 
 		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Consultar\"></input>");
 
-
-
 		pw.println("</form>");
 		pw.println("</div>");
 		pw.println("<!-- /.col-lg-6 (nested) -->");

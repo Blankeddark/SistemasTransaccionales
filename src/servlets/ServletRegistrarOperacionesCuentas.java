@@ -34,31 +34,52 @@ public class ServletRegistrarOperacionesCuentas extends ASServlet {
 		String tipo = request.getParameter("tipo");
 		String correo = request.getParameter("correo");
 		String correoCajero = request.getParameter("correoCajero");
-		int idCuenta = 0;
+		int idCuenta = 0; 
 		int monto = 0;
 		int idPuntoAtencion = 0;
-		
-		try
+		pw.println("<option>Abrir</option>");
+		pw.println("<option>Consignar</option>");
+		pw.println("<option>Retirar</option>");
+		if(tipo.equals("Consignar"))
 		{
-			idCuenta = Integer.parseInt(request.getParameter("idCuenta") );
-		}
-		catch (Exception e)
-		{
-			imprimirRegistrarOperacionesError(pw, "Lo ingresado en el campo de la id cuenta no es un n&uacute;mero v&aacute;lido.");
-			imprimirWrapper(pw);
-			return;
+			tipo = "C";
 		}
 		
-		try
+		else if(tipo.equals("Abrir"))
 		{
-			monto = Integer.parseInt(request.getParameter("monto") );
+			tipo = "AC";
 		}
-		catch (Exception e)
+		
+		else if(tipo.equals("Retirar"))
 		{
-			imprimirRegistrarOperacionesError(pw, "Lo ingresado en el campo de no es un n&uacute;mero v&aacute;lido.");
-			imprimirWrapper(pw);
-			return;
+			tipo = "R";
 		}
+		
+		if (!tipo.equals("AC"))
+		{
+			try
+			{
+				idCuenta = Integer.parseInt(request.getParameter("idCuenta") );
+			}
+			catch (Exception e)
+			{
+				imprimirRegistrarOperacionesError(pw, "Lo ingresado en el campo de la id cuenta no es un n&uacute;mero v&aacute;lido.");
+				imprimirWrapper(pw);
+				return;
+			}
+			
+			try
+			{
+				monto = Integer.parseInt(request.getParameter("monto") );
+			}
+			catch (Exception e)
+			{
+				imprimirRegistrarOperacionesError(pw, "Lo ingresado en el campo de no es un n&uacute;mero v&aacute;lido.");
+				imprimirWrapper(pw);
+				return;
+			}
+		}
+		
 		
 		try
 		{
@@ -73,11 +94,11 @@ public class ServletRegistrarOperacionesCuentas extends ASServlet {
 		
 		RegistrarOperacionCuentaDAO roc = new RegistrarOperacionCuentaDAO();
 		
-		
 		try
 		{
 			roc.registrarOperacionSobreCuentaExistente(tipo, correo, idCuenta, monto, idPuntoAtencion , correoCajero);
 		}
+		
 		catch (Exception e)
 		{
 			imprimirRegistrarOperacionesError(pw, e.getMessage());
@@ -141,7 +162,7 @@ public class ServletRegistrarOperacionesCuentas extends ASServlet {
 		pw.println("</div>");
 
 		pw.println("<br>");
-		pw.println("<font color=\"red\">No se pudo registrar la operación <br> Error: " + error + "</font><br>");
+		pw.println("<font color=\"red\">No se pudo registrar la operaci&oacute;n <br> Error: " + error + "</font><br>");
 		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Registrar\"></button>");
 		pw.println("</form>");
 		pw.println("</div>");
@@ -213,7 +234,7 @@ public class ServletRegistrarOperacionesCuentas extends ASServlet {
 		pw.println("</div>");
 
 		pw.println("<br>");
-		pw.println("<font color=\"green\">¡La operaci&oacute;n fue realizada exitosamente!</font><br>");
+		pw.println("<font color=\"green\">&iexcl;La operaci&oacute;n fue realizada exitosamente!</font><br>");
 		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Registrar\"></button>");
 		pw.println("</form>");
 		pw.println("</div>");

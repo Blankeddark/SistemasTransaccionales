@@ -266,6 +266,7 @@ public class ServletUsuarioMasActivoOficina extends ASServlet {
 		pw.println("<th>Numero ID</th>");
 		pw.println("<th>Tipo ID</th>");
 		pw.println("<th>Tipo De Usuario</th>");
+pw.println("<th>Veces realizadas</th>");
 		pw.println("</tr>");
 		pw.println("</thead>");
 		pw.println("<tbody>");
@@ -275,6 +276,7 @@ public class ServletUsuarioMasActivoOficina extends ASServlet {
 		pw.println("<td>999897</td>");
 		pw.println("<td>TI</td>");
 		pw.println("<td>Cliente</td>");
+		pw.println("<td>5</td>");
 		pw.println("</tr>");
 		pw.println("</tbody>");
 		pw.println("</table>");
@@ -363,6 +365,7 @@ public class ServletUsuarioMasActivoOficina extends ASServlet {
 		pw.println("<th>Numero ID</th>");
 		pw.println("<th>Tipo ID</th>");
 		pw.println("<th>Tipo De Usuario</th>");
+		pw.println("<th>Veces realizadas</th>");
 		pw.println("</tr>");
 		pw.println("</thead>");
 		pw.println("<tbody>");
@@ -393,6 +396,7 @@ public class ServletUsuarioMasActivoOficina extends ASServlet {
 			pw.println("<td>" + usuarioActual.getNumeroID() + "</td>");
 			pw.println("<td>" + usuarioActual.getTipoID() + "</td>");
 			pw.println("<td>" + usuarioActual.getTipoUsuario() + "</td>");
+			pw.println("<td>" + usuarioActual.getNumTransacciones() + "</td>");
 		}
 
 	}

@@ -1,18 +1,25 @@
 package DAOS;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Properties;
 
+import vos.CuentaValues;
 import vos.UsuarioActivoValues;
+import vos.UsuarioValues;
 
 public class ConsultaUsuarioMasActivoDAO 
 {
-
 	private static final String ARCHIVO_CONEXION = "/../conexion.properties";
 
 	public Connection conexion;
@@ -22,8 +29,38 @@ public class ConsultaUsuarioMasActivoDAO
 	private String clave;
 
 	private String cadenaConexion;
-	
-	
+
+	public ConsultaUsuarioMasActivoDAO()
+	{
+		inicializar("./Conexion/conexion.properties");
+	}
+
+	public void inicializar(String path)
+	{
+		try
+		{
+			File arch = new File(path+ARCHIVO_CONEXION);
+			Properties prop = new Properties();
+			FileInputStream in = new FileInputStream ("C:/Users/Sergio/Documents/Sistrans/Project Sistrans/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/PROJECT_Sistrans3/conexion.properties");
+
+			prop.load(in);
+			in.close();
+
+			cadenaConexion = prop.getProperty("url");
+			usuario = prop.getProperty("usuario");
+			clave = prop.getProperty("clave");
+			@SuppressWarnings ("unused")
+			final String driver = prop.getProperty("driver");
+
+		}
+
+		catch (Exception e)
+		{
+			e.printStackTrace(); 
+		}
+
+	}
+
 	private void establecerConexion (String url, String usuario, String clave) throws SQLException
 	{
 		System.out.println("------- Oracle Connection Testing ------- ");
@@ -61,7 +98,23 @@ public class ConsultaUsuarioMasActivoDAO
 			System.out.println("Connection Fail");
 		}
 	}
-	
+
+	public void closeConnection (Connection connection) throws Exception
+	{
+		try
+		{
+			connection.close();
+			connection = null;
+
+		}
+
+		catch (SQLException exception)
+		{
+			throw new Exception("ERROR: ConsultaDAO: closeConnection() = cerrando una conexiÃ³n.");
+		}
+	}
+
+
 	/**
 	 * Método que retorna un arrayList con la información del usuario (o usuarios) más activos 
 	 * de la BD a partir de un tipo de transacción en particular. Un usuario activo values solo
@@ -79,24 +132,29 @@ public class ConsultaUsuarioMasActivoDAO
 			establecerConexion(cadenaConexion, usuario, clave);
 
 			Statement s = conexion.createStatement();
-			ResultSet rs = s.executeQuery("SELECT * FROM "
-					+ "(SELECT NOMBRE, NUMERO_ID, TIPO_ID, CORREO, TIPO_USUARIO, COUNT(ID_TRANSACCION) AS NUM_TRANSACCIONES"
-					+ " FROM USUARIOS c JOIN TRANSACCIONSES t ON (c.CORREO = t.CORREO_USUARIO ) )"
-					+ "WHERE TIPO = " + tipoTransaccion + "  HAVING MAX (COUNT(ID_TRANSACCION))" );
+			ResultSet rs = s.executeQuery("  SELECT NOMBRE, CORREO, NUMERO_ID, TIPO_ID, TIPO_USUARIO, NUMERO_OPERACIONES "
+					+ " FROM (SELECT * FROM (SELECT CORREO, COUNT(CORREO) AS NUMERO_OPERACIONES FROM (SELECT NOMBRE, NUMERO_ID, "
+					+ " TIPO_ID, CORREO, TIPO_USUARIO, TIPO_TRANSACCION, OFICINA FROM ( SELECT * "
+					+ " FROM USUARIOS u JOIN (SELECT ID_TRANSACCION, TIPO AS TIPO_TRANSACCION, "
+					+ " CORREO_USUARIO , ID_PUNTO_ATENCION FROM TRANSACCIONES) "
+					+ " t ON(u.CORREO = t.CORREO_USUARIO) ) b JOIN PUNTOS_ATENCION p ON "
+					+ " (b.id_punto_atencion = p.id) WHERE TIPO_TRANSACCION = " + "'" + tipoTransaccion +"'" +  
+					") f   GROUP BY CORREO ORDER BY COUNT(CORREO) DESC) WHERE ROWNUM = 1 ) "
+					+ "NATURAL JOIN USUARIOS" );
 
 			while(rs.next())
 			{		
-               String correo = rs.getString("CORREO");
-               String nombre = rs.getString("NOMBRE");
-               String numeroID = rs.getString("NUMERO_ID");
-               String tipoID = rs.getString("TIPO_ID");
-               String tipoUsuario = rs.getString("TIPO_USUARIO");
-               int numTransacciones = rs.getInt("NUM_TRANSACCIONES");
-               UsuarioActivoValues usuarioActual = new UsuarioActivoValues(nombre, numeroID, tipoID, numTransacciones, tipoUsuario, correo);
-               cuentas.add(usuarioActual);
+				String correo = rs.getString("CORREO");
+				String nombre = rs.getString("NOMBRE");
+				String numeroID = rs.getString("NUMERO_ID");
+				String tipoID = rs.getString("TIPO_ID");
+				String tipoUsuario = rs.getString("TIPO_USUARIO");
+				int numTransacciones = rs.getInt("NUMERO_OPERACIONES");
+				UsuarioActivoValues usuarioActual = new UsuarioActivoValues(nombre, numeroID, tipoID, numTransacciones, tipoUsuario, correo);
+				cuentas.add(usuarioActual);
 			}
-			
-			
+
+
 
 		}
 
@@ -106,8 +164,8 @@ public class ConsultaUsuarioMasActivoDAO
 		}
 
 	}
-	
-	
+
+
 	/**
 	 * Método que retorna un arrayList con la información del usuario (o usuarios) más activos 
 	 * de una oficina a partir de un tipo de transacción en particular. Un usuario activo values solo
@@ -125,25 +183,35 @@ public class ConsultaUsuarioMasActivoDAO
 			establecerConexion(cadenaConexion, usuario, clave);
 
 			Statement s = conexion.createStatement();
-			ResultSet rs = s.executeQuery(" SELECT * FROM (SELECT * FROM "
-					+ "(SELECT ID_PUNTO_ATENCION, NOMBRE, NUMERO_ID, TIPO_ID, CORREO, TIPO_USUARIO, COUNT(ID_TRANSACCION) AS NUM_TRANSACCIONES"
-					+ " FROM USUARIOS c JOIN TRANSACCIONSES t ON (c.CORREO = t.CORREO_USUARIO ) ) b "
-					+ "JOIN PUNTOS_ATENCION p ON (b.id_punto_atencion = p.id) ) "
-					+ "WHERE TIPO = " + tipoTransaccion + " AND OFICINA = " + idOficina + "  HAVING MAX (COUNT(ID_TRANSACCION))" );
+			ResultSet rs = s.executeQuery("  SELECT NOMBRE, CORREO, NUMERO_ID, TIPO_ID, TIPO_USUARIO, NUMERO_OPERACIONES "
+					+ " FROM (SELECT * FROM (SELECT CORREO, COUNT(CORREO) AS NUMERO_OPERACIONES FROM (SELECT NOMBRE, NUMERO_ID, "
+					+ " TIPO_ID, CORREO, TIPO_USUARIO, TIPO_TRANSACCION, OFICINA FROM ( SELECT * "
+					+ " FROM USUARIOS u JOIN (SELECT ID_TRANSACCION, TIPO AS TIPO_TRANSACCION, "
+					+ " CORREO_USUARIO , ID_PUNTO_ATENCION FROM TRANSACCIONES) "
+					+ " t ON(u.CORREO = t.CORREO_USUARIO) ) b JOIN PUNTOS_ATENCION p ON "
+					+ " (b.id_punto_atencion = p.id) WHERE TIPO_TRANSACCION = " + "'" + tipoTransaccion + "'" +  
+					" AND OFICINA = " + idOficina + " ) f "
+					+ " GROUP BY CORREO ORDER BY COUNT(CORREO) DESC) WHERE ROWNUM = 1 ) "
+					+ "NATURAL JOIN USUARIOS" );
 
 			while(rs.next())
 			{		
-               String correo = rs.getString("CORREO");
-               String nombre = rs.getString("NOMBRE");
-               String numeroID = rs.getString("NUMERO_ID");
-               String tipoID = rs.getString("TIPO_ID");
-               String tipoUsuario = rs.getString("TIPO_USUARIO");
-               int numTransacciones = rs.getInt("NUM_TRANSACCIONES");
-               UsuarioActivoValues usuarioActual = new UsuarioActivoValues(nombre, numeroID, tipoID, numTransacciones, tipoUsuario, correo);
-               cuentas.add(usuarioActual);
+				String correo = rs.getString("CORREO");
+				String nombre = rs.getString("NOMBRE");
+				String numeroID = rs.getString("NUMERO_ID");
+				String tipoID = rs.getString("TIPO_ID");
+				String tipoUsuario = rs.getString("TIPO_USUARIO");
+				int numTransacciones = rs.getInt("NUMERO_OPERACIONES");
+				UsuarioActivoValues usuarioActual = new UsuarioActivoValues(nombre, numeroID, tipoID, numTransacciones, tipoUsuario, correo);
+				cuentas.add(usuarioActual);
 			}
-			
 		}
+
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
 
 		finally
 		{
