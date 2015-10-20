@@ -56,13 +56,13 @@ public class ServletPrincipal extends ASServlet {
 		pw.println("<form role=\"form\" method=\"post\" action=\"login\">");
 		pw.println("<fieldset>");
 		pw.println("<div class=\"form-group\">");
-		pw.println("<input id=\""+ID_INPUT_USUARIO + "\" class=\"form-control\" placeholder=\"Nombre de usuario\" name=\"email\" type=\"email\" autofocus>");
+		pw.println("<input id=\"cuentaUsuario\" class=\"form-control\" placeholder=\"Nombre de usuario\" name=\"cuentaUsuario\" type=\"email\" autofocus>");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
-		pw.println("<input id=\""+ID_PASS_USUARIO+"\" class=\"form-control\" placeholder=\"Contrase&ntilde;a\" name=\"password\" type=\"password\" value=\"\">");
+		pw.println("<input id=\"passUsuario\" class=\"form-control\" placeholder=\"Contrase&ntilde;a\" name=\"passUsuario\" type=\"password\" value=\"\">");
 		pw.println("</div>");
 		pw.println("<!-- Change this to a button or input when using this as a form -->");
-		pw.println("<input type=\"submit\" value=\"Iniciar Sesi&oacute;n\" id=\"" + ID_BOTON_INICIAR+ "\" name=\"" + ID_BOTON_INICIAR+ "\" class=\"btn btn-lg btn-success btn-block\"></input>");
+		pw.println("<input type=\"submit\" value=\"Iniciar Sesi&oacute;n\" id=\"botonIniciarSesion\" name=\"botonIniciarSesion\" class=\"btn btn-lg btn-success btn-block\"></input>");
 		pw.println("</fieldset>");
 		pw.println("</form>");
 		pw.println("</div>");

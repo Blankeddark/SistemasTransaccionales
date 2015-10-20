@@ -177,20 +177,48 @@ public class ConsultarClienteDAO
 			establecerConexion(cadenaConexion, usuario, clave);
 
 			Statement s = conexion.createStatement();
-			ResultSet rs = s.executeQuery("SELECT * FROM USUARIOS WHERE CORREO = " + correo );
-			String ciudad = rs.getString("CIUDAD");
-			String codPostal = rs.getString("COS_POSTAL");
-			String contraseña= rs.getString("CONTRASEÃ‘A");
-			String departamento = rs.getString("DEPARTAMENTO");
-			String direccion = rs.getString("DIRECCION");
-			Date fecha_registro = rs.getTimestamp("FECHA_REGISTRO");
-			String login = rs.getString("LOGIN");
-			String nacionalidad = rs.getString("NACIONALIDAD");
-			String nombre = rs.getString("NOMBRE");
-			String numeroID = rs.getString("NUMERO_ID");
-			String telefono = rs.getString("TELEFONO");
-			String tipo_id = rs.getString("TIPO_ID");
-			String tipo_usuario = rs.getString("TIPO_USUARIO");
+			ResultSet rs = s.executeQuery("SELECT * FROM USUARIOS WHERE CORREO = '" + correo + "'" );
+
+			String ciudad = "";
+			String codPostal = "";
+			String contraseña = "";
+			String departamento = "";
+			String direccion = "";
+			Date fecha_registro = null;
+			String login = "";
+			String nacionalidad = "";
+			String nombre = "";
+			String numeroID = "";
+			String telefono = "";
+			String tipo_id = "";
+			String tipo_usuario = "";
+
+			if(!rs.isBeforeFirst())
+			{
+				return null;
+			}
+			
+
+			
+			while(rs.next())
+			{
+				ciudad = rs.getString("CIUDAD");
+
+
+				codPostal = rs.getString("COD_POSTAL");
+				contraseña = rs.getString("CONTRASEÑA");
+				departamento = rs.getString("DEPARTAMENTO");
+				direccion = rs.getString("DIRECCION");
+				fecha_registro = rs.getTimestamp("FECHA_REGISTRO");
+				login = rs.getString("LOGIN");
+				nacionalidad = rs.getString("NACIONALIDAD");
+				nombre = rs.getString("NOMBRE");
+				numeroID = rs.getString("NUMERO_ID");
+				telefono = rs.getString("TELEFONO");
+				tipo_id = rs.getString("TIPO_ID");
+				tipo_usuario = rs.getString("TIPO_USUARIO");
+			}
+
 			UsuarioValues usuarioActual = new UsuarioValues(correo, login, 
 					contraseña, numeroID, tipo_id, nombre, nacionalidad, 
 					direccion, telefono, ciudad, departamento, codPostal,
@@ -217,8 +245,13 @@ public class ConsultarClienteDAO
 			establecerConexion(cadenaConexion, usuario, clave);
 
 			Statement s = conexion.createStatement();
-			ResultSet rs = s.executeQuery("SELECT OFICINA FROM EMPLEADOS WHERE CORREO = " + correo );
-			int oficina = rs.getInt("OFICINA");
+			ResultSet rs = s.executeQuery("SELECT OFICINA FROM EMPLEADOS WHERE CORREO = '" + correo + "'");
+			int oficina = 0;
+			
+			while(rs.next())
+			{
+				oficina = rs.getInt("OFICINA");
+			}
 			return oficina; 
 		}
 
@@ -266,6 +299,7 @@ public class ConsultarClienteDAO
 					+ " WHERE CORREO = " + "'" + pCorreo + "'");
 
 			System.out.println("LLego antes del while 1");
+
 			while(rs.next())
 			{
 
@@ -285,7 +319,7 @@ public class ConsultarClienteDAO
 			rs = s.executeQuery("SELECT * FROM CUENTAS WHERE CORREO = " +  "'" + temp.getCorreo() + "'");
 
 
-            
+
 			while(rs.next())
 			{
 				String idCuenta = rs.getString("ID_CUENTA");
@@ -304,7 +338,7 @@ public class ConsultarClienteDAO
 				cuentas.add(cuentaActual);
 
 			}
-            System.out.println(cuentas.size());
+			System.out.println(cuentas.size());
 
 			rs = s.executeQuery("SELECT  DIRECCION, GERENTE, c.ID_OFICINA, NOMBRE, c.TELEFONO FROM "
 					+ " (SELECT * FROM CUENTAS WHERE CORREO = " +  "'" + temp.getCorreo() + "')"  
@@ -324,7 +358,7 @@ public class ConsultarClienteDAO
 				oficinas.add(oficinaActual);
 			}
 
-            System.out.println(oficinas.size());
+			System.out.println(oficinas.size());
 
 
 			rs = s.executeQuery("SELECT * FROM  (SELECT CORREO FROM CUENTAS WHERE CORREO = " 
@@ -355,7 +389,7 @@ public class ConsultarClienteDAO
 				prestamos.add(prestamoActual);
 			}
 
-            System.out.println(prestamos.size());
+			System.out.println(prestamos.size());
 
 
 			rs = s.executeQuery("SELECT  * FROM  (SELECT CORREO AS CORREO_USUARIO FROM CUENTAS WHERE CORREO = " 
@@ -377,7 +411,7 @@ public class ConsultarClienteDAO
 
 				operaciones.add(transaccionActual);
 			}
-            
+
 			System.out.println(operaciones.size());
 			informacionCliente.add(clientes);
 			informacionCliente.add(cuentas);

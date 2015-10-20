@@ -2,6 +2,7 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -9,8 +10,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import vos.ClienteValues;
+import vos.CuentaValues;
 import vos.EmpleadoValues;
+import vos.OficinaValues;
+import vos.PrestamoValues;
+import vos.TransaccionValues;
 import vos.UsuarioValues;
+import Fachada.BancAndes;
 
 public class ServletLogin extends ASServlet {
 
@@ -33,39 +40,70 @@ public class ServletLogin extends ASServlet {
 	 * Modela si el usuario es un gerente general
 	 */
 	public final static String TIPO_EMPLEADO_GERENTE_GENERAL = "GG";
-	
+
 	private static UsuarioValues usuarioActual;
-	
+
 	/**
 	 * Null si el usuario actual no es un empleado.
 	 */
 	private static EmpleadoValues empleadoActual;
-	
+
+	/**
+	 * Null si el usuario actual no es un cliente
+	 */
+	private static ClienteValues clienteActual;
+
+	/**
+	 * Lista de cuentas del usuario actual. 
+	 */
+	private static ArrayList<CuentaValues> cuentasUsuarioActual;
+
+	/**
+	 * Null si el sujeto no es cuenta
+	 */
+	private static ArrayList<OficinaValues> oficinaCuentasUsuarioActual;
+
+	private static ArrayList<PrestamoValues> prestamosUsuarioActual;
+
+	private static ArrayList<TransaccionValues> transaccionesUsuarioActual;
+
+	/**
+	 * Cambia a la url del servlet que maneja al tipo de usuario que est· conectado.
+	 */
+	String urlUsuarioActual = "";
+
 	public ServletLogin()
 	{
 		usuarioActual = null;
 		empleadoActual = null;
+		clienteActual = null;
+		cuentasUsuarioActual = new ArrayList<CuentaValues>();
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		System.out.println("En doPost de ServletLogin");
+
+		PrintWriter pw = response.getWriter();
+
+		imprimirEncabezado(pw);
+
 		if (usuarioActual != null)
 		{
-			PrintWriter pw = response.getWriter();
 			imprimirYaHayUsuario(pw);
 			return;
 		}
 
-		String cuentaUsuario = request.getParameter(ServletPrincipal.ID_BOTON_INICIAR);
+		String cuentaUsuario = request.getParameter("cuentaUsuario");
 		String passUsuario = request.getParameter(ServletPrincipal.ID_PASS_USUARIO);
 
 		//SÛlo para probar:
 
-		if ( iniciarSesion() ) //TODO quitar debug y agregar inicio de sesiÛn real
+		if ( iniciarSesion(pw, cuentaUsuario, passUsuario) ) //TODO quitar debug y agregar inicio de sesiÛn real
 		{
+
 			ServletContext context= getServletContext();
-			RequestDispatcher rd= context.getRequestDispatcher("/gerenteOficina");
+			RequestDispatcher rd= context.getRequestDispatcher(urlUsuarioActual);
 			rd.forward(request, response);
 		}
 
@@ -81,10 +119,199 @@ public class ServletLogin extends ASServlet {
 		empleadoActual = new EmpleadoValues(usuarioActual, 1);
 	}
 
-	public boolean iniciarSesion()
+	public boolean iniciarSesion(PrintWriter pw, String cuentaUsuario, String contraseÒaUsuario)
 	{
-		paraProbarGerenteOficina();
+
+		BancAndes bancAndes = BancAndes.darInstancia();
+
+		/**
+		 * Este m√©todo retorna un arrayList que contiene 5 ArrayList.
+		 * El primer arrayList contiene la informaci√≥n del cliente en forma de un objeto clienteValues.
+		 * El segundo arrayList contiene la informaci√≥n de las cuentas del cliente en forma
+		 * de cuentaValues.
+		 * El tercero contiene la informaci√≥n de las oficinas donde tiene una cuenta el usuario
+		 * en forma de oficinaValue.
+		 * El cuarto contiene informaci√≥n de los prestamos del cliente en forma de
+		 * prestamoValue.
+		 * Y el quinto contiene la informaci√≥n de las operaciones del cliente en forma
+		 * de transaccionValue.
+		 * El cliente se busca a partir de su correo el cual entra por par√°metro.
+		 * La informaci√≥n que es retornada no est√° sujetada a ning√∫n tipo de filtro
+		 * @return
+		 * @throws Exception
+		 */
+		ArrayList infoClienteActual = bancAndes.consultarClienteEspecifico(cuentaUsuario, "", "", "");
+
+		System.out.println("øEst· vacÌa la lista de retorno para el cliente con la cuenta " + cuentaUsuario + " ? --");
+		System.err.println( infoClienteActual.isEmpty() );
+
+		usuarioActual = bancAndes.darUsuarioInicioSesion(cuentaUsuario);
+
+		if ( usuarioActual == null )
+		{
+			imprimirMainConError(pw, "No hay un usuario registrado con el correo ingresado");
+			return false;
+		}
+
+
+		System.out.println("Usuario actual: " + usuarioActual);
+
+		if(contraseÒaUsuario.equals( usuarioActual.getContraseÒa()) )
+		{
+
+			if (usuarioActual.getTipo_usuario().equals("Cliente"))
+			{
+				ArrayList<ClienteValues> temp = ( (ArrayList<ClienteValues>) infoClienteActual.get(0) );
+				clienteActual = temp.get(0);
+				cuentasUsuarioActual = (ArrayList<CuentaValues>) infoClienteActual.get(1);
+				oficinaCuentasUsuarioActual = (ArrayList<OficinaValues>) infoClienteActual.get(2);
+				prestamosUsuarioActual = (ArrayList<PrestamoValues>) infoClienteActual.get(3);
+				transaccionesUsuarioActual = (ArrayList<TransaccionValues>) infoClienteActual.get(4);
+				urlUsuarioActual = "/cliente";
+			}
+
+			else if (usuarioActual.getTipo_usuario().equals("C"))
+			{
+				try 
+				{
+					empleadoActual = new EmpleadoValues(usuarioActual, bancAndes.darOficinaEmpleado(cuentaUsuario) );
+				} 
+
+				catch (Exception e) 
+				{
+					imprimirMainConError(pw, "Error al asignar el empleadoActual para Cajero. <br>ERROR:<br>" + e.getMessage() );
+					usuarioActual = null;
+					e.printStackTrace();
+					return false;
+				}
+				urlUsuarioActual = "/cajero";
+			}
+
+			else if (usuarioActual.getTipo_usuario().equals("GG"))
+			{
+				try 
+				{
+					empleadoActual = new EmpleadoValues(usuarioActual, bancAndes.darOficinaEmpleado(cuentaUsuario) );
+				} 
+
+				catch (Exception e) 
+				{
+					imprimirMainConError(pw, "Error al asignar el empleadoActual para GG. <br>ERROR:<br>" + e.getMessage() );
+					usuarioActual = null;
+					e.printStackTrace();
+					return false;
+				}
+				urlUsuarioActual = "/gerenteGeneral";
+			}
+
+			else if (usuarioActual.getTipo_usuario().equals("GO"))
+			{
+				try 
+				{
+					empleadoActual = new EmpleadoValues(usuarioActual, bancAndes.darOficinaEmpleado(cuentaUsuario) );
+				} 
+
+				catch (Exception e) 
+				{
+					imprimirMainConError(pw, "Error al asignar el empleadoActual para GO. <br>ERROR:<br>" + e.getMessage() );
+					usuarioActual = null;
+					e.printStackTrace();
+					return false;
+				}
+				urlUsuarioActual = "/gerenteOficina";
+			}
+
+		}
+
+		else
+		{
+			imprimirMainConError(pw, "La contrase&ntilde;a ingresada es incorrecta");
+			usuarioActual = null;
+			return false;
+		}
+
+		imprimirMainExitoso(pw);
 		return true;
+	}
+
+	private void imprimirMainExitoso(PrintWriter pw)
+	{
+
+
+		pw.println("<body>");
+
+		pw.println("<div class=\"container\">");
+		pw.println("<div class=\"row\">");
+		pw.println("<div class=\"col-md-4 col-md-offset-4\">");
+		pw.println("<div class=\"login-panel panel panel-default\">");
+		pw.println("<div class=\"panel-heading\">");
+		pw.println("<h3 class=\"panel-title\">Por favor inicie sesi&oacute;n</h3>");
+		pw.println("</div>");
+		pw.println("<div class=\"panel-body\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"login\">");
+		pw.println("<fieldset>");
+		pw.println("<div class=\"form-group\">");
+		pw.println("<input id=\"cuentaUsuario\" class=\"form-control\" placeholder=\"Nombre de usuario\" name=\"cuentaUsuario\" type=\"email\" autofocus>");
+		pw.println("</div>");
+		pw.println("<div class=\"form-group\">");
+		pw.println("<input id=\"passUsuario\" class=\"form-control\" placeholder=\"Contrase&ntilde;a\" name=\"passUsuario\" type=\"password\" value=\"\">");
+		pw.println("</div>");
+		pw.println("<!-- Change this to a button or input when using this as a form -->");
+		pw.println("<input type=\"submit\" value=\"Iniciar Sesi&oacute;n\" id=\"botonIniciarSesion\" name=\"botonIniciarSesion\" class=\"btn btn-lg btn-success btn-block\"></input>");
+		pw.println("</fieldset>");
+		pw.println("<font color=\"green\">" + "Operaci&oacute;n realizada &eacute;xitosamente" + "</font>");
+		pw.println("</form>");
+		pw.println("</div>");
+		pw.println("</div>");
+		pw.println("</div>");
+		pw.println("</div>");
+		pw.println("</div>");
+
+
+		pw.println("</body>");
+
+		pw.println("</html>");
+
+
+	}
+
+	private void imprimirMainConError(PrintWriter pw, String error)
+	{
+
+		pw.println("<body>");
+
+		pw.println("<div class=\"container\">");
+		pw.println("<div class=\"row\">");
+		pw.println("<div class=\"col-md-4 col-md-offset-4\">");
+		pw.println("<div class=\"login-panel panel panel-default\">");
+		pw.println("<div class=\"panel-heading\">");
+		pw.println("<h3 class=\"panel-title\">Por favor inicie sesi&oacute;n</h3>");
+		pw.println("</div>");
+		pw.println("<div class=\"panel-body\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"login\">");
+		pw.println("<fieldset>");
+		pw.println("<div class=\"form-group\">");
+		pw.println("<input id=\"cuentaUsuario\" class=\"form-control\" placeholder=\"Nombre de usuario\" name=\"cuentaUsuario\" type=\"email\" autofocus>");
+		pw.println("</div>");
+		pw.println("<div class=\"form-group\">");
+		pw.println("<input id=\"passUsuario\" class=\"form-control\" placeholder=\"Contrase&ntilde;a\" name=\"passUsuario\" type=\"password\" value=\"\">");
+		pw.println("</div>");
+		pw.println("<!-- Change this to a button or input when using this as a form -->");
+		pw.println("<input type=\"submit\" value=\"Iniciar Sesi&oacute;n\" id=\"botonIniciarSesion\" name=\"botonIniciarSesion\" class=\"btn btn-lg btn-success btn-block\"></input>");
+		pw.println("</fieldset>");
+		pw.println("<font color=\"red\">" + error + "</font>");
+		pw.println("</form>");
+		pw.println("</div>");
+		pw.println("</div>");
+		pw.println("</div>");
+		pw.println("</div>");
+		pw.println("</div>");
+
+
+		pw.println("</body>");
+
+		pw.println("</html>");
+
 	}
 
 	public void imprimirYaHayUsuario(PrintWriter pw)
@@ -92,15 +319,15 @@ public class ServletLogin extends ASServlet {
 		pw.println("Ya hay un usuario conectado. En este momento la aplicaciÛn sÛlo permite que"
 				+ " un usuario ingrese al tiempo.");
 	}
-	
+
 	public static UsuarioValues darUsuarioActual()
 	{
 		return usuarioActual;
 	}
-	
+
 	public static EmpleadoValues darEmpleadoActual()
 	{
 		return empleadoActual;
 	}
-	
+
 }

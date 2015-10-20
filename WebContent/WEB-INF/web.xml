@@ -156,11 +156,27 @@
  
  </servlet>
  
-       <servlet>
+ <servlet>
  
  	<display-name>ServletTop10General</display-name>
  	<servlet-name>ServletTop10General</servlet-name>
  	<servlet-class>servlets.ServletTop10General</servlet-class>
+ 
+ </servlet>
+ 
+  <servlet>
+ 
+ 	<display-name>ServletIndexCliente</display-name>
+ 	<servlet-name>ServletIndexCliente</servlet-name>
+ 	<servlet-class>servlets.ServletIndexCliente</servlet-class>
+ 
+ </servlet>
+ 
+   <servlet>
+ 
+ 	<display-name>ServletRegistrarOperacionCuentaCliente</display-name>
+ 	<servlet-name>ServletRegistrarOperacionCuentaCliente</servlet-name>
+ 	<servlet-class>servlets.ServletRegistrarOperacionCuentaCliente</servlet-class>
  
  </servlet>
  
@@ -298,10 +314,24 @@
  
  </servlet-mapping>
  
-        <servlet-mapping>
+ <servlet-mapping>
  
  	<servlet-name>ServletTop10General</servlet-name>
  	<url-pattern>/top10General</url-pattern>
+ 
+ </servlet-mapping>
+ 
+  <servlet-mapping>
+ 
+ 	<servlet-name>ServletIndexCliente</servlet-name>
+ 	<url-pattern>/cliente</url-pattern>
+ 
+ </servlet-mapping>
+ 
+   <servlet-mapping>
+ 
+ 	<servlet-name>ServletRegistrarOperacionCuentaCliente</servlet-name>
+ 	<url-pattern>/registrarOperacionesCuentaCliente</url-pattern>
  
  </servlet-mapping>
  
