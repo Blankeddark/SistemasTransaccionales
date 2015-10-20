@@ -141,6 +141,7 @@ public class BancAndes
 	public int darOficinaEmpleado(String correo) throws Exception
 	{
 		int oficina = consultarClienteDAO.darOficinaEmpleado(correo);
+		
 		if(oficina == 0)
 		{
 			throw new Exception("La oficina no existe");

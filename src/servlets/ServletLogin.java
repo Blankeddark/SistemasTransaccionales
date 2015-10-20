@@ -59,12 +59,18 @@ public class ServletLogin extends ASServlet {
 	private static ArrayList<CuentaValues> cuentasUsuarioActual;
 
 	/**
-	 * Null si el sujeto no es cuenta
+	 * Null si el sujeto no es cliente
 	 */
 	private static ArrayList<OficinaValues> oficinaCuentasUsuarioActual;
 
+	/**
+	 * Null si el sujeto no es cliente
+	 */
 	private static ArrayList<PrestamoValues> prestamosUsuarioActual;
 
+	/**
+	 * Null si el sujeto no es cliente
+	 */
 	private static ArrayList<TransaccionValues> transaccionesUsuarioActual;
 
 	/**
@@ -121,8 +127,7 @@ public class ServletLogin extends ASServlet {
 
 	public boolean iniciarSesion(PrintWriter pw, String cuentaUsuario, String contraseñaUsuario)
 	{
-
-		BancAndes bancAndes = BancAndes.darInstancia();
+   		BancAndes bancAndes = BancAndes.darInstancia();
 
 		/**
 		 * Este mÃ©todo retorna un arrayList que contiene 5 ArrayList.
@@ -153,9 +158,11 @@ public class ServletLogin extends ASServlet {
 			return false;
 		}
 
-
 		System.out.println("Usuario actual: " + usuarioActual);
 
+		System.out.println("Contraseña ingresada: " + contraseñaUsuario);
+		System.out.println("Contraseña esperada: " + usuarioActual.getContraseña() );
+		
 		if(contraseñaUsuario.equals( usuarioActual.getContraseña()) )
 		{
 
@@ -189,18 +196,6 @@ public class ServletLogin extends ASServlet {
 
 			else if (usuarioActual.getTipo_usuario().equals("GG"))
 			{
-				try 
-				{
-					empleadoActual = new EmpleadoValues(usuarioActual, bancAndes.darOficinaEmpleado(cuentaUsuario) );
-				} 
-
-				catch (Exception e) 
-				{
-					imprimirMainConError(pw, "Error al asignar el empleadoActual para GG. <br>ERROR:<br>" + e.getMessage() );
-					usuarioActual = null;
-					e.printStackTrace();
-					return false;
-				}
 				urlUsuarioActual = "/gerenteGeneral";
 			}
 
