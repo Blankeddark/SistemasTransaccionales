@@ -13,7 +13,6 @@ import DAOS.RegistrarOperacionCuentaDAO;
  * url-pattern: /registrarOperacionesCuentaCliente
  */
 public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
-
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		System.out.println("doGet en ServletRegistrarOperacionesCuentaCliente");
@@ -21,7 +20,7 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 
 		imprimirEncabezado(pw);
 		imprimirSidebarCliente(pw);
-		imprimirRegistrarOperacionesInicial(pw);
+		imprimirRegistrarOperacionesClienteInicial(pw);
 		imprimirWrapper(pw);
 	}
 	
@@ -29,14 +28,20 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 	{
 		PrintWriter pw = response.getWriter();
 		imprimirEncabezado(pw);
-		imprimirSidebarCajero(pw);
+		imprimirSidebarCliente(pw);
 		
 		String tipo = request.getParameter("tipo");
-		String correo = request.getParameter("correo");
-		String correoCajero = request.getParameter("correoCajero");
+		String correo = ServletLogin.darUsuarioActual().getCorreo();
+		
+		/**
+		 * En este caso, quien realiza la transacción es el mismo cliente.
+		 */
+		
+		String correoCajero = correo;
 		int idCuenta = 0; 
 		int monto = 0;
-		int idPuntoAtencion = 0;
+		int idPuntoAtencion = 10;
+		
 		pw.println("<option>Abrir</option>");
 		pw.println("<option>Consignar</option>");
 		pw.println("<option>Retirar</option>");
@@ -64,7 +69,7 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 			}
 			catch (Exception e)
 			{
-				imprimirRegistrarOperacionesError(pw, "Lo ingresado en el campo de la id cuenta no es un n&uacute;mero v&aacute;lido.");
+				imprimirRegistrarOperacionesClienteError(pw, "Lo ingresado en el campo de la id cuenta no es un n&uacute;mero v&aacute;lido.");
 				imprimirWrapper(pw);
 				return;
 			}
@@ -75,7 +80,7 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 			}
 			catch (Exception e)
 			{
-				imprimirRegistrarOperacionesError(pw, "Lo ingresado en el campo de no es un n&uacute;mero v&aacute;lido.");
+				imprimirRegistrarOperacionesClienteError(pw, "Lo ingresado en el campo de no es un n&uacute;mero v&aacute;lido.");
 				imprimirWrapper(pw);
 				return;
 			}
@@ -88,7 +93,7 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 		}
 		catch (Exception e)
 		{
-			imprimirRegistrarOperacionesError(pw, "Lo ingresado en el campo del idPuntoAtencion no es un n&uacute;mero v&aacute;lido.");
+			imprimirRegistrarOperacionesClienteError(pw, "Lo ingresado en el campo del idPuntoAtencion no es un n&uacute;mero v&aacute;lido.");
 			imprimirWrapper(pw);
 			return;
 		}
@@ -97,22 +102,22 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 		
 		try
 		{
-			roc.registrarOperacionSobreCuentaExistente(tipo, correo, idCuenta, monto, idPuntoAtencion , correoCajero);
+			roc.registrarOperacionSobreCuentaExistente(tipo, correo, idCuenta, monto, idPuntoAtencion, correoCajero);
 		}
 		
 		catch (Exception e)
 		{
-			imprimirRegistrarOperacionesError(pw, e.getMessage());
+			imprimirRegistrarOperacionesClienteError(pw, e.getMessage());
 			imprimirWrapper(pw);
 			e.printStackTrace();
 			return;
 		}
 		
-		imprimirRegistrarOperacionesExito(pw);
+		imprimirRegistrarOperacionesClienteExito(pw);
 		imprimirWrapper(pw);
 	}
 	
-	private void imprimirRegistrarOperacionesError(PrintWriter pw, String error)
+	private void imprimirRegistrarOperacionesClienteError(PrintWriter pw, String error)
 	{
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
@@ -131,7 +136,7 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-6\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"registrarOperacionesCuentaCliente\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"operacionesCuentas\">");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Tipo:</label>");
 		pw.println("<select name=\"tipo\" class=\"form-control\">");
@@ -141,10 +146,7 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 		pw.println("<option>Retirar</option>");
 		pw.println("</select>");
 		pw.println("</div>");
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Correo Cliente:</label>");
-		pw.println("<input name=\"correo\" class=\"form-control\">");
-		pw.println("</div>");
+
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>ID cuenta:</label>");
 		pw.println("<input name=\"idCuenta\" class=\"form-control\">");
@@ -154,19 +156,16 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 		pw.println("<input name=\"monto\" type=\"text\" class=\"form-control\">");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Puesto de atenci&oacute;n:</label>");
-		pw.println("<input name=\"idPuntoAtencion\" class=\"form-control\">");
-		pw.println("</div>");
+
 		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Cajero:</label>");
-		pw.println("<input name=\"correoCajero\" class=\"form-control\">");
-		pw.println("</div>");
 
 		pw.println("<br>");
-		pw.println("<font color=\"red\">No se pudo registrar la operaci&oacute;n <br> Error: " + error + "</font><br>");
-		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Registrar\"></input>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Registrar\"></button>");
+
 		pw.println("</form>");
 		pw.println("</div>");
+		pw.println("<font color=\"red\">La operaci&oacute;n no pudo ser realizada. ERROR:<br>" + error);
 		pw.println("<!-- /.col-lg-6 (nested) -->");
 		pw.println("</div>");
 		pw.println("<!-- /.row (nested) -->");
@@ -184,7 +183,7 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 		pw.println("</div>");
 	}
 	
-	private void imprimirRegistrarOperacionesExito(PrintWriter pw)
+	private void imprimirRegistrarOperacionesClienteExito(PrintWriter pw)
 	{
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
@@ -203,7 +202,7 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-6\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"registrarOperacionesCuentaCliente\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"operacionesCuentas\">");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Tipo:</label>");
 		pw.println("<select name=\"tipo\" class=\"form-control\">");
@@ -213,10 +212,7 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 		pw.println("<option>Retirar</option>");
 		pw.println("</select>");
 		pw.println("</div>");
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Correo Cliente:</label>");
-		pw.println("<input name=\"correo\" class=\"form-control\">");
-		pw.println("</div>");
+
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>ID cuenta:</label>");
 		pw.println("<input name=\"idCuenta\" class=\"form-control\">");
@@ -226,18 +222,15 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 		pw.println("<input name=\"monto\" type=\"text\" class=\"form-control\">");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Puesto de atenci&oacute;n:</label>");
-		pw.println("<input name=\"idPuntoAtencion\" class=\"form-control\">");
-		pw.println("</div>");
+
 		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Cajero:</label>");
-		pw.println("<input name=\"correoCajero\" class=\"form-control\">");
-		pw.println("</div>");
 
 		pw.println("<br>");
-		pw.println("<font color=\"green\">&iexcl;La operaci&oacute;n fue realizada exitosamente!</font><br>");
+
 		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Registrar\"></button>");
+
 		pw.println("</form>");
+		pw.println("<font color=\"green\">Operaci&oacute;n realizada &eacute;xitosamente");
 		pw.println("</div>");
 		pw.println("<!-- /.col-lg-6 (nested) -->");
 		pw.println("</div>");
@@ -256,7 +249,7 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 		pw.println("</div>");
 	}
 
-	private void imprimirRegistrarOperacionesInicial(PrintWriter pw)
+	private void imprimirRegistrarOperacionesClienteInicial(PrintWriter pw)
 	{
 		
 		pw.println("<div id=\"page-wrapper\">");
@@ -276,7 +269,7 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-6\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"registrarOperacionesCuentaCliente\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"operacionesCuentas\">");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Tipo:</label>");
 		pw.println("<select name=\"tipo\" class=\"form-control\">");
@@ -286,10 +279,7 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 		pw.println("<option>Retirar</option>");
 		pw.println("</select>");
 		pw.println("</div>");
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Correo Cliente:</label>");
-		pw.println("<input name=\"correo\" class=\"form-control\">");
-		pw.println("</div>");
+
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>ID cuenta:</label>");
 		pw.println("<input name=\"idCuenta\" class=\"form-control\">");
@@ -299,13 +289,8 @@ public class ServletRegistrarOperacionCuentaCliente extends ASServlet {
 		pw.println("<input name=\"monto\" type=\"text\" class=\"form-control\">");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Puesto de atenci&oacute;n:</label>");
-		pw.println("<input name=\"idPuntoAtencion\" class=\"form-control\">");
-		pw.println("</div>");
+
 		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Cajero:</label>");
-		pw.println("<input name=\"correoCajero\" class=\"form-control\">");
-		pw.println("</div>");
 
 		pw.println("<br>");
 
