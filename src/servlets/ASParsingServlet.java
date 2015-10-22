@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import vos.ClienteValues;
 import vos.CuentaValues;
 import vos.PrestamoValues;
+import vos.TransaccionValues;
 
 /**
  * Clase abstracta que heredan todos los servlets que deben tratar con cuentas o clientes y
@@ -36,9 +37,20 @@ public abstract class ASParsingServlet extends ASServlet {
 			pw.println("<td>" + cuentaActual.getSaldo() +"</td>");
 			pw.println("<td>" + cuentaActual.getEstado() + "</td>");
 			pw.println("</tr>");
-			
 		} 
-
+	}
+	
+	protected void parsearTablaOperaciones(ArrayList<TransaccionValues> operaciones, PrintWriter pw)
+	{
+		for(TransaccionValues transaccionActual : operaciones)
+		{
+			pw.println("<tr class=\"odd gradeX\">");
+			pw.println("<td>" + transaccionActual.getIdTransaccion() + "</td>");
+			pw.println("<td>" + transaccionActual.getCorreoUsuario() + "</td>");
+			pw.println("<td>" + transaccionActual.getTipo( ) + "</td>");
+			pw.println("<td>" + transaccionActual.getFechaTransaccion() + "</td>");
+			pw.println("</tr>");
+		}
 	}
 	
 	/**
