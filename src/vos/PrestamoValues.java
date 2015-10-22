@@ -29,6 +29,8 @@ public class PrestamoValues
 
 	private int cuotasEfectivas;
 
+	private String nombreCliente;
+
 	public PrestamoValues(int id, String correoCliente, int montoPrestado,
 			String tipo, Date fechaPrestamo, int diaPagoMensual,
 			int cuota, int saldoPendiente, String estado, int numeroCuotas,
@@ -46,6 +48,19 @@ public class PrestamoValues
 		this.numeroCuotas = numeroCuotas;
 		this.interes = interes;
 		this.cuotasEfectivas = cuotasEfectivas;
+	}
+
+	public PrestamoValues(int id2, String correo, int saldoPendiente2,
+			String nombre, int cuotasPagadas, String tipo2, Date fecha) 
+	{   
+		this.id = id2;
+		this.correoCliente = correo;
+		this.saldoPendiente = saldoPendiente2;
+		this.nombreCliente = nombre;
+		this.cuotasEfectivas = cuotasPagadas;
+		this.tipo = tipo2;
+		this.fechaPrestamo = fecha;
+		// TODO Auto-generated constructor stub
 	}
 
 	public int getId() {
@@ -142,6 +157,16 @@ public class PrestamoValues
 
 	public void setCuotasEfectivas(int cuotasEfectivas) {
 		this.cuotasEfectivas = cuotasEfectivas;
+	}
+
+	public String getNombreCliente()
+	{
+		return nombreCliente;
+	}
+	
+	public void setNombreCliente(String nombreCliente)
+	{
+		this.nombreCliente = nombreCliente;
 	}
 
 

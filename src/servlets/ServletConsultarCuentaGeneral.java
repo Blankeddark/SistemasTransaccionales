@@ -316,7 +316,7 @@ public class ServletConsultarCuentaGeneral extends ASParsingServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"consultarCuentaGeneral\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"consultarCuentaCliente\">");
 		pw.println("<div class=\"form-group\">");
 
 		pw.println("<label>Tipo:</label>");
@@ -429,6 +429,7 @@ public class ServletConsultarCuentaGeneral extends ASParsingServlet {
 
 	private void imprimirConsultarCuentasGeneralError(PrintWriter pw, String error)
 	{
+
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
@@ -448,7 +449,7 @@ public class ServletConsultarCuentaGeneral extends ASParsingServlet {
 		pw.println("<div class=\"col-lg-12\">");
 		pw.println("<form role=\"form\" method=\"post\" action=\"consultarCuentaGeneral\">");
 		pw.println("<div class=\"form-group\">");
-		pw.println("<font color=\"red\">" + error + "</font>");
+
 		pw.println("<label>Tipo:</label>");
 		pw.println("<select name=\"tipoCuenta\" class=\"form-control\">");
 		pw.println("<option> </option>");
@@ -503,8 +504,6 @@ public class ServletConsultarCuentaGeneral extends ASParsingServlet {
 
 		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Consultar\"></input>");
 
-
-
 		pw.println("</form>");
 		pw.println("</div>");
 		pw.println("<!-- /.col-lg-6 (nested) -->");
@@ -531,7 +530,7 @@ public class ServletConsultarCuentaGeneral extends ASParsingServlet {
 		pw.println("<th>ID Cuenta</th>");
 		pw.println("<th>Correo Dueño</th>");
 		pw.println("<th>Tipo De Cuenta</th>");
-		pw.println("<th>Oficina Asociada</th>");
+		pw.println("<th>General Asociada</th>");
 		pw.println("<th>Fecha &uacute;ltimo movimiento</th>");
 		pw.println("<th>Saldo</th>");
 		pw.println("<th>Estado</th>");

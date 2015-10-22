@@ -37,7 +37,7 @@ public class CerrarPrestamoDAO
 	{
 		try
 		{
-			File arch = new File("C:/Users/Sergio/Documents/Sistrans/Project Sistrans/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/PROJECT_Sistrans3/conexion.properties");
+			File arch = new File("C:/Users/Sergio/git/PROJECT_Sistrans/SistemasTransaccionales/WebContent/conexion.properties");
 			Properties prop = new Properties();
 			FileInputStream in = new FileInputStream (arch);
 

@@ -2,18 +2,25 @@ package Fachada;
 
 import java.util.ArrayList;
 
+import vos.EmpleadoValues;
+import vos.PrestamoValues;
+import vos.TransaccionValues;
 import vos.UsuarioActivoValues;
 import vos.UsuarioValues;
 import vos.Top10Values;
+import DAOS.AsociarCuentaDAO;
 import DAOS.CerrarCuentaDAO;
 import DAOS.CerrarPrestamoDAO;
 import DAOS.ConsultaUsuarioMasActivoDAO;
 import DAOS.ConsultarClienteDAO;
 import DAOS.ConsultarCuentasDAO;
+import DAOS.ConsultarOperacionesDAO;
+import DAOS.ConsultarPrestamosDAO;
 import DAOS.PoblarTablasRB1DAO;
 import DAOS.RegistrarOperacionCuentaDAO;
 import DAOS.RegistrarOperacionSobrePrestamoDAO;
 import DAOS.Top10ActividadesDAO;
+import JSonParser.Principal;
 
 
 /**
@@ -26,13 +33,16 @@ public class BancAndes
 	private CerrarCuentaDAO cerrarCuentaDao;
 	private CerrarPrestamoDAO cerrarPrestamoDao;
 	private ConsultarClienteDAO consultarClienteDAO;
-	private PoblarTablasRB1DAO poblarDAO;
 	private ConsultarCuentasDAO consultarCuentasDAO;
+	private PoblarTablasRB1DAO poblarDAO;
 	private RegistrarOperacionCuentaDAO registrarOperacionCuentaDAO;
 	private RegistrarOperacionSobrePrestamoDAO registrarOperacionPrestamoDAO;
 	private ConsultaUsuarioMasActivoDAO consultarActivoDAO;
 	private Top10ActividadesDAO top10;
-
+	private ConsultarOperacionesDAO consultaOperacionesDAO;
+	private ConsultarPrestamosDAO consultaPrestamoDAO;
+    private AsociarCuentaDAO asociarDAO;
+	
 	// -----------------------------------------------------------------
 	// Singleton
 	// -----------------------------------------------------------------
@@ -60,7 +70,7 @@ public class BancAndes
 	/**
 	 * contructor de la clase. Inicializa el atributo dao.
 	 */
-	private BancAndes()
+	public BancAndes()
 	{
 		cerrarCuentaDao = new CerrarCuentaDAO();
 		cerrarPrestamoDao = new CerrarPrestamoDAO();
@@ -70,7 +80,11 @@ public class BancAndes
 		registrarOperacionCuentaDAO = new RegistrarOperacionCuentaDAO();
 		registrarOperacionPrestamoDAO = new RegistrarOperacionSobrePrestamoDAO();
 		consultarActivoDAO = new ConsultaUsuarioMasActivoDAO();
-				top10 = new Top10ActividadesDAO();
+		top10 = new Top10ActividadesDAO();
+		consultaOperacionesDAO = new ConsultarOperacionesDAO();
+		consultaPrestamoDAO = new ConsultarPrestamosDAO();
+        asociarDAO = new AsociarCuentaDAO();
+		
 	}
 
 	/**
@@ -87,6 +101,7 @@ public class BancAndes
 		poblarDAO.inicializar(ruta);
 		registrarOperacionCuentaDAO.inicializar(ruta);
 		registrarOperacionPrestamoDAO.inicializar(ruta);
+		consultarActivoDAO.inicializar(ruta);
 	}
 
 
@@ -102,54 +117,17 @@ public class BancAndes
 	 * de datos cuyo ID entra por parámetro.
 	 * @param idCuenta
 	 */
-	public void cerrarCuenta(int idCuenta) throws Exception
-	{
-	cerrarCuentaDao.registrarCerrarCuentaExistente(idCuenta);
-		
-	}
-	
-	public static void main(String[] args) throws NumberFormatException, Exception
-	{
-		 BancAndes.darInstancia().cerrarCuenta(1);
-	}
-
-	/**
-	 * Este método devuelve un objeto de tipo usuariosValues a partir del inicio de sesión de un usuario
-	 */
-	public UsuarioValues darUsuarioInicioSesion(String correo)
+	public void cerrarCuenta(int idCuenta, int nuevaCuenta)
 	{
 		try 
 		{
-			return consultarClienteDAO.darUsuarioInicioSesion(correo);
+			cerrarCuentaDao.registrarCerrarCuentaExistente(idCuenta, nuevaCuenta);
 		}
 
 		catch (Exception e) 
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-
-		return null;
-	}
-	
-	/**
-	 * Método que retorna la oficina del empleado que se logueó
-	 * @param correo
-	 * @return
-	 * @throws Exception 
-	 */
-	public int darOficinaEmpleado(String correo) throws Exception
-	{
-		int oficina = consultarClienteDAO.darOficinaEmpleado(correo);
-		
-		if(oficina == 0)
-		{
-			throw new Exception("La oficina no existe");
-		}
-
-		else
-		{
-			return oficina;
 		}
 	}
 
@@ -225,12 +203,12 @@ public class BancAndes
 	 * @param cajero
 	 */
 	public void registrarOperacionSobreCuenta(String tipo, String correo_cliente, int id_cuenta,
-			int valor, int puesto_atencion, String cajero)
+			int valor, int puesto_atencion, String cajero, int cuentaDestino)
 	{
 		try 
 		{
 			registrarOperacionCuentaDAO.registrarOperacionSobreCuentaExistente(tipo, correo_cliente, 
-					id_cuenta, valor, puesto_atencion, cajero);
+					id_cuenta, valor, puesto_atencion, cajero, cuentaDestino);
 		} 
 
 		catch (Exception e) 
@@ -387,6 +365,46 @@ public class BancAndes
 	}
 
 	/**
+	 * Este método devuelve un objeto de tipo usuariosValues a partir del inicio de sesión de un usuario
+	 */
+	public UsuarioValues darUsuarioInicioSesion(String correo)
+	{
+		try 
+		{
+			return consultarClienteDAO.darUsuarioInicioSesion(correo);
+		}
+
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Método que retorna la oficina del empleado que se logueó
+	 * @param correo
+	 * @return
+	 * @throws Exception 
+	 */
+	public int darOficinaEmpleado(String correo) throws Exception
+	{
+		int oficina = consultarClienteDAO.darOficinaEmpleado(correo);
+		if(oficina == 0)
+		{
+			throw new Exception("La oficina no existe");
+		}
+
+		else
+		{
+			return oficina;
+		}
+	}
+
+
+	/**
 	 * Dependiendo de la operación que se vaya a realizar son los campos a utilizar.
 	 * @param tipo 
 	 * @param correo_cliente 
@@ -401,18 +419,20 @@ public class BancAndes
 	 */
 	public void registrarCuentaSobrePrestamoRF8(String tipo, String correo_cliente, int id_cuenta,
 			int valor, int puesto_atencion, String cajero, String tipo_prestamo, int id_solicitud,
-			int numCuotas, int idPrestamo)
+			int numCuotas, int idPrestamo, int cuentaOrigen)
 	{
 		try {
 			registrarOperacionPrestamoDAO.registrarOperacionSobrePrestamoExistente(tipo, 
 					correo_cliente, id_cuenta, valor, puesto_atencion, cajero, tipo_prestamo, 
-					id_solicitud, numCuotas, idPrestamo);
+					id_solicitud, numCuotas, idPrestamo, cuentaOrigen);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
+
+
 	public ArrayList<UsuarioActivoValues> darUsuarioActivoGeneral(String tipoTransaccion)
 	{
 		try {
@@ -461,6 +481,97 @@ public class BancAndes
 
 		return null;
 	}
+	
+	public ArrayList<TransaccionValues> darCuentasCliente( String ordenarPor, String filtrarPor, String desasc,String correoCliente)
+	{
+		try {
+			return consultaOperacionesDAO.darOperacionesCliente(ordenarPor, filtrarPor, desasc, correoCliente) ;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
+		return null;
+	}
+	
+	public ArrayList<TransaccionValues> darCuentasOficina( int idOficina, String ordenarPor, String desasc, String filtrarPor)
+	{
+		try {
+			return consultaOperacionesDAO.darOperacionesOficina(idOficina, ordenarPor, desasc, filtrarPor);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	public ArrayList<TransaccionValues> darCuentasGeneral( String ordenarPor, String filtrarPor, String desasc)
+	{
+		try {
+			return consultaOperacionesDAO.darOperacionesGeneral(ordenarPor, desasc, filtrarPor) ;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	public ArrayList<PrestamoValues> darPrestamosCliente( String correoCliente, String ordenarPor, String filtrarPor, String desasc)
+	{
+		try {
+			return consultaPrestamoDAO.darPrestamosCliente( correoCliente, ordenarPor, desasc, filtrarPor) ;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	public ArrayList<PrestamoValues> darPrestamosOficina( int idOficina, String ordenarPor, String filtrarPor, String desasc)
+	{
+		try {
+			return consultaPrestamoDAO.darPrestamosOficina( idOficina, ordenarPor, desasc, filtrarPor) ;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	public ArrayList<PrestamoValues> darPrestamosGeneral( String ordenarPor, String filtrarPor, String desasc)
+	{
+		try {
+			return consultaPrestamoDAO.darPrestamosGeneral(ordenarPor, desasc, filtrarPor) ;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	
+	/**
+	 * Método que se encarga de solucionar el RF12 "Asociar cuenta de cliente empresarial a empleado"
+	 */
+	public void asociarCuentaAEmpleado(String correoEmpleador, int cuentaEmpleador, String correoEmpleado, int cuentaEmpleado, int valorPagar, String frecuencia)
+	{
+		try 
+		{
+			asociarDAO.registrarAsociarCuenta(correoEmpleador, cuentaEmpleador, correoEmpleado, cuentaEmpleado, valorPagar, frecuencia);
+		} 
+		
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		
+	}
 
 }

@@ -231,7 +231,7 @@ public abstract class ASServlet extends HttpServlet {
 		pw.println("<a href=\"cerrarCuenta\">Cerrar cuenta</a>");
 		pw.println("</li>");
 		pw.println("<li>");
-		pw.println("<a href=\"registrarPrestamo\">Registrar pr&eacute;stamo</a>");
+		pw.println("<a href=\"operacionesPrestamos\">Registrar Operaciones pr&eacute;stamo</a>");
 		pw.println("</li>");
 		pw.println("<li>");
 		pw.println("<a href=\"cerrarPrestamo\">Cerrar pr&eacute;stamo</a>");

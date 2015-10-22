@@ -24,7 +24,7 @@ public abstract class ASParsingServlet extends ASServlet {
 	 * @param cuentas
 	 * @param pw
 	 */
-	public void parsearTablaCuentas(ArrayList<CuentaValues> cuentas, PrintWriter pw)
+	protected void parsearTablaCuentas(ArrayList<CuentaValues> cuentas, PrintWriter pw)
 	{
 		for (CuentaValues cuentaActual : cuentas)
 		{
@@ -53,7 +53,7 @@ public abstract class ASParsingServlet extends ASServlet {
 	 * @param cuentas
 	 * @param pw
 	 */
-	public void parsearTablaCuentasTipo2(ArrayList<CuentaValues> cuentas, PrintWriter pw)
+	protected void parsearTablaCuentasTipo2(ArrayList<CuentaValues> cuentas, PrintWriter pw)
 	{
 		for (CuentaValues cuentaActual : cuentas)
 		{
@@ -71,7 +71,7 @@ public abstract class ASParsingServlet extends ASServlet {
 
 	}
 	 
-	public void parsearTablaClientes(ArrayList<ClienteValues> clientes, PrintWriter pw)
+	protected void parsearTablaClientes(ArrayList<ClienteValues> clientes, PrintWriter pw)
 	{
 		for (ClienteValues clienteActual : clientes)
 		{ 
@@ -85,7 +85,7 @@ public abstract class ASParsingServlet extends ASServlet {
 		}
 	}
 	
-	public void parsearTablaPrestamos(ArrayList<PrestamoValues> prestamos, PrintWriter pw)
+	protected void parsearTablaPrestamos(ArrayList<PrestamoValues> prestamos, PrintWriter pw)
 	{
 		for (PrestamoValues prestamoActual : prestamos)
 		{
@@ -100,12 +100,29 @@ public abstract class ASParsingServlet extends ASServlet {
 			pw.println("</tr>");
 		}
 	}
+	
+	protected void parsearTablaPrestamosTipo2(ArrayList<PrestamoValues> prestamos, PrintWriter pw)
+	{
+		for (PrestamoValues prestamoActual : prestamos)
+		{
+			pw.println("<tr class=\"odd gradeX\">");
+
+			pw.println("<td>" + prestamoActual.getId() + "</td>");
+			pw.println("<td>" + prestamoActual.getCorreoCliente() +"</td>");
+			pw.println("<td>" + prestamoActual.getTipo() + "</td>");
+			pw.println("<td class=\"center\">" + prestamoActual.getSaldoPendiente() + "</td>");
+			pw.println("<td>" + prestamoActual.getCuotasEfectivas() + "</td>");
+			pw.println("<td>" + prestamoActual.getFechaPrestamo().toString() + "</td>");
+			pw.println("<td>" + prestamoActual.getEstado() + "</td>");
+			pw.println("</tr>");
+		}
+	}
 	/**
 	 * 
 	 * @param tipoCuenta tipoCuenta.equals("Ahorros") || tipoCuenta.equals("Corriente")
 	 * 					|| tipoCuenta.equals("CDT")
 	 */
-	public void filtrarCuentasPorTipoCuenta(String tipoCuenta, ArrayList<CuentaValues> cuentas)
+	protected void filtrarCuentasPorTipoCuenta(String tipoCuenta, ArrayList<CuentaValues> cuentas)
 	{
 		CuentaValues cuentaActual = null;
 		for(int i = 0; i < cuentas.size(); i++)
@@ -118,7 +135,7 @@ public abstract class ASParsingServlet extends ASServlet {
 		}
 	}
 
-	public void filtrarCuentasPorIdCuenta(int idCuenta, ArrayList<CuentaValues> cuentas)
+	protected void filtrarCuentasPorIdCuenta(int idCuenta, ArrayList<CuentaValues> cuentas)
 	{
 		CuentaValues cuentaActual = null;
 		for(int i = 0; i < cuentas.size(); i++)
@@ -131,7 +148,7 @@ public abstract class ASParsingServlet extends ASServlet {
 		}
 	}
 	
-	public void filtrarCuentasPorSaldo(int saldo, ArrayList<CuentaValues> cuentas)
+	protected void filtrarCuentasPorSaldo(int saldo, ArrayList<CuentaValues> cuentas)
 	{
 		CuentaValues cuentaActual = null;
 		for(int i = 0; i < cuentas.size(); i++)
@@ -144,7 +161,7 @@ public abstract class ASParsingServlet extends ASServlet {
 		}
 	}
 	
-	public void filtrarCuentasPorCorreoCliente(String correoCliente, ArrayList<CuentaValues> cuentas)
+	protected void filtrarCuentasPorCorreoCliente(String correoCliente, ArrayList<CuentaValues> cuentas)
 	{
 		CuentaValues cuentaActual = null;
 		for(int i = 0; i< cuentas.size() + 1; i++)
@@ -157,7 +174,7 @@ public abstract class ASParsingServlet extends ASServlet {
 		}
 	}
 	
-	public void filtrarCuentasPorRangoSaldo(int rangoSaldoInicial, int rangoSaldoFinal, ArrayList<CuentaValues> cuentas)
+	protected void filtrarCuentasPorRangoSaldo(int rangoSaldoInicial, int rangoSaldoFinal, ArrayList<CuentaValues> cuentas)
 	{
 		CuentaValues cuentaActual = null;
 		for(int i = 0; i< cuentas.size(); i++)
@@ -170,7 +187,7 @@ public abstract class ASParsingServlet extends ASServlet {
 		}
 	}
 	
-	public void filtrarCuentasPorOficina(int oficina, ArrayList<CuentaValues> cuentas)
+	protected void filtrarCuentasPorOficina(int oficina, ArrayList<CuentaValues> cuentas)
 	{
 		CuentaValues cuentaActual = null;
 		for(int i = 0; i< cuentas.size(); i++)
@@ -179,6 +196,17 @@ public abstract class ASParsingServlet extends ASServlet {
 			if ( cuentaActual.getOficina() != oficina)
 			{
 				cuentas.remove(i);
+			}
+		}
+	}
+	
+	protected void filtrarPrestamosPorTipoPrestamo(ArrayList<PrestamoValues> prestamos, String tipoPrestamo)
+	{
+		for (int i = 0; i < prestamos.size(); i++)
+		{
+			if( !prestamos.get(i).getTipo().equalsIgnoreCase(tipoPrestamo) )
+			{
+				prestamos.remove(i);
 			}
 		}
 	}

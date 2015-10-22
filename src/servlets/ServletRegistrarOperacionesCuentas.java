@@ -97,7 +97,7 @@ public class ServletRegistrarOperacionesCuentas extends ASServlet {
 		
 		try
 		{
-			roc.registrarOperacionSobreCuentaExistente(tipo, correo, idCuenta, monto, idPuntoAtencion , correoCajero);
+			//roc.registrarOperacionSobreCuentaExistente(tipo, correo, idCuenta, monto, idPuntoAtencion , correoCajero);
 		}
 		
 		catch (Exception e)

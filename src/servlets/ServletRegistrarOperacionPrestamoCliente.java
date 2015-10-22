@@ -1,4 +1,5 @@
 package servlets;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -8,15 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import vos.CuentaValues;
-import vos.EmpleadoValues;
 import DAOS.RegistrarOperacionSobrePrestamoDAO;
-import Fachada.BancAndes;
 
 /**
- * url-pattern: /operacionesPrestamos
+ * url-pattern: registrarOperacionPrestamoCliente
  */
-public class ServletRegistrarOperacionesPrestamos extends ASServlet {
-
+public class ServletRegistrarOperacionPrestamoCliente extends ASServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
@@ -24,92 +22,60 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 
 		PrintWriter pw = response.getWriter();
 		imprimirEncabezado(pw);
-		if (ServletLogin.darEmpleadoActual() != null)
-		{
-			if(ServletLogin.darUsuarioActual().getTipo_usuario().equals("C"))
-			{
-				imprimirSidebarCajero(pw);
-
-			}
-			else
-			{
-				imprimirSidebarGO(pw);
-			}
-		}
-		else
-		{
-			imprimirSidebarGG(pw);
-		}
-		imprimirOperacionesPrestamosInicial(pw);
+		imprimirSidebarCliente(pw);
+		imprimirOperacionesPrestamoClienteInicial(pw);
 		imprimirWrapper(pw);
 	}
-
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		PrintWriter pw = response.getWriter();
 		imprimirEncabezado(pw);
-		
-		if (ServletLogin.darEmpleadoActual() != null)
-		{
-			if(ServletLogin.darUsuarioActual().getTipo_usuario().equals("C"))
-			{
-				imprimirSidebarCajero(pw);
-
-			}
-			else
-			{
-				imprimirSidebarGO(pw);
-			}
-		}
-		
-		else
-		{
-			imprimirSidebarGG(pw);
-		}
+		imprimirSidebarCliente(pw);
 
 		String tipoOperacion = request.getParameter("tipoOperacion");
-		String correoCliente = request.getParameter("correoCliente");
+		/**
+		 * El cliente es quien realiza la operación
+		 */
+		String correoCliente = ServletLogin.darUsuarioActual().getCorreo();
+		
 		int idCuenta = 0;
 		int idSolicitud = 0;
 		int idPrestamo = 0;
 		int monto = 0;
 		int numCuotas = 0;
-		int idPuntoAtencion = 0;
-		String correoCajero = request.getParameter("idCajero");
+		int idPuntoAtencion = 10;
+		String correoCajero = ServletLogin.darUsuarioActual().getCorreo();
 		String tipoPrestamo = request.getParameter("tipoPrestamo");
 
 		try
 		{
-			idCuenta = Integer.parseInt ( request.getParameter("idCuenta") );
+			idCuenta = Integer.parseInt ( request.getParameter("idCuentaOrigen") );
 		}
+		
 		catch (Exception e)
 		{
 			imprimirOperacionesPrestamosError(pw, "Lo ingresado en idCuenta no es un n&uacute;mero v&aacute;lido");
 			imprimirWrapper(pw);
 			return;
 		}
-
-		EmpleadoValues empleadoActual = ServletLogin.darEmpleadoActual();
-
-		if(empleadoActual != null)
+		
+		ArrayList<CuentaValues> cuentasActuales = ServletLogin.darCuentasUsuarioActual();
+		boolean encontro = false;
+		
+		for(int i = 0; i < cuentasActuales.size() && !encontro; i++)
 		{
-			ArrayList<CuentaValues> cuentasAccesibles = BancAndes.darInstancia().darCuentasGerenteOficina(empleadoActual.getOficina(), "", "", "");
-			boolean encontro = false;
-			
-			for(int i = 0; i < cuentasAccesibles.size() && !encontro; i++)
+			if(cuentasActuales.get(i).getIdCuenta() == idCuenta)
 			{
-				if(cuentasAccesibles.get(i).getIdCuenta() == idCuenta)
-				{
-					encontro = true;
-				}
+				encontro = true;
 			}
-			
-			if(!encontro)
-			{
-				imprimirOperacionesPrestamosError(pw, "El id con la cuenta ingresada no existe o no es accesible para el empleado actual");
-				imprimirWrapper(pw);
-				return;
-			}
+		}
+		
+		if(!encontro)
+		{
+			imprimirOperacionesPrestamosError(pw, "La cuenta con el id ingresado no existe o no pertenece al cliente actual.");
+			imprimirWrapper(pw);
+			return;
 		}
 
 		//		pw.println("<option>Solicitar</option>");
@@ -162,7 +128,6 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 			}
 
 		}
-
 		try
 		{
 			numCuotas = Integer.parseInt ( request.getParameter("numCuotas") );
@@ -173,7 +138,7 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 			imprimirWrapper(pw);
 			return;
 		}
-
+		
 		try
 		{
 			idPrestamo = Integer.parseInt ( request.getParameter("idPrestamo") );
@@ -188,8 +153,8 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 		RegistrarOperacionSobrePrestamoDAO rospd = new RegistrarOperacionSobrePrestamoDAO();
 
 		try {
-			//rospd.registrarOperacionSobrePrestamoExistente(tipoOperacion, correoCliente, idCuenta, monto, 
-			//		idPuntoAtencion, correoCajero, tipoPrestamo, idSolicitud, numCuotas, idPrestamo);
+			rospd.registrarOperacionSobrePrestamoExistente(tipoOperacion, correoCajero, idCuenta, monto, 10, correoCajero, tipoPrestamo, idSolicitud, numCuotas, idPrestamo, idCuenta);
+
 		}
 		catch (Exception e)
 		{
@@ -222,22 +187,18 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-6\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"operacionesPrestamos\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"registrarOperacionPrestamoCliente\">");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Tipo Operacion:</label>");
 		pw.println("<select name=\"tipoOperacion\" class=\"form-control\">");
 		pw.println("<option> </option>");
 		pw.println("<option>Solicitar</option>");
-		pw.println("<option>Aprobar</option>");
-		pw.println("<option>Rechazar</option>");
 		pw.println("<option>Pagar cuota</option>");
 		pw.println("<option>Pagar cuota extraordinaria</option>");
 		pw.println("</select>");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Correo Cliente:</label>");
-		pw.println("<input name=\"correoCliente\" class=\"form-control\">");
-		pw.println("</div>");
+
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>ID Cuenta:</label>");
 		pw.println("<input name=\"idCuenta\" class=\"form-control\">");
@@ -317,30 +278,17 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-6\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"operacionesPrestamos\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"registrarOperacionPrestamoCliente\">");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Tipo Operacion:</label>");
 		pw.println("<select name=\"tipoOperacion\" class=\"form-control\">");
 		pw.println("<option> </option>");
 		pw.println("<option>Solicitar</option>");
-		pw.println("<option>Aprobar</option>");
-		pw.println("<option>Rechazar</option>");
 		pw.println("<option>Pagar cuota</option>");
 		pw.println("<option>Pagar cuota extraordinaria</option>");
 		pw.println("</select>");
 		pw.println("</div>");
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Correo Cliente:</label>");
-		pw.println("<input name=\"correoCliente\" class=\"form-control\">");
-		pw.println("</div>");
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>ID Cuenta:</label>");
-		pw.println("<input name=\"idCuenta\" class=\"form-control\">");
-		pw.println("</div>");
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>ID Solicitud:</label>");
-		pw.println("<input name=\"idSolicitud\" class=\"form-control\">");
-		pw.println("</div>");
+
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>ID prestamo:</label>");
 		pw.println("<input name=\"idPrestamo\" class=\"form-control\">");
@@ -356,25 +304,16 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 		pw.println("</div>");
 
 		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Punto de atencion:</label>");
-		pw.println("<input name=\"idPuntoAtencion\" class=\"form-control\">");
-		pw.println("</div>");
-
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Cajero:</label>");
-		pw.println("<input name=\"idCajero\" class=\"form-control\">");
-		pw.println("</div>");
-
-		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Tipo Prestamo:</label>");
 		pw.println("<input name=\"tipoPrestamo\" class=\"form-control\">");
 		pw.println("</div>");
 
 		pw.println("<br>");
-		pw.println("<font color=\"red\">No se pudo registrar la operaci&oacute;n. <br> Error: " + error+"</font><br>");
+
 		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Registrar\"></input>");
 
 		pw.println("</form>");
+		pw.println("<font color=\"red\">No se pudo registrar la operaci&oacute;n. ERROR:<br>" + error);
 		pw.println("</div>");
 		pw.println("<!-- /.col-lg-6 (nested) -->");
 		pw.println("</div>");
@@ -393,7 +332,7 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 		pw.println("</div>");
 	}
 
-	private void imprimirOperacionesPrestamosInicial(PrintWriter pw)
+	private void imprimirOperacionesPrestamoClienteInicial(PrintWriter pw)
 	{
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
@@ -412,33 +351,24 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-6\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"operacionesPrestamos\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"registrarOperacionPrestamoCliente\">");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Tipo Operacion:</label>");
 		pw.println("<select name=\"tipoOperacion\" class=\"form-control\">");
 		pw.println("<option> </option>");
 		pw.println("<option>Solicitar</option>");
-		pw.println("<option>Aprobar</option>");
-		pw.println("<option>Rechazar</option>");
 		pw.println("<option>Pagar cuota</option>");
 		pw.println("<option>Pagar cuota extraordinaria</option>");
 		pw.println("</select>");
 		pw.println("</div>");
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Correo Cliente:</label>");
-		pw.println("<input name=\"correoCliente\" class=\"form-control\">");
-		pw.println("</div>");
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>ID Cuenta:</label>");
-		pw.println("<input name=\"idCuenta\" class=\"form-control\">");
-		pw.println("</div>");
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>ID Solicitud:</label>");
-		pw.println("<input name=\"idSolicitud\" class=\"form-control\">");
-		pw.println("</div>");
+
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>ID prestamo:</label>");
 		pw.println("<input name=\"idPrestamo\" class=\"form-control\">");
+		pw.println("</div>");
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>ID cuenta origen:</label>");
+		pw.println("<input name=\"idCuentaOrigen\" class=\"form-control\">");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group input-group\">");
 		pw.println("<span class=\"input-group-addon\">$</span>");
@@ -448,16 +378,6 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Numero de cuotas:</label>");
 		pw.println("<input name=\"numCuotas\" class=\"form-control\">");
-		pw.println("</div>");
-
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Punto de atencion:</label>");
-		pw.println("<input name=\"idPuntoAtencion\" class=\"form-control\">");
-		pw.println("</div>");
-
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Cajero:</label>");
-		pw.println("<input name=\"idCajero\" class=\"form-control\">");
 		pw.println("</div>");
 
 		pw.println("<div class=\"form-group\">");
@@ -487,11 +407,12 @@ public class ServletRegistrarOperacionesPrestamos extends ASServlet {
 
 		pw.println("</div>");
 	}
-
-	public String darTituloPagina() {
-		return "Registrar operaciones sobre préstamos";
+	
+	public String darTituloPagina() 
+	{
+		return "Registrar operaci&oacute;n pr&eacute;stamo";
 	}
-
-
+	
+	
 
 }

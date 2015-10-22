@@ -8,42 +8,36 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import Fachada.BancAndes;
 import vos.CuentaValues;
+import Fachada.BancAndes;
 
 /**
- * url-pattern: /consultarCuentaOficina
+ * url-pattern: /consultarCuentaCliente
  */
-public class ServletConsultarCuentaOficina extends ASParsingServlet {
+public class ServletConsultarCuentaCliente extends ASParsingServlet {
 
 	ArrayList<CuentaValues> cuentas;
-
-	public ServletConsultarCuentaOficina()
-	{
-		cuentas = new ArrayList<CuentaValues>();
-	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		System.out.println("en doGet de ServletConsultarCuentaOficina");
+		System.out.println("en doGet de ServletConsultarCuentaCliente");
 
 		PrintWriter pw = response.getWriter();
 		imprimirEncabezado(pw);
-		imprimirSidebarGO(pw);
-		imprimirConsultarCuentasOficinaInicial(pw);
+		imprimirSidebarCliente(pw);
+		imprimirConsultarCuentasClienteInicial(pw);
 		imprimirWrapper(pw);
 	}
-
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		System.out.println("doPost en ServletConsultarCuentaOficina");
+		System.out.println("doPost en ServletConsultarCuentaGeneral");
 		PrintWriter pw = response.getWriter();
 
 		imprimirEncabezado(pw);
-		imprimirSidebarGO(pw);
+		imprimirSidebarCliente(pw);
 
 		BancAndes bancAndes = BancAndes.darInstancia();
-
 
 		String ordenarPor = request.getParameter("ordenarPor");
 		String agruparPor = request.getParameter("agruparPor");
@@ -58,9 +52,8 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 			agruparPor = "";
 		}
 
-		int idOficina = ServletLogin.darEmpleadoActual().getOficina();
-
-		cuentas = bancAndes.darCuentasGerenteOficina(idOficina, ordenarPor, agruparPor, "DESC");
+		cuentas = ServletLogin.darCuentasUsuarioActual();
+		
 		System.out.println(cuentas);
 
 		for(int i = 0; i < cuentas.size(); i++)
@@ -75,16 +68,6 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 			if ( !tipoCuenta.trim().equals(""))
 			{
 				filtrarCuentasPorTipoCuenta(tipoCuenta, cuentas);
-			}
-		}
-
-		String correoCliente = request.getParameter("correoCliente");
-
-		if (correoCliente != null)
-		{
-			if( !correoCliente.trim().equals(""))
-			{
-				filtrarCuentasPorCorreoCliente(correoCliente, cuentas);
 			}
 		}
 
@@ -105,7 +88,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 				}
 				catch(Exception e)
 				{
-					imprimirConsultarCuentasOficinaError(pw, "El valor ingresado en Desde (saldoInicial) no es un n&uacute;mero v&aacute;lido");
+					imprimirConsultarCuentasClienteError(pw, "El valor ingresado en Desde (saldoInicial) no es un n&uacute;mero v&aacute;lido");
 					imprimirWrapper(pw);
 					return;
 				}
@@ -123,7 +106,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 				}
 				catch(Exception e)
 				{
-					imprimirConsultarCuentasOficinaError(pw, "El valor ingresado en Hasta (saldoFinal) no es un n&uacute;mero v&aacute;lido");
+					imprimirConsultarCuentasClienteError(pw, "El valor ingresado en Hasta (saldoFinal) no es un n&uacute;mero v&aacute;lido");
 					imprimirWrapper(pw);
 					return;
 				}
@@ -141,11 +124,11 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		String fechaApertura = request.getParameter("fechaApertura");
 		String fechaUltimoMovimiento = request.getParameter("fechaUltimoMovimiento");
 
-		imprimirConsultarCuentasOficinaResultado(pw);
+		imprimirConsultarCuentasClienteResultado(pw);
 		imprimirWrapper(pw);
 	}
 
-	private void imprimirConsultarCuentasOficinaInicial(PrintWriter pw)
+	private void imprimirConsultarCuentasClienteInicial(PrintWriter pw)
 	{
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
@@ -164,7 +147,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"consultarCuentaOficina\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"consultarCuentaCliente\">");
 		pw.println("<div class=\"form-group\">");
 
 		pw.println("<label>Tipo:</label>");
@@ -192,10 +175,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<label>Fecha de &uacute;ltimo movimiento:</label>");
 		pw.println("<input name=\"fechaUltimoMovimiento\" class=\"form-control\" placeholder=\"AAAA/MM/DD\" name=\"password\" type=\"password\" value=\"\">");
 		pw.println("</div>");
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Correo Cliente:</label>");
-		pw.println("<div><input name=\"correoCliente\" class=\"form-control\"> ");
-		pw.println("</div>");
+
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Ordenar por:</label>");
 		pw.println("<select name=\"ordenarPor\" class=\"form-control\">");
@@ -204,7 +184,6 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<option>Saldo</option>");
 		pw.println("<option>Fecha de apertura</option>");
 		pw.println("<option>Fecha &uacute;ltimo movimiento</option>");
-		pw.println("<option>Cliente</option>");
 		pw.println("</select>");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
@@ -220,8 +199,6 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<br>");
 
 		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Consultar\"></input>");
-
-
 
 		pw.println("</form>");
 		pw.println("</div>");
@@ -247,9 +224,9 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<thead>");
 		pw.println("<tr>");
 		pw.println("<th>ID Cuenta</th>");
-		pw.println("<th>Correo Dueño</th>");
+		pw.println("<th>Correo Due&ntilde;o</th>");
 		pw.println("<th>Tipo De Cuenta</th>");
-		pw.println("<th>Oficina Asociada</th>");
+		pw.println("<th>General Asociada</th>");
 		pw.println("<th>Fecha &uacute;ltimo movimiento</th>");
 		pw.println("<th>Saldo</th>");
 		pw.println("<th>Estado</th>");
@@ -300,7 +277,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("</div>");
 	}
 
-	private void imprimirConsultarCuentasOficinaResultado(PrintWriter pw)
+	private void imprimirConsultarCuentasClienteResultado(PrintWriter pw)
 	{
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
@@ -319,7 +296,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"consultarCuentaOficina\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"consultarCuentaCliente\">");
 		pw.println("<div class=\"form-group\">");
 
 		pw.println("<label>Tipo:</label>");
@@ -347,10 +324,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<label>Fecha de &uacute;ltimo movimiento:</label>");
 		pw.println("<input name=\"fechaUltimoMovimiento\" class=\"form-control\" placeholder=\"AAAA/MM/DD\" name=\"password\" type=\"password\" value=\"\">");
 		pw.println("</div>");
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Correo Cliente:</label>");
-		pw.println("<div><input name=\"correoCliente\" class=\"form-control\"> ");
-		pw.println("</div>");
+
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Ordenar por:</label>");
 		pw.println("<select name=\"ordenarPor\" class=\"form-control\">");
@@ -359,7 +333,6 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<option>Saldo</option>");
 		pw.println("<option>Fecha de apertura</option>");
 		pw.println("<option>Fecha &uacute;ltimo movimiento</option>");
-		pw.println("<option>Cliente</option>");
 		pw.println("</select>");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
@@ -375,8 +348,6 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<br>");
 
 		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Consultar\"></input>");
-
-
 
 		pw.println("</form>");
 		pw.println("</div>");
@@ -402,9 +373,9 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<thead>");
 		pw.println("<tr>");
 		pw.println("<th>ID Cuenta</th>");
-		pw.println("<th>Correo Dueño</th>");
+		pw.println("<th>Correo Due&ntilde;o</th>");
 		pw.println("<th>Tipo De Cuenta</th>");
-		pw.println("<th>Oficina Asociada</th>");
+		pw.println("<th>General Asociada</th>");
 		pw.println("<th>Fecha &uacute;ltimo movimiento</th>");
 		pw.println("<th>Saldo</th>");
 		pw.println("<th>Estado</th>");
@@ -430,7 +401,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("</div>");
 	}
 
-	private void imprimirConsultarCuentasOficinaError(PrintWriter pw, String error)
+	private void imprimirConsultarCuentasClienteError(PrintWriter pw, String error)
 	{
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
@@ -449,7 +420,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\" method=\"post\" action=\"consultarCuentaOficina\">");
+		pw.println("<form role=\"form\" method=\"post\" action=\"consultarCuentaCliente\">");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<font color=\"red\">" + error + "</font>");
 		pw.println("<label>Tipo:</label>");
@@ -519,7 +490,6 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 
 		pw.println("</div>");
 
-
 		pw.println("<div class=\"col-lg-9\">");
 		pw.println("<div class=\"panel panel-default\">");
 		pw.println("<div class=\"panel-heading\">");
@@ -532,7 +502,7 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 		pw.println("<thead>");
 		pw.println("<tr>");
 		pw.println("<th>ID Cuenta</th>");
-		pw.println("<th>Correo Dueño</th>");
+		pw.println("<th>Correo Due&ntilde;o</th>");
 		pw.println("<th>Tipo De Cuenta</th>");
 		pw.println("<th>Oficina Asociada</th>");
 		pw.println("<th>Fecha &uacute;ltimo movimiento</th>");
@@ -584,9 +554,10 @@ public class ServletConsultarCuentaOficina extends ASParsingServlet {
 
 		pw.println("</div>");
 	}
-
-	public String darTituloPagina() {
-		return "BancAndes - Consultar cuentas";
+	
+	public String darTituloPagina() 
+	{
+		return "Consultar cuenta";
 	}
 
 }

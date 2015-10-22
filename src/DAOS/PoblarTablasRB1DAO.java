@@ -33,7 +33,7 @@ public class PoblarTablasRB1DAO
 	{
 		try
 		{
-			File arch = new File(path+ARCHIVO_CONEXION);
+			File arch = new File("C:/Users/Sergio/git/PROJECT_Sistrans/SistemasTransaccionales/WebContent/conexion.properties");
 			Properties prop = new Properties();
 			FileInputStream in = new FileInputStream (arch);
 

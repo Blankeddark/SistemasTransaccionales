@@ -26,46 +26,66 @@ public class ServletCerrarCuenta extends ASServlet {
 		imprimirCerrarCuentaInicial(pw);
 		imprimirWrapper(pw);
 	}
-	
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 
 		PrintWriter pw = response.getWriter();
-		
+
 		imprimirEncabezado(pw);
-		imprimirSidebarGG(pw);
-		
+		imprimirSidebarGO(pw);
+
 		int numCuenta = 0;
+		String numeroNuevaCuentaAsociada = request.getParameter("numeroNuevaCuentaAsociada");
+		int idNueva = 0;
+
 		try
 		{
 			numCuenta = Integer.parseInt( request.getParameter("numCuenta") );
 		}
 		catch (Exception e2)
 		{
-			imprimirCerrarCuentaError(pw, "El n&uacute;mero ingresado no es v&aacute;lido.");
+			imprimirCerrarCuentaError(pw, "El n&uacute;mero ingresado como id de la cuenta a eliminar no es v&aacute;lido.");
 			return;
 		}
-		
+
+		if(numeroNuevaCuentaAsociada != null)
+		{
+			if( !numeroNuevaCuentaAsociada.trim().equals(""))
+			{
+				try
+				{
+					idNueva = Integer.parseInt( numeroNuevaCuentaAsociada );
+				}
+				catch (Exception e2)
+				{
+					imprimirCerrarCuentaError(pw, "El n&uacute;mero ingresado como id de la nueva cuenta asociada no es valido no es v&aacute;lido.");
+					return;
+				}
+			}
+		}
+
 		CerrarCuentaDAO ccd = new CerrarCuentaDAO();
+
 		try {
-			
-			ccd.registrarCerrarCuentaExistente(numCuenta);
+
+			ccd.registrarCerrarCuentaExistente(numCuenta, idNueva);
 			imprimirCerrarCuentaExitoso(pw);
-			
+
 		} 
-		
+
 		catch (Exception e) {
 			imprimirCerrarCuentaError(pw, e.getMessage());
 			e.printStackTrace();
 		}
 		imprimirWrapper(pw);
-		
+
 	}
-	
+
 	private void imprimirCerrarCuentaExitoso(PrintWriter pw)
 	{
 
-		
+
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
@@ -88,6 +108,10 @@ public class ServletCerrarCuenta extends ASServlet {
 		pw.println("<label>N&uacute;mero de cuenta:</label>");
 		pw.println("<input class=\"form-control\" name=\"numCuenta\">");
 		pw.println("</div>");
+		
+		pw.println("	 <div class=\"form-group\">");
+		pw.println("   <label>Numero de nueva cuenta asociada:</label>");
+		pw.println("<input name=\"numeroNuevaCuentaAsociada\" class=\"form-control\">");
 		pw.println("<br> <font color=\"green\"> ¡Cuenta cerrada exitosamente!</font>");
 		pw.println("<br>");
 
@@ -108,13 +132,13 @@ public class ServletCerrarCuenta extends ASServlet {
 		pw.println("<!-- /.row -->");
 		pw.println("</div>");
 		pw.println("<!-- /#page-wrapper -->");
-		
+
 		imprimirWrapper(pw);
 	}
-	
+
 	private void imprimirCerrarCuentaError(PrintWriter pw, String error)
 	{
-		
+
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
@@ -137,6 +161,10 @@ public class ServletCerrarCuenta extends ASServlet {
 		pw.println("<label>N&uacute;mero de cuenta:</label>");
 		pw.println("<input class=\"form-control\" name=\"numCuenta\">");
 		pw.println("</div>");
+		
+		pw.println("	 <div class=\"form-group\">");
+		pw.println("   <label>Numero de nueva cuenta asociada:</label>");
+		pw.println("<input name=\"numeroNuevaCuentaAsociada\" class=\"form-control\">");
 		pw.println("<br> <font color=\"red\">La cuenta no pudo ser cerrada. Error:<br>"
 				+ error + "</font>");
 		pw.println("<br>");
@@ -158,7 +186,7 @@ public class ServletCerrarCuenta extends ASServlet {
 		pw.println("<!-- /.row -->");
 		pw.println("</div>");
 		pw.println("<!-- /#page-wrapper -->");
-		
+
 		imprimirWrapper(pw);
 	}
 
@@ -186,6 +214,12 @@ public class ServletCerrarCuenta extends ASServlet {
 		pw.println("<label>N&uacute;mero de cuenta:</label>");
 		pw.println("<input class=\"form-control\" name=\"numCuenta\">");
 		pw.println("</div>");
+
+		pw.println("	 <div class=\"form-group\">");
+		pw.println("   <label>Numero de nueva cuenta asociada:</label>");
+		pw.println("<input name=\"numeroNuevaCuentaAsociada\" class=\"form-control\">");
+		pw.println("</div>");
+
 		pw.println("<br>");
 
 		pw.println("<input type=\"submit\" class=\"btn btn-danger\" value=\"Cerrar\"></input>");

@@ -35,9 +35,9 @@ public class RegistrarOperacionCuentaDAO
 	{
 		try
 		{
-			File arch = new File(path+ARCHIVO_CONEXION);
+			File arch = new File("C:/Users/Sergio/git/PROJECT_Sistrans/SistemasTransaccionales/WebContent/conexion.properties");
 			Properties prop = new Properties();
-			FileInputStream in = new FileInputStream ("C:/Users/Sergio/Documents/Sistrans/Project Sistrans/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/PROJECT_Sistrans3/conexion.properties");
+			FileInputStream in = new FileInputStream (arch);
 
 			prop.load(in);
 			in.close();
@@ -123,18 +123,30 @@ public class RegistrarOperacionCuentaDAO
 			correo = rs.getString("CORREO");
 
 		}
-
+		
 		catch(Exception e)
 		{
 			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
-
+		
 		return correo;
 	}
 
-
-	public boolean registrarOperacionSobreCuentaExistente (String tipo, String correo_cliente, int id_cuenta, int valor, int puesto_atencion, String cajero) throws Exception
+	
+	/**
+	 * Esté metodo se encarga de resolver el RF6, no necesita apoyo de ningún otro
+	 * método externo, simplemente de las entradas que ofrece el navegador.
+	 * @param tipo
+	 * @param correo_cliente
+	 * @param id_cuenta_origen
+	 * @param valor
+	 * @param puesto_atencion
+	 * @param cajero
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean registrarOperacionSobreCuentaExistente (String tipo, String correo_cliente, int idCuentaDestino, int valor, int puesto_atencion, String cajero, int id_cuenta_origen) throws Exception
 	{
 		PreparedStatement prepStmt = null;
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -152,38 +164,34 @@ public class RegistrarOperacionCuentaDAO
 			Statement state = conexion.createStatement();
 
 			ResultSet rs1 = state.executeQuery("SELECT ESTADO FROM CUENTAS WHERE ID_CUENTA = "
-					+ id_cuenta);
+					+ id_cuenta_origen);
 			String estadoActual = "";
+			
 			while(rs1.next())
 			{
 				estadoActual = rs1.getString("ESTADO");
 			}
-
-
+			
+            
 			rs1 = state.executeQuery("SELECT TIPO_CUENTA FROM CUENTAS WHERE ID_CUENTA = "
-					+ id_cuenta);
-			String tipo_cuenta = "";
+					+ id_cuenta_origen);
 			while(rs1.next())
 			{
-				tipo_cuenta = rs1.getString("TIPO_CUENTA");
+				
 			}
-
-
-
+			String tipo_cuenta = rs1.getString("TIPO_CUENTA");
+			
+			
 			if(estadoActual.equals("Inactiva"))
 			{
 				throw new Exception("La cuenta está inactiva, no se pueden registrar operaciones");	
 			}
 
-			rs1 = state.executeQuery("SELECT ID_TRANSACCION "
-					+ "FROM (SELECT ID_TRANSACCION FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC) "
+			rs1 = state.executeQuery("SELECT ID_TRANSACCION"
+					+ "FROM (SELECT ID_TRANSACCION FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC)"
 					+ "WHERE ROWNUM = 1");
-            
-			while(rs1.next())
-			{
-				idTransaccion= rs1.getInt("ID_TRANSACCION");
-			}
-					
+
+			idTransaccion= rs1.getInt("ID_TRANSACCION");		
 			idTransaccion++;
 
 
@@ -191,34 +199,50 @@ public class RegistrarOperacionCuentaDAO
 					"VALUES (" + idTransaccion + "," + "'" + correo_cliente + "'"  + "," + 
 					"'" + tipo + "'" + "," + "TO_DATE ("+
 					"'" + fecha_registro + "' , 'yyyy/mm/dd HH24-Mi-SS')" + "," 
-					+ puesto_atencion + ")";
+				     + puesto_atencion + ")";
 			System.out.println("--------------------------------------------------------------------------");
 			System.out.println(sentencia);
 			prepStmt = conexion.prepareStatement(sentencia);
 			prepStmt.executeUpdate();
 			conexion.commit();
 
-			if(tipo.equals("C"))
+			if(tipo.equals("Consignacion"))
 			{
-
+				
 				int saldoActual = 0;
 				Statement s = conexion.createStatement();
-				ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = " + id_cuenta);
+				ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = " + id_cuenta_origen);
 				saldoActual = rs.getInt("SALDO");
 				saldoActual+= valor;
 
-				String sentencia1 = "INSERT INTO CONSIGNACIONES (ID,"
-						+ " ID_CUENTA_DESTINO, MONTO) "+
-						"VALUES (" + idTransaccion + "," + id_cuenta + "," + valor +")";
-				System.out.println("--------------------------------------------------------------------------");
-				System.out.println(sentencia1);
-				prepStmt = conexion.prepareStatement(sentencia1);
-				prepStmt.executeUpdate();
-				conexion.commit();
+				if(id_cuenta_origen != 0)
+				{
+					String sentencia1 = "INSERT INTO CONSIGNACIONES (ID, ID_CUENTA_ORIGEN"
+							+ " ID_CUENTA_DESTINO, MONTO) "+
+							"VALUES (" + idTransaccion + "," + id_cuenta_origen + "," + idCuentaDestino + "," + valor +")";
+					System.out.println("--------------------------------------------------------------------------");
+					System.out.println(sentencia1);
+					prepStmt = conexion.prepareStatement(sentencia1);
+					prepStmt.executeUpdate();
+					conexion.commit();
+				}
+				
+				else
+				{
+					String sentencia1 = "INSERT INTO CONSIGNACIONES (ID "
+							+ " ID_CUENTA_DESTINO, MONTO) "+
+							"VALUES (" + idTransaccion + "," + idCuentaDestino + "," + valor +")";
+					System.out.println("--------------------------------------------------------------------------");
+					System.out.println(sentencia1);
+					prepStmt = conexion.prepareStatement(sentencia1);
+					prepStmt.executeUpdate();
+					conexion.commit();
+				}
+				
 
 
 				String sentencia0 = "UPDATE CUENTAS SET SALDO = " + saldoActual 
-						+ "WHERE ID_CUENTA = " + id_cuenta;
+						+ "WHERE ID_CUENTA = " + idCuentaDestino;
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia0);
 				prepStmt = conexion.prepareStatement(sentencia0);
@@ -226,23 +250,18 @@ public class RegistrarOperacionCuentaDAO
 				conexion.commit();
 			}
 
-
-			else if(tipo.equals("R"))
+			
+			else if(tipo.equals("Retiro"))
 			{
-
+				
 				int saldoActual = 0;
 				Statement s = conexion.createStatement();
-				ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = " + id_cuenta);
-				
-				while(rs.next())
-				{
-					saldoActual = rs.getInt("SALDO");
-				}
-				
+				ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = " + id_cuenta_origen);
+				saldoActual = rs.getInt("SALDO");
 				saldoActual-= valor;
 
 				String sentencia1 = "INSERT INTO RETIROS (ID, ID_CUENTA_RETIRO, MONTO) "+
-						"VALUES (" + idTransaccion + "," + id_cuenta + "," + valor + ")";
+						"VALUES (" + idTransaccion + "," + id_cuenta_origen + "," + valor + ")";
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia1);
 				prepStmt = conexion.prepareStatement(sentencia1);
@@ -250,7 +269,7 @@ public class RegistrarOperacionCuentaDAO
 				conexion.commit();
 
 				String sentencia0 = "UPDATE CUENTAS SET SALDO = " + saldoActual 
-						+ "WHERE ID_CUENTA = " + id_cuenta;
+						+ "WHERE ID_CUENTA = " + id_cuenta_origen;
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia0);
 				prepStmt = conexion.prepareStatement(sentencia0);
@@ -258,29 +277,19 @@ public class RegistrarOperacionCuentaDAO
 				conexion.commit();
 			}
 
-			else if(tipo.equals("AC"))
+			else if(tipo.equals("Apertura cuenta"))
 			{
-				tipo_cuenta = "Corriente";
+				
 				int idMaxCuenta = 0;
 				Statement s = conexion.createStatement();
-				ResultSet rs = s.executeQuery("SELECT ID_CUENTA "
-						+ "FROM (SELECT ID_CUENTA FROM CUENTAS ORDER BY ID_CUENTA DESC) "
+				ResultSet rs = s.executeQuery("SELECT ID_CUENTA"
+						+ "FROM (SELECT ID_CUENTA FROM CUENTAS ORDER BY ID_CUENTA DESC)"
 						+ "WHERE ROWNUM = 1");
-				while (rs.next())
-				{
-					idMaxCuenta = rs.getInt("ID_CUENTA");
-				}
-				
+				idMaxCuenta = rs.getInt("ID_CUENTA");
 				idMaxCuenta++;
 
 				rs = s.executeQuery("SELECT OFICINA FROM PUNTOS_ATENCION WHERE ID =" + puesto_atencion);
-				int idOficina = 0;
-				
-				while(rs.next())
-				{
-					idOficina = rs.getInt("OFICINA");
-				}
-				
+				int idOficina = rs.getInt("OFICINA");
 
 				String sentencia2 = "INSERT INTO CUENTAS (ID_CUENTA, CORREO, TIPO_CUENTA, OFICINA, FECHA_ULTIMO_MOVIMIENTO, SALDO, ESTADO) "+
 						"VALUES (" + idMaxCuenta + "," + "'" + correo_cliente + "'" + "," 

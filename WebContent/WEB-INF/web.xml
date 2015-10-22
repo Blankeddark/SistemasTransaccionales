@@ -174,9 +174,57 @@
  
    <servlet>
  
+ 	<display-name>ServletAsociarCuentaEmpleadoCliente</display-name>
+ 	<servlet-name>ServletAsociarCuentaEmpleadoCliente</servlet-name>
+ 	<servlet-class>servlets.ServletAsociarCuentaEmpleadoCliente</servlet-class>
+ 
+ </servlet>
+ 
+   <servlet>
+ 
  	<display-name>ServletRegistrarOperacionCuentaCliente</display-name>
  	<servlet-name>ServletRegistrarOperacionCuentaCliente</servlet-name>
  	<servlet-class>servlets.ServletRegistrarOperacionCuentaCliente</servlet-class>
+ 
+ </servlet>
+ 
+    <servlet>
+ 
+ 	<display-name>ServletRegistrarOperacionPrestamoCliente</display-name>
+ 	<servlet-name>ServletRegistrarOperacionPrestamoCliente</servlet-name>
+ 	<servlet-class>servlets.ServletRegistrarOperacionPrestamoCliente</servlet-class>
+ 
+ </servlet>
+ 
+     <servlet>
+ 
+ 	<display-name>ServletPagarNominaCliente</display-name>
+ 	<servlet-name>ServletPagarNominaCliente</servlet-name>
+ 	<servlet-class>servlets.ServletPagarNominaCliente</servlet-class>
+ 
+ </servlet>
+ 
+      <servlet>
+ 
+ 	<display-name>ServletConsultarCuentaCliente</display-name>
+ 	<servlet-name>ServletConsultarCuentaCliente</servlet-name>
+ 	<servlet-class>servlets.ServletConsultarCuentaCliente</servlet-class>
+ 
+ </servlet>
+ 
+      <servlet>
+ 
+ 	<display-name>ServletConsultarPrestamoGeneral</display-name>
+ 	<servlet-name>ServletConsultarPrestamoGeneral</servlet-name>
+ 	<servlet-class>servlets.ServletConsultarPrestamosGeneral</servlet-class>
+ 
+ </servlet>
+ 
+       <servlet>
+ 
+ 	<display-name>ServletConsultarOperacionesGeneral</display-name>
+ 	<servlet-name>ServletConsultarOperacionesGeneral</servlet-name>
+ 	<servlet-class>servlets.ServletConsultarOperacionesGeneral</servlet-class>
  
  </servlet>
  
@@ -332,6 +380,48 @@
  
  	<servlet-name>ServletRegistrarOperacionCuentaCliente</servlet-name>
  	<url-pattern>/registrarOperacionesCuentaCliente</url-pattern>
+ 
+ </servlet-mapping>
+ 
+    <servlet-mapping>
+ 
+ 	<servlet-name>ServletRegistrarOperacionPrestamoCliente</servlet-name>
+ 	<url-pattern>/registrarOperacionPrestamoCliente</url-pattern>
+ 
+ </servlet-mapping>
+ 
+     <servlet-mapping>
+ 
+ 	<servlet-name>ServletAsociarCuentaEmpleadoCliente</servlet-name>
+ 	<url-pattern>/asociarCuentaCliente</url-pattern>
+ 
+ </servlet-mapping>
+ 
+      <servlet-mapping>
+ 
+ 	<servlet-name>ServletPagarNominaCliente</servlet-name>
+ 	<url-pattern>/pagarNominaCliente</url-pattern>
+ 
+ </servlet-mapping>
+ 
+       <servlet-mapping>
+ 
+ 	<servlet-name>ServletConsultarCuentaCliente</servlet-name>
+ 	<url-pattern>/consultarCuentaCliente</url-pattern>
+ 
+ </servlet-mapping>
+ 
+        <servlet-mapping>
+ 
+ 	<servlet-name>ServletConsultarPrestamoGeneral</servlet-name>
+ 	<url-pattern>/consultarPrestamosGeneral</url-pattern>
+ 
+ </servlet-mapping>
+ 
+      <servlet-mapping>
+ 
+ 	<servlet-name>ServletConsultarOperacionesGeneral</servlet-name>
+ 	<url-pattern>/consultarOperacionesGeneral</url-pattern>
  
  </servlet-mapping>
  

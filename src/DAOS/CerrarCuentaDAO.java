@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
 
-import servlets.ServletLogin;
 import vos.CuentaValues;
 import vos.EmpleadoValues;
 import conexion.ConexionBd;
@@ -35,17 +35,12 @@ public class CerrarCuentaDAO
 	{
 		inicializar("./Conexion/conexion.properties");
 	}
-	
-	public void main(String[] args)
-	{
-		
-	}
 
 	public void inicializar(String path)
 	{
 		try
 		{
-			File arch = new File("C:/Users/Sergio/git/PROJECT_Sistrans/SistemasTransaccionales/Conexion/conexion.properties"); //TODO
+			File arch = new File(path+ARCHIVO_CONEXION);
 			Properties prop = new Properties();
 			FileInputStream in = new FileInputStream (arch);
 
@@ -68,8 +63,7 @@ public class CerrarCuentaDAO
 	private void establecerConexion (String url, String usuario, String clave) throws SQLException
 	{
 		System.out.println("------- Oracle Connection Testing ------- ");
-		try
-		{
+		try{
 			Class.forName("oracle.jdbc.OracleDriver");
 
 		}
@@ -225,78 +219,44 @@ public class CerrarCuentaDAO
 	}
 
 	/**
-	 * M�todo que se encarga de cerrar (deshabilitar) una cuenta dentro del sistema a petici�n
+	 * Método que se encarga de cerrar (deshabilitar) una cuenta dentro del sistema a petición
 	 * del cliente. Si el saldo que posee la cuenta es cero entonces simplemente se deshabilita
 	 * la cuenta. Sin embargo en el caso de que la cuenta posea un saldo > 0 entonces no solamente
-	 * se deshabilita la cuenta y se coloca el saldo de esta en cero, sino que adem�s se
-	 * registra un retiro con el fin de actualizar la informaci�n de la cuenta deshabilitada.
+	 * se deshabilita la cuenta y se coloca el saldo de esta en cero, sino que además se
+	 * registra un retiro con el fin de actualizar la información de la cuenta deshabilitada.
 	 * @param id_eliminar
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean registrarCerrarCuentaExistente (int id_eliminar) throws Exception
+	public boolean registrarCerrarCuentaExistente (int id_eliminar, int id_nueva) throws Exception
 	{
 		PreparedStatement prepStmt = null;
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = new Date();
-		String fecha_registro = dateFormat.format(date) ;
 
 		try
 		{
 			establecerConexion(cadenaConexion, usuario, clave);
-			//conexion.setAutoCommit(false);
+			conexion.setAutoCommit(false);
 			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);			
 
+
 			Statement s = conexion.createStatement();
-			ResultSet rs = s.executeQuery("SELECT CORREO FROM CUENTAS WHERE ID_CUENTA = "
+			ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = "
 					+ id_eliminar);
-			String correoTemp = "";
-		    if(rs.next())
-		    {
-		    	while(rs.next())
-				{
-					correoTemp = rs.getString("CORREO");
-				}
-		    }
-		    
-		    else
-		    {
-		    	throw new Exception("No existe una cuenta con el ID ingresado");	
-		    	
-		    }
-			
-		    String correo =  ServletLogin.darUsuarioActual().getCorreo();
-			
-			s = conexion.createStatement();
-			rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = "
-					+ id_eliminar);
-			int saldoActual = 0;
-			while(rs.next())
-			{
-				saldoActual = rs.getInt("SALDO");
-			}
-			
+			int saldoActual = rs.getInt("SALDO");
 
 			rs = s.executeQuery("SELECT ESTADO FROM CUENTAS WHERE ID_CUENTA = " + id_eliminar);
-			String estado = "";
-			while(rs.next())
-			{
-				estado = rs.getString("ESTADO");
-			}
-			
+			String estado = rs.getString("ESTADO");
 			if(estado.equals("Inactiva"))
 			{
 				throw new Exception("no se pueden cerrar cuentas ya cerradas");
 			}
-			
+
+
+
 			rs = s.executeQuery("SELECT ID FROM ( SELECT * FROM RETIROS ORDER BY ID DESC) "
 					+ "WHERE ROWNUM = 1");
-			int idMax = 0;
-			while(rs.next())
-			{
-			    idMax = rs.getInt("ID");
-			}
-			
+
+			int idMax = rs.getInt("ID");
 			idMax++;
 
 			if(saldoActual == 0)
@@ -313,47 +273,163 @@ public class CerrarCuentaDAO
 			}
 
 			else
-			{
-				String sentencia1 = "UPDATE CUENTAS SET ESTADO = 'Inactiva',"
-						+ "SALDO = 0  WHERE ID_CUENTA = "+ id_eliminar;
-				System.out.println("--------------------------------------------------------------------------");
-				System.out.println(sentencia1);
-				prepStmt = conexion.prepareStatement(sentencia1);
-				prepStmt.executeUpdate();
-				conexion.commit();
+			{   
+				rs = s.executeQuery("SELECT ID FROM ( SELECT * FROM CUENTAS NATURAL JOIN"
+						+ " CLIENTES WHERE ID_CUENTA = " + id_eliminar);
+				char pp = 'a';
 
-				rs = s.executeQuery("SELECT ID_TRANSACCION FROM "
-						+ "( SELECT * FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC) "
-						+ "WHERE ROWNUM = 1");
-				
-				int idMax2 = 0;
-				
-                while(rs.next())
-                {
-                	idMax2 = rs.getInt("ID_TRANSACCION");
-                }
-				
-				idMax2++;
+				while(rs.next())
+				{
+					pp = rs.getString("TIPO_PERSONA").charAt(0);
+				}
 
-				String sentencia3 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
-						+ " TIPO, FECHA_TRANSACCION, ID_PUNTO_ATENCION) "
-						+ "VALUES (" +  idMax2 + "," + "'" + correo + "'" + "," + "'CC'" + ","
-						+ "TO_DATE ("+
-						"'" + fecha_registro + "' , 'yyyy/mm/dd HH24-Mi-SS')" + "," 
-						+ "'3'" + ")";
-				System.out.println("--------------------------------------------------------------------------");
-				System.out.println(sentencia3);
-				prepStmt = conexion.prepareStatement(sentencia3);
-				prepStmt.executeUpdate();
-				conexion.commit();
+				if(pp == 'N')
+				{
+					String sentencia1 = "UPDATE CUENTAS SET ESTADO = 'Inactiva',"
+							+ "SALDO = 0  WHERE ID_CUENTA = "+ id_eliminar;
+					System.out.println("--------------------------------------------------------------------------");
+					System.out.println(sentencia1);
+					prepStmt = conexion.prepareStatement(sentencia1);
+					prepStmt.executeUpdate();
+					conexion.commit();
 
-				String sentencia2 = "INSERT INTO RETIROS(ID, ID_CUENTA_RETIRO, MONTO) "
-						+ "VALUES (" +  idMax2 + ","  + id_eliminar + "," + saldoActual + ")";
-				System.out.println("--------------------------------------------------------------------------");
-				System.out.println(sentencia2);
-				prepStmt = conexion.prepareStatement(sentencia2);
-				prepStmt.executeUpdate();
-				conexion.commit();
+					rs = s.executeQuery("SELECT ID_TRANSACCION FROM "
+							+ "( SELECT * FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC) "
+							+ "WHERE ROWNUM = 1");
+
+					int idMax2 = rs.getInt("ID_TRANSACCION");
+					idMax2++;
+
+					String sentencia3 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
+							+ " TIPO, FECHA_TRANSACCION, ID_PUNTO_ATENCION) "
+							+ "VALUES (" +  idMax + ","  + id_eliminar + "," + saldoActual + ")";
+					System.out.println("--------------------------------------------------------------------------");
+					System.out.println(sentencia3);
+					prepStmt = conexion.prepareStatement(sentencia3);
+					prepStmt.executeUpdate();
+					conexion.commit();
+
+					String sentencia2 = "INSERT INTO RETIROS(ID, ID_CUENTA_RETIRO, MONTO) "
+							+ "VALUES (" +  idMax + ","  + id_eliminar + "," + saldoActual + ")";
+					System.out.println("--------------------------------------------------------------------------");
+					System.out.println(sentencia2);
+					prepStmt = conexion.prepareStatement(sentencia2);
+					prepStmt.executeUpdate();
+					conexion.commit();	
+				}
+
+				else
+				{
+
+
+					String sentencia1 = "UPDATE CUENTAS SET ESTADO = 'Inactiva',"
+							+ "SALDO = 0  WHERE ID_CUENTA = "+ id_eliminar;
+					System.out.println("--------------------------------------------------------------------------");
+					System.out.println(sentencia1);
+					prepStmt = conexion.prepareStatement(sentencia1);
+					prepStmt.executeUpdate();
+					conexion.commit();
+
+					rs = s.executeQuery("SELECT ID_TRANSACCION FROM "
+							+ "( SELECT * FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC) "
+							+ "WHERE ROWNUM = 1");
+
+					int idMax2 = rs.getInt("ID_TRANSACCION");
+					idMax2++;
+
+					String sentencia3 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
+							+ " TIPO, FECHA_TRANSACCION, ID_PUNTO_ATENCION) "
+							+ "VALUES (" +  idMax + ","  + id_eliminar + "," + saldoActual + ")";
+					System.out.println("--------------------------------------------------------------------------");
+					System.out.println(sentencia3);
+					prepStmt = conexion.prepareStatement(sentencia3);
+					prepStmt.executeUpdate();
+					conexion.commit();
+
+					String sentencia2 = "INSERT INTO RETIROS(ID, ID_CUENTA_RETIRO, MONTO) "
+							+ "VALUES (" +  idMax + ","  + id_eliminar + "," + saldoActual + ")";
+					System.out.println("--------------------------------------------------------------------------");
+					System.out.println(sentencia2);
+					prepStmt = conexion.prepareStatement(sentencia2);
+					prepStmt.executeUpdate();
+					conexion.commit();
+
+					rs = s.executeQuery("SELECT ID_CUENTA_EMPLEADO FROM CLIENTES_EMPLEADOS_DE_CLIENTES "
+							+ " WHERE ID_CUENTA_EMPLEADOR = " + id_eliminar);
+					ArrayList cuentasAsociadas = new ArrayList();
+					while(rs.next())
+					{
+						int idCuentaActual = rs.getInt("ID_CUENTA_EMPLEADO");
+						cuentasAsociadas.add(idCuentaActual);
+					}
+
+					rs = s.executeQuery("SELECT * FROM CUENTAS WHERE ID_CUENTA = " + id_nueva);
+					int xd = 0;
+					while(rs.next())
+					{
+						xd = rs.getInt("ID_CUENTA");	
+					}
+
+					if(xd == 0 && cuentasAsociadas.size() != 0 )
+					{
+						throw new Exception ( "Debe ingresar una cuenta nueva para asociar sus clientes");
+					}
+
+					if(xd != 0 && cuentasAsociadas.size() == 0)
+					{
+						throw new Exception("La cuenta no se puede asociar porque no tiene  empleados a quienes asociar");
+					}
+
+					if(xd != 0 && cuentasAsociadas.size() != 0)
+					{
+						AsociarCuentaDAO dao2 = new AsociarCuentaDAO();
+						Savepoint savepoint2 = conexion.setSavepoint("Savepoint2");
+
+						for (int i = 0; i < cuentasAsociadas.size(); i++) 
+						{
+							rs = s.executeQuery("SELECT * FROM CLIENTES_EMPLEADOS_DE_CLIENTES WHERE "
+									+ " ID_CUENTA_EMPLEADO = " + cuentasAsociadas.get(i) 
+									+ " AND ID_CUENTA_EMPLEADOR = " +  id_nueva);
+							String correoEmpleador = "";
+							int valor = 0;
+							String frecuencia = "";
+							String correoEmpleado ="";
+							while(rs.next())
+							{   
+								correoEmpleador = rs.getString("CORREO_EMPLEADOR");
+								valor = rs.getInt("MONTO_PAGO");
+								correoEmpleado = rs.getString("CORREO_EMPLEADO");
+								frecuencia = rs.getString("FRECUENCIA_PAGO");
+							}
+
+							try
+							{
+								dao2.registrarAsociarCuenta(correoEmpleador, id_nueva, correoEmpleado, 
+										(Integer) cuentasAsociadas.get(i), valor, frecuencia);
+								cuentasAsociadas.remove(i);
+							}
+
+							catch(Exception e)
+							{  								
+								System.out.println(e.getMessage());
+								e.printStackTrace();
+								String xd2= " ";
+								for (int j = 0; j < cuentasAsociadas.size(); j++) 
+								{
+                                    xd2= ", " + cuentasAsociadas.get(j);
+								}
+								
+								System.out.println("Los siguientes cuentas de empleados no pudieron ser asociados: " + xd2);
+								conexion.rollback(savepoint2);
+							}
+
+						}
+
+					}
+
+
+				}
+
 
 			}
 
@@ -378,7 +454,7 @@ public class CerrarCuentaDAO
 				catch (SQLException exception) 
 				{
 
-					throw new Exception("ERROR: RegistroDePaquetesDAO: loadRow() =  cerrando una conexi�n");
+					throw new Exception("ERROR: RegistroDePaquetesDAO: loadRow() =  cerrando una conexiÔøΩÔøΩÔøΩn.");
 				}
 			}
 
@@ -389,13 +465,13 @@ public class CerrarCuentaDAO
 	}
 
 	/**
-	 * M�todo que se encarga de cerrar (deshabilitar) una cuenta dentro del sistema a petici�n
+	 * Método que se encarga de cerrar (deshabilitar) una cuenta dentro del sistema a petición
 	 * del cliente. Si el saldo que posee la cuenta es cero entonces simplemente se deshabilita
 	 * la cuenta. Sin embargo en el caso de que la cuenta posea un saldo > 0 entonces no solamente
-	 * se deshabilita la cuenta y se coloca el saldo de esta en cero, sino que adem�s se
-	 * registra un retiro con el fin de actualizar la informaci�n de la cuenta deshabilitada.
-	 * Adem�s en este m�todo se incluye como par�metro el id de la oficina, lo anterior
-	 * con el fin de preservar la seguridad en la manipulaci�n de los datos de tal forma
+	 * se deshabilita la cuenta y se coloca el saldo de esta en cero, sino que además se
+	 * registra un retiro con el fin de actualizar la información de la cuenta deshabilitada.
+	 * Además en este método se incluye como parámetro el id de la oficina, lo anterior
+	 * con el fin de preservar la seguridad en la manipulación de los datos de tal forma
 	 * que un gerente solo pueda tener acceso a las cuentas de la oficina de la cual es gerente.
 	 * @param id_eliminar
 	 * @return
@@ -415,14 +491,14 @@ public class CerrarCuentaDAO
 			ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = "
 					+ id_eliminar + "AND OFICINA = " + oficina);
 			int saldoActual = rs.getInt("SALDO");
-            
+
 			rs = s.executeQuery("SELECT ESTADO FROM CUENTAS WHERE ID_CUENTA = " + id_eliminar);
 			String estado = rs.getString("ESTADO");
 			if(estado.equals("Inactiva"))
 			{
 				throw new Exception("no se pueden cerrar cuentas ya cerradas");
 			}
-			
+
 			rs = s.executeQuery("SELECT ID_TRANSACCION FROM ( SELECT * FROM TRANSACCIONES"
 					+ " ORDER BY ID_TRANSACCION DESC) "
 					+ "WHERE ROWNUM = 1");
@@ -560,7 +636,7 @@ public class CerrarCuentaDAO
 				catch (SQLException exception) 
 				{
 
-					throw new Exception("ERROR: RegistroDePaquetesDAO: loadRow() =  cerrando una conexi�n");
+					throw new Exception("ERROR: RegistroDePaquetesDAO: loadRow() =  cerrando una conexiÔøΩÔøΩÔøΩn.");
 				}
 			}
 
@@ -570,8 +646,6 @@ public class CerrarCuentaDAO
 		return true;
 	}
 
-	
-
 	/**
 	 * Este método retorna un empleadoValues a partir de su correo
 	 * @param correo
@@ -579,7 +653,6 @@ public class CerrarCuentaDAO
 	 */
 	public EmpleadoValues darEmpleadoDAO(String correo)
 	{
-
 		try 
 		{  
 			Statement s = conexion.createStatement();
@@ -588,11 +661,11 @@ public class CerrarCuentaDAO
 
 			String ciudad = rs.getString("CIUDAD");
 			String cod_postal = rs.getString("COS_POSTAL");
-			String contrase�a = rs.getString("CONTRASEÑA");
+			String contrasena = rs.getString("CONTRASEÑA");
 			String departamento = rs.getString("DEPARTAMENTO");
 			String direccion = rs.getString("DIRECCION");
 			int oficina = rs.getInt("OFICINA");
-			EmpleadoValues empleadoActual = new EmpleadoValues(correo, null, contrase�a, null, null, null, null, direccion, null, oficina, null, ciudad, departamento, cod_postal, null);
+			EmpleadoValues empleadoActual = new EmpleadoValues(correo, null, contrasena, null, null, null, null, direccion, null, oficina, null, ciudad, departamento, cod_postal, null);
 			return empleadoActual;
 
 
@@ -603,7 +676,7 @@ public class CerrarCuentaDAO
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 }

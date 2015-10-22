@@ -44,7 +44,7 @@ public class ServletLogin extends ASServlet {
 	private static UsuarioValues usuarioActual;
 
 	/**
-	 * Null si el usuario actual no es un empleado.
+	 * Null si el usuario actual no es un GO o Cajero.
 	 */
 	private static EmpleadoValues empleadoActual;
 
@@ -324,5 +324,11 @@ public class ServletLogin extends ASServlet {
 	{
 		return empleadoActual;
 	}
+	
+	public static ArrayList<CuentaValues> darCuentasUsuarioActual()
+	{
+		return cuentasUsuarioActual;
+	}
+
 
 }
