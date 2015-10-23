@@ -35,7 +35,7 @@ public class RegistrarOperacionSobrePrestamoDAO
 	{
 		try
 		{
-			File arch = new File(path + ARCHIVO_CONEXION);
+			File arch = new File("C:/Users/Sergio/git/PROJECT_Sistrans/SistemasTransaccionales/WebContent/conexion.properties");
 			Properties prop = new Properties();
 			FileInputStream in = new FileInputStream (arch);
 
@@ -152,10 +152,14 @@ public class RegistrarOperacionSobrePrestamoDAO
 			int idTransaccion = 0;
 			Statement state = conexion.createStatement();
 			ResultSet rs1 = state.executeQuery("SELECT ID_TRANSACCION"
-					+ "FROM (SELECT ID_TRANSACCION FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC)"
-					+ "WHERE ROWNUM = 1");
+					+ " FROM (SELECT ID_TRANSACCION FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC)"
+					+ " WHERE ROWNUM = 1");
 
-			idTransaccion = rs1.getInt("ID_TRANSACCION");
+			while(rs1.next())
+			{
+				idTransaccion = rs1.getInt("ID_TRANSACCION");
+				
+			}
 			idTransaccion++;
             
             String tipoX = "";
@@ -281,20 +285,34 @@ public class RegistrarOperacionSobrePrestamoDAO
 			{
 				Statement s = conexion.createStatement();
 				ResultSet rs = s.executeQuery("SELECT SALDO_PENDIENTE FROM PRESTAMOS WHERE ID = " + idPrestamo);
-				int saldoPendiente = rs.getInt("SALDO_PENDIENTE");
-				saldoPendiente -= (valor/numCuotas);
+				
+				int saldoPendiente = 0;
+				
+				while(rs.next())
+				{
+					saldoPendiente = rs.getInt("SALDO_PENDIENTE");
+				}
+				 
+				saldoPendiente -= valor;
+				 
 				rs = s.executeQuery("SELECT CUOTAS_EFECTIVAS FROM PRESTAMOS WHERE ID = " + idPrestamo);
-				int cuotasEfectivas = rs.getInt("CUOTAS_EFECTIVAS");
+				int cuotasEfectivas = 0;
+				
+				while(rs.next())
+				{
+					cuotasEfectivas = rs.getInt("CUOTAS_EFECTIVAS");
+				}
+				
 				cuotasEfectivas++;
 				String sentencia1 = "UPDATE PRESTAMOS SET SALDO_PENDIENTE = " + saldoPendiente + "," 
-						+ " CUOTAS_EFECTIVAS = " + cuotasEfectivas + "WHERE ID = " + idPrestamo;
+						+ " CUOTAS_EFECTIVAS = '" + cuotasEfectivas + "' WHERE ID = " + idPrestamo;
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia1);
 				prepStmt = conexion.prepareStatement(sentencia1);
 				prepStmt.executeUpdate();
 				conexion.commit();
 				sentencia1 = "INSERT INTO PAGOS_PRESTAMO(ID_PAGO, ID_PRESTAMO_PAGADO, MONTO_PAGADO, ID_CUENTA_ORIGEN) "
-						+ "VALUES (" + idTransaccion + "," + idPrestamo + "," + (valor/numCuotas) +  cuentaOrigen + ")";
+						+ "VALUES (" + idTransaccion + "," + idPrestamo + "," + (valor) +  "," + cuentaOrigen + ")";
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia1);
 				prepStmt = conexion.prepareStatement(sentencia1);

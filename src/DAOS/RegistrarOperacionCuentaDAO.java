@@ -175,23 +175,27 @@ public class RegistrarOperacionCuentaDAO
             
 			rs1 = state.executeQuery("SELECT TIPO_CUENTA FROM CUENTAS WHERE ID_CUENTA = "
 					+ id_cuenta_origen);
+			String tipo_cuenta = "";
 			while(rs1.next())
 			{
 				
+				tipo_cuenta= rs1.getString("TIPO_CUENTA");
 			}
-			String tipo_cuenta = rs1.getString("TIPO_CUENTA");
 			
 			
 			if(estadoActual.equals("Inactiva"))
 			{
-				throw new Exception("La cuenta está inactiva, no se pueden registrar operaciones");	
+				throw new Exception("La cuenta esta inactiva, no se pueden registrar operaciones");	
 			}
 
-			rs1 = state.executeQuery("SELECT ID_TRANSACCION"
+			rs1 = state.executeQuery("SELECT ID_TRANSACCION "
 					+ "FROM (SELECT ID_TRANSACCION FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC)"
-					+ "WHERE ROWNUM = 1");
-
-			idTransaccion= rs1.getInt("ID_TRANSACCION");		
+					+ " WHERE ROWNUM = 1");
+			
+			while (rs1.next())
+			{
+				idTransaccion= rs1.getInt("ID_TRANSACCION");		
+			}
 			idTransaccion++;
 
 
@@ -206,18 +210,23 @@ public class RegistrarOperacionCuentaDAO
 			prepStmt.executeUpdate();
 			conexion.commit();
 
-			if(tipo.equals("Consignacion"))
+			if(tipo.equals("Consignacion") || tipo.equals("C"))
 			{
 				
 				int saldoActual = 0;
 				Statement s = conexion.createStatement();
-				ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = " + id_cuenta_origen);
-				saldoActual = rs.getInt("SALDO");
-				saldoActual+= valor;
+				ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = " + idCuentaDestino);
+				
+				while(rs.next())
+				{
+					saldoActual = rs.getInt("SALDO");
+				}
+				
+				saldoActual += valor;
 
 				if(id_cuenta_origen != 0)
 				{
-					String sentencia1 = "INSERT INTO CONSIGNACIONES (ID, ID_CUENTA_ORIGEN"
+					String sentencia1 = "INSERT INTO CONSIGNACIONES (ID, ID_CUENTA_ORIGEN,"
 							+ " ID_CUENTA_DESTINO, MONTO) "+
 							"VALUES (" + idTransaccion + "," + id_cuenta_origen + "," + idCuentaDestino + "," + valor +")";
 					System.out.println("--------------------------------------------------------------------------");
@@ -225,11 +234,27 @@ public class RegistrarOperacionCuentaDAO
 					prepStmt = conexion.prepareStatement(sentencia1);
 					prepStmt.executeUpdate();
 					conexion.commit();
+					
+					int saldoOrigen = 0;
+					
+					ResultSet rs3 = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = " + id_cuenta_origen);
+					
+					while(rs3.next())
+					{
+						saldoOrigen = rs3.getInt("SALDO");
+					}
+					
+					String sentencia2 = "UPDATE CUENTAS SET SALDO = " + (saldoOrigen - valor) + " WHERE ID_CUENTA = " + id_cuenta_origen;
+					System.out.println("--------------------------------------------------------------------------");
+					System.out.println(sentencia2);
+					prepStmt = conexion.prepareStatement(sentencia2);
+					prepStmt.executeUpdate();
+					conexion.commit();
 				}
 				
 				else
 				{
-					String sentencia1 = "INSERT INTO CONSIGNACIONES (ID "
+					String sentencia1 = "INSERT INTO CONSIGNACIONES (ID, "
 							+ " ID_CUENTA_DESTINO, MONTO) "+
 							"VALUES (" + idTransaccion + "," + idCuentaDestino + "," + valor +")";
 					System.out.println("--------------------------------------------------------------------------");
@@ -237,21 +262,21 @@ public class RegistrarOperacionCuentaDAO
 					prepStmt = conexion.prepareStatement(sentencia1);
 					prepStmt.executeUpdate();
 					conexion.commit();
-				}
+					
+			}
 				
-
-
 				String sentencia0 = "UPDATE CUENTAS SET SALDO = " + saldoActual 
-						+ "WHERE ID_CUENTA = " + idCuentaDestino;
+						+ " WHERE ID_CUENTA = " + idCuentaDestino;
 				System.out.println("--------------------------------------------------------------------------");
 				System.out.println(sentencia0);
+				
 				prepStmt = conexion.prepareStatement(sentencia0);
 				prepStmt.executeUpdate();
 				conexion.commit();
 			}
 
 			
-			else if(tipo.equals("Retiro"))
+			else if(tipo.equals("Retiro") || tipo.equals("R"))
 			{
 				
 				int saldoActual = 0;

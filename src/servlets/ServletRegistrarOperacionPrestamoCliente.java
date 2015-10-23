@@ -26,7 +26,7 @@ public class ServletRegistrarOperacionPrestamoCliente extends ASServlet {
 		imprimirOperacionesPrestamoClienteInicial(pw);
 		imprimirWrapper(pw);
 	}
-	
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		PrintWriter pw = response.getWriter();
@@ -38,7 +38,7 @@ public class ServletRegistrarOperacionPrestamoCliente extends ASServlet {
 		 * El cliente es quien realiza la operación
 		 */
 		String correoCliente = ServletLogin.darUsuarioActual().getCorreo();
-		
+
 		int idCuenta = 0;
 		int idSolicitud = 0;
 		int idPrestamo = 0;
@@ -52,17 +52,17 @@ public class ServletRegistrarOperacionPrestamoCliente extends ASServlet {
 		{
 			idCuenta = Integer.parseInt ( request.getParameter("idCuentaOrigen") );
 		}
-		
+
 		catch (Exception e)
 		{
 			imprimirOperacionesPrestamosError(pw, "Lo ingresado en idCuenta no es un n&uacute;mero v&aacute;lido");
 			imprimirWrapper(pw);
 			return;
 		}
-		
+
 		ArrayList<CuentaValues> cuentasActuales = ServletLogin.darCuentasUsuarioActual();
 		boolean encontro = false;
-		
+
 		for(int i = 0; i < cuentasActuales.size() && !encontro; i++)
 		{
 			if(cuentasActuales.get(i).getIdCuenta() == idCuenta)
@@ -70,7 +70,7 @@ public class ServletRegistrarOperacionPrestamoCliente extends ASServlet {
 				encontro = true;
 			}
 		}
-		
+
 		if(!encontro)
 		{
 			imprimirOperacionesPrestamosError(pw, "La cuenta con el id ingresado no existe o no pertenece al cliente actual.");
@@ -98,16 +98,7 @@ public class ServletRegistrarOperacionPrestamoCliente extends ASServlet {
 		}
 		//}
 
-		try
-		{
-			idPuntoAtencion = Integer.parseInt ( request.getParameter("idPuntoAtencion"));
-		}
-		catch (Exception e)
-		{
-			imprimirOperacionesPrestamosError(pw, "Lo ingresado en idPuntoAtencion no es un n&uacute;mero v&aacute;lido");
-			imprimirWrapper(pw);
-			return;
-		}
+
 		//		pw.println("<option>Solicitar</option>");
 		//		pw.println("<option>Aprobar</option>");
 		//		pw.println("<option>Rechazar</option>");
@@ -128,17 +119,20 @@ public class ServletRegistrarOperacionPrestamoCliente extends ASServlet {
 			}
 
 		}
-		try
+
+		if(tipoOperacion.equalsIgnoreCase("Solicitar"))
 		{
-			numCuotas = Integer.parseInt ( request.getParameter("numCuotas") );
+			try
+			{
+				numCuotas = Integer.parseInt ( request.getParameter("numCuotas") );
+			}
+			catch (Exception e)
+			{
+				imprimirOperacionesPrestamosError(pw, "Lo ingresado en numCuotas no es un n&uacute;mero v&aacute;lido");
+				imprimirWrapper(pw);
+				return;
+			}
 		}
-		catch (Exception e)
-		{
-			imprimirOperacionesPrestamosError(pw, "Lo ingresado en numCuotas no es un n&uacute;mero v&aacute;lido");
-			imprimirWrapper(pw);
-			return;
-		}
-		
 		try
 		{
 			idPrestamo = Integer.parseInt ( request.getParameter("idPrestamo") );
@@ -407,12 +401,12 @@ public class ServletRegistrarOperacionPrestamoCliente extends ASServlet {
 
 		pw.println("</div>");
 	}
-	
+
 	public String darTituloPagina() 
 	{
 		return "Registrar operaci&oacute;n pr&eacute;stamo";
 	}
-	
-	
+
+
 
 }

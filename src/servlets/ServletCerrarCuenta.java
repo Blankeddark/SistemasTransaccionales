@@ -2,19 +2,26 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import DAOS.CerrarCuentaDAO;
-import conexion.ConexionBd;
 
 /**
  * url-pattern: /cerrarCuenta
  */
 public class ServletCerrarCuenta extends ASServlet {
 
+	ArrayList cuentasNoAsignadas;
+	
+	public ServletCerrarCuenta()
+	{
+		cuentasNoAsignadas = new ArrayList();
+	}
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		System.out.println("En doGet de ServletCerrarCuenta");
@@ -66,18 +73,27 @@ public class ServletCerrarCuenta extends ASServlet {
 		}
 
 		CerrarCuentaDAO ccd = new CerrarCuentaDAO();
-
+		
 		try {
 
-			ccd.registrarCerrarCuentaExistente(numCuenta, idNueva);
+			cuentasNoAsignadas = ccd.registrarCerrarCuentaExistente(
+					ServletLogin.darUsuarioActual().getCorreo(),
+					numCuenta, idNueva);
+			
+			if(cuentasNoAsignadas == null)
+			{
+				cuentasNoAsignadas = new ArrayList();
+			}
+			
 			imprimirCerrarCuentaExitoso(pw);
-
 		} 
 
 		catch (Exception e) {
 			imprimirCerrarCuentaError(pw, e.getMessage());
 			e.printStackTrace();
 		}
+		
+		imprimirCerrarCuentaExitoso(pw);
 		imprimirWrapper(pw);
 
 	}
@@ -112,13 +128,24 @@ public class ServletCerrarCuenta extends ASServlet {
 		pw.println("	 <div class=\"form-group\">");
 		pw.println("   <label>Numero de nueva cuenta asociada:</label>");
 		pw.println("<input name=\"numeroNuevaCuentaAsociada\" class=\"form-control\">");
-		pw.println("<br> <font color=\"green\"> ¡Cuenta cerrada exitosamente!</font>");
+
 		pw.println("<br>");
 
 		pw.println("<input type=\"submit\" class=\"btn btn-danger\" value=\"Cerrar\"></button>");
 
 		pw.println("</form>");
 		pw.println("</div>");
+		pw.println("<br> <font color=\"green\">Cuenta cerrada exitosamente.</font>");
+		
+		if( !cuentasNoAsignadas.isEmpty() )
+		{
+			pw.println("<font color=\"red\">Las cuentas con los siguientes id no tienen una cuenta empleador:<br>");
+			
+			for(int i = 0; i < cuentasNoAsignadas.size(); i++)
+			{
+				pw.println(cuentasNoAsignadas.get(i) + "<br>");
+			}
+		}
 		pw.println("<!-- /.col-lg-6 (nested) -->");
 		pw.println("</div>");
 		pw.println("<!-- /.row (nested) -->");
@@ -165,14 +192,15 @@ public class ServletCerrarCuenta extends ASServlet {
 		pw.println("	 <div class=\"form-group\">");
 		pw.println("   <label>Numero de nueva cuenta asociada:</label>");
 		pw.println("<input name=\"numeroNuevaCuentaAsociada\" class=\"form-control\">");
-		pw.println("<br> <font color=\"red\">La cuenta no pudo ser cerrada. Error:<br>"
-				+ error + "</font>");
+		
 		pw.println("<br>");
 
 		pw.println("<button type=\"button\" class=\"btn btn-danger\" value=\"Cerrar\"></input>");
 
 		pw.println("</form>");
 		pw.println("</div>");
+		pw.println("<br> <font color=\"red\">La cuenta no pudo ser cerrada. Error:<br>"
+				+ error + "</font>");
 		pw.println("<!-- /.col-lg-6 (nested) -->");
 		pw.println("</div>");
 		pw.println("<!-- /.row (nested) -->");

@@ -2,12 +2,12 @@ package Fachada;
 
 import java.util.ArrayList;
 
-import vos.EmpleadoValues;
+import vos.CuentaValues;
 import vos.PrestamoValues;
+import vos.Top10Values;
 import vos.TransaccionValues;
 import vos.UsuarioActivoValues;
 import vos.UsuarioValues;
-import vos.Top10Values;
 import DAOS.AsociarCuentaDAO;
 import DAOS.CerrarCuentaDAO;
 import DAOS.CerrarPrestamoDAO;
@@ -16,11 +16,11 @@ import DAOS.ConsultarClienteDAO;
 import DAOS.ConsultarCuentasDAO;
 import DAOS.ConsultarOperacionesDAO;
 import DAOS.ConsultarPrestamosDAO;
+import DAOS.PagarNominaDAO;
 import DAOS.PoblarTablasRB1DAO;
 import DAOS.RegistrarOperacionCuentaDAO;
 import DAOS.RegistrarOperacionSobrePrestamoDAO;
 import DAOS.Top10ActividadesDAO;
-import JSonParser.Principal;
 
 
 /**
@@ -42,6 +42,7 @@ public class BancAndes
 	private ConsultarOperacionesDAO consultaOperacionesDAO;
 	private ConsultarPrestamosDAO consultaPrestamoDAO;
     private AsociarCuentaDAO asociarDAO;
+    private PagarNominaDAO pagarNominaDAO;
 	
 	// -----------------------------------------------------------------
 	// Singleton
@@ -84,7 +85,7 @@ public class BancAndes
 		consultaOperacionesDAO = new ConsultarOperacionesDAO();
 		consultaPrestamoDAO = new ConsultarPrestamosDAO();
         asociarDAO = new AsociarCuentaDAO();
-		
+		pagarNominaDAO = new PagarNominaDAO();
 	}
 
 	/**
@@ -117,11 +118,11 @@ public class BancAndes
 	 * de datos cuyo ID entra por parámetro.
 	 * @param idCuenta
 	 */
-	public void cerrarCuenta(int idCuenta, int nuevaCuenta)
+	public void cerrarCuenta(String correoUsuario, int idCuenta, int nuevaCuenta)
 	{
 		try 
 		{
-			cerrarCuentaDao.registrarCerrarCuentaExistente(idCuenta, nuevaCuenta);
+			cerrarCuentaDao.registrarCerrarCuentaExistente(correoUsuario, idCuenta, nuevaCuenta);
 		}
 
 		catch (Exception e) 
@@ -482,10 +483,22 @@ public class BancAndes
 		return null;
 	}
 	
-	public ArrayList<TransaccionValues> darCuentasCliente( String ordenarPor, String filtrarPor, String desasc,String correoCliente)
+	public ArrayList<TransaccionValues> darOperacionesCliente( String ordenarPor, String filtrarPor, String desasc,String correoCliente)
 	{
 		try {
 			return consultaOperacionesDAO.darOperacionesCliente(ordenarPor, filtrarPor, desasc, correoCliente) ;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	public ArrayList<TransaccionValues> darOperacionesGeneral( String ordenarPor, String filtrarPor, String desasc)
+	{
+		try {
+			return consultaOperacionesDAO.darOperacionesGeneral(ordenarPor, filtrarPor, desasc) ;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -572,6 +585,19 @@ public class BancAndes
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public ArrayList registrarPagarNomina(int cuenta, String correoCliente)
+	{
+		try
+		{
+			return pagarNominaDAO.registrarPagarNomina(cuenta, correoCliente);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

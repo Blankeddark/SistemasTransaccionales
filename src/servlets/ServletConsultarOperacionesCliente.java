@@ -8,24 +8,24 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import Fachada.BancAndes;
 import vos.TransaccionValues;
+import Fachada.BancAndes;
 
 /**
- * url-pattern: /consultarOperacionesGeneral
+ * url-pattern: /consultarOperacionesCliente
  */
-public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
-
+public class ServletConsultarOperacionesCliente extends ASParsingServlet {
+	
 	ArrayList<TransaccionValues> operaciones;
 
-	public ServletConsultarOperacionesGeneral()
+	public ServletConsultarOperacionesCliente()
 	{
 		operaciones = new ArrayList<TransaccionValues>();
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		System.out.println("en doGet de ServletConsultarOperacionesGeneral");
+		System.out.println("en doGet de ServletConsultarOperacionesCliente");
 
 		PrintWriter pw = response.getWriter();
 		imprimirEncabezado(pw);
@@ -36,7 +36,7 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		System.out.println("en doPost de ServletConsultarOperacionesGeneral");
+		System.out.println("en doPost de ServletConsultarOperacionesCliente");
 		PrintWriter pw = response.getWriter();
 		
 		imprimirEncabezado(pw);
@@ -48,18 +48,19 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 			String ordenarPor = request.getParameter("ordenarPor");
 			String descoasc = request.getParameter("descoasc");
 			
-			operaciones = BancAndes.darInstancia().darOperacionesGeneral(ordenarPor, tipoOperacion, descoasc);
+			operaciones = BancAndes.darInstancia().darOperacionesCliente(ordenarPor, tipoOperacion, descoasc,
+																		ServletLogin.darUsuarioActual().getCorreo() );
 		}
 		
 		catch(Exception e)
 		{
-			imprimirConsultarOperacionesGeneralError(pw, e.getMessage());
+			imprimirConsultarOperacionesClienteError(pw, e.getMessage());
 			imprimirWrapper(pw);
 			e.printStackTrace();
 			return;
 		}
 		
-		imprimirConsultarOperacionesGeneralResultados(pw);
+		imprimirConsultarOperacionesClienteResultados(pw);
 		imprimirWrapper(pw);
 	}
 
@@ -82,7 +83,7 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\" action=\"consultarOperacionesGeneral\" method=\"post\">");
+		pw.println("<form role=\"form\" action=\"consultarOperacionesCliente\" method=\"post\">");
 		pw.println("<div class=\"form-group\">");
 
 		pw.println("<label>Tipo:</label>");
@@ -176,7 +177,7 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 
 	}
 	
-	private void imprimirConsultarOperacionesGeneralResultados(PrintWriter pw)
+	private void imprimirConsultarOperacionesClienteResultados(PrintWriter pw)
 	{
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
@@ -195,7 +196,7 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\" action=\"consultarOperacionesGeneral\" method=\"post\">");
+		pw.println("<form role=\"form\" action=\"consultarOperacionesCliente\" method=\"post\">");
 		pw.println("<div class=\"form-group\">");
 
 		pw.println("<label>Tipo:</label>");
@@ -285,7 +286,7 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 
 	}
 	
-	private void imprimirConsultarOperacionesGeneralError(PrintWriter pw, String error)
+	private void imprimirConsultarOperacionesClienteError(PrintWriter pw, String error)
 	{
 		pw.println("<div id=\"page-wrapper\">");
 		pw.println("<div class=\"row\">");
@@ -304,7 +305,7 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 		pw.println("<div class=\"panel-body\">");
 		pw.println("<div class=\"row\">");
 		pw.println("<div class=\"col-lg-12\">");
-		pw.println("<form role=\"form\" action=\"consultarOperacionesGeneral\" method=\"post\">");
+		pw.println("<form role=\"form\" action=\"consultarOperacionesCliente\" method=\"post\">");
 		pw.println("<div class=\"form-group\">");
 
 		pw.println("<label>Tipo:</label>");

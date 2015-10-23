@@ -228,6 +228,22 @@
  
  </servlet>
  
+        <servlet>
+ 
+ 	<display-name>ServletConsultarOperacionesCliente</display-name>
+ 	<servlet-name>ServletConsultarOperacionesCliente</servlet-name>
+ 	<servlet-class>servlets.ServletConsultarOperacionesCliente</servlet-class>
+ 
+ </servlet>
+ 
+         <servlet>
+ 
+ 	<display-name>ServletConsultarPrestamosCliente</display-name>
+ 	<servlet-name>ServletConsultarPrestamosCliente</servlet-name>
+ 	<servlet-class>servlets.ServletConsultarPrestamosCliente</servlet-class>
+ 
+ </servlet>
+ 
  <servlet-mapping>
  
   <servlet-name>ServletPrincipal</servlet-name>
@@ -422,6 +438,20 @@
  
  	<servlet-name>ServletConsultarOperacionesGeneral</servlet-name>
  	<url-pattern>/consultarOperacionesGeneral</url-pattern>
+ 
+ </servlet-mapping>
+ 
+       <servlet-mapping>
+ 
+ 	<servlet-name>ServletConsultarOperacionesCliente</servlet-name>
+ 	<url-pattern>/consultarOperacionesCliente</url-pattern>
+ 
+ </servlet-mapping>
+ 
+        <servlet-mapping>
+ 
+ 	<servlet-name>ServletConsultarPrestamosCliente</servlet-name>
+ 	<url-pattern>/consultarPrestamosCliente</url-pattern>
  
  </servlet-mapping>
  

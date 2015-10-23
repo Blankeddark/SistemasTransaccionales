@@ -42,7 +42,7 @@ public class CerrarCuentaDAO
 		{
 			File arch = new File(path+ARCHIVO_CONEXION);
 			Properties prop = new Properties();
-			FileInputStream in = new FileInputStream (arch);
+			FileInputStream in = new FileInputStream ("C:/Users/Sergio/git/PROJECT_Sistrans/SistemasTransaccionales/WebContent/conexion.properties");
 
 			prop.load(in);
 			in.close();
@@ -228,10 +228,11 @@ public class CerrarCuentaDAO
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean registrarCerrarCuentaExistente (int id_eliminar, int id_nueva) throws Exception
+	public ArrayList registrarCerrarCuentaExistente (String correoUsuario, int id_eliminar, int id_nueva) throws Exception
 	{
 		PreparedStatement prepStmt = null;
-
+		ArrayList cuentasAsociadasGlobal = new ArrayList();
+		
 		try
 		{
 			establecerConexion(cadenaConexion, usuario, clave);
@@ -242,21 +243,33 @@ public class CerrarCuentaDAO
 			Statement s = conexion.createStatement();
 			ResultSet rs = s.executeQuery("SELECT SALDO FROM CUENTAS WHERE ID_CUENTA = "
 					+ id_eliminar);
-			int saldoActual = rs.getInt("SALDO");
+			int saldoActual = 0;
+			while(rs.next())
+			{
+				saldoActual = rs.getInt("SALDO");
+			}
 
 			rs = s.executeQuery("SELECT ESTADO FROM CUENTAS WHERE ID_CUENTA = " + id_eliminar);
-			String estado = rs.getString("ESTADO");
+			String estado = "";
+			
+			while(rs.next())
+			{
+				estado = rs.getString("ESTADO");
+			}
 			if(estado.equals("Inactiva"))
 			{
 				throw new Exception("no se pueden cerrar cuentas ya cerradas");
 			}
 
-
-
 			rs = s.executeQuery("SELECT ID FROM ( SELECT * FROM RETIROS ORDER BY ID DESC) "
 					+ "WHERE ROWNUM = 1");
 
-			int idMax = rs.getInt("ID");
+			int idMax = 0;
+			
+			while(rs.next())
+			{
+				idMax = rs.getInt("ID");
+			}
 			idMax++;
 
 			if(saldoActual == 0)
@@ -274,8 +287,8 @@ public class CerrarCuentaDAO
 
 			else
 			{   
-				rs = s.executeQuery("SELECT ID FROM ( SELECT * FROM CUENTAS NATURAL JOIN"
-						+ " CLIENTES WHERE ID_CUENTA = " + id_eliminar);
+				rs = s.executeQuery("SELECT ID_CUENTA, TIPO_PERSONA FROM ( SELECT * FROM CUENTAS NATURAL JOIN"
+						+ " CLIENTES WHERE ID_CUENTA = " + id_eliminar + ")");
 				char pp = 'a';
 
 				while(rs.next())
@@ -297,7 +310,12 @@ public class CerrarCuentaDAO
 							+ "( SELECT * FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC) "
 							+ "WHERE ROWNUM = 1");
 
-					int idMax2 = rs.getInt("ID_TRANSACCION");
+					int idMax2 = 0;
+					
+					while(rs.next())
+					{
+						idMax2 = rs.getInt("ID_TRANSACCION");
+					}
 					idMax2++;
 
 					String sentencia3 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
@@ -334,12 +352,16 @@ public class CerrarCuentaDAO
 							+ "( SELECT * FROM TRANSACCIONES ORDER BY ID_TRANSACCION DESC) "
 							+ "WHERE ROWNUM = 1");
 
-					int idMax2 = rs.getInt("ID_TRANSACCION");
+					int idMax2 = 0;
+					while (rs.next())
+					{
+						idMax2 = rs.getInt("ID_TRANSACCION");
+					}
 					idMax2++;
 
 					String sentencia3 = "INSERT INTO TRANSACCIONES(ID_TRANSACCION, CORREO_USUARIO,"
 							+ " TIPO, FECHA_TRANSACCION, ID_PUNTO_ATENCION) "
-							+ "VALUES (" +  idMax + ","  + id_eliminar + "," + saldoActual + ")";
+							+ "VALUES (" +  idMax + "," + correoUsuario + "," + "CC" + "," + "24/10/2015" + ")";
 					System.out.println("--------------------------------------------------------------------------");
 					System.out.println(sentencia3);
 					prepStmt = conexion.prepareStatement(sentencia3);
@@ -417,6 +439,7 @@ public class CerrarCuentaDAO
 								for (int j = 0; j < cuentasAsociadas.size(); j++) 
 								{
                                     xd2= ", " + cuentasAsociadas.get(j);
+                                    cuentasAsociadasGlobal.add(cuentasAsociadas.get(j) );
 								}
 								
 								System.out.println("Los siguientes cuentas de empleados no pudieron ser asociados: " + xd2);
@@ -461,7 +484,7 @@ public class CerrarCuentaDAO
 			closeConnection(conexion);
 		} 
 
-		return true;
+		return cuentasAsociadasGlobal;
 	}
 
 	/**

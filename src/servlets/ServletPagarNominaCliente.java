@@ -2,16 +2,27 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import vos.CuentaValues;
+import Fachada.BancAndes;
 
 /**
  * url-pattern: /pagarNominaCliente
  */
 public class ServletPagarNominaCliente extends ASServlet {
 
+	ArrayList cuentasSinPagar;
+	
+	public ServletPagarNominaCliente()
+	{
+		cuentasSinPagar = new ArrayList();
+	}
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
 		System.out.println("en doGet de ServletPagarNominaCliente");
@@ -29,9 +40,54 @@ public class ServletPagarNominaCliente extends ASServlet {
 		PrintWriter pw = response.getWriter();
 		
 		String cuentaAUsar = request.getParameter("cuentaAUsar");
+		int idCuentaAUsar = 0;
 		
 		imprimirEncabezado(pw);
 		imprimirSidebarCliente(pw);
+		
+		try
+		{
+			idCuentaAUsar = Integer.parseInt(cuentaAUsar);
+		}
+		catch (Exception e)
+		{
+			imprimirPagarNominaClienteError(pw, "Lo ingresado en el campo del id de la cuenta a usar no es un n&uacute;mero v&aacute;lido");
+			imprimirWrapper(pw);
+			return;
+		}
+		
+		ArrayList<CuentaValues> cuentas = ServletLogin.darCuentasUsuarioActual();
+		boolean esSuCuenta = false;
+		
+		for(int i = 0; i <cuentas.size() && !esSuCuenta; i++)
+		{
+			if(cuentas.get(i).getIdCuenta() == idCuentaAUsar)
+			{
+				esSuCuenta = true;
+			}
+		}
+		
+		if(!esSuCuenta)
+		{
+			imprimirPagarNominaClienteError(pw, "La cuenta con el id ingresado no existe o no pertenece al usuario actual.");
+			imprimirWrapper(pw);
+			return;
+		}
+		
+		cuentasSinPagar = BancAndes.darInstancia().registrarPagarNomina(idCuentaAUsar, ServletLogin.darUsuarioActual().getCorreo());
+		
+		if( !cuentasSinPagar.isEmpty() )
+		{
+			String error = "No hubo suficiente dinero para pagar todas las cuentas. "
+					+ "<br>Las cuentas con uno de los siguientes ID no recibieron el pago:<br>";
+			
+			for (int i = 0; i < cuentasSinPagar.size(); i++)
+			{
+				error += cuentasSinPagar.get(i) + "<br>";
+			}
+			
+			imprimirPagarNominaClienteError(pw, error);
+		}
 		
 		imprimirPagarNominaClienteExito(pw);
 		imprimirWrapper(pw);

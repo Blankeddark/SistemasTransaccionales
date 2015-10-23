@@ -42,9 +42,9 @@ public class ConsultarOperacionesDAO
 	{
 		try
 		{
-			File arch = new File("C:/Users/Sergio/git/PROJECT_Sistrans/SistemasTransaccionales/WebContent/conexion.properties");
+			File arch = new File(path+ARCHIVO_CONEXION);
 			Properties prop = new Properties();
-			FileInputStream in = new FileInputStream (arch);
+			FileInputStream in = new FileInputStream ("C:/Users/Sergio/git/PROJECT_Sistrans/SistemasTransaccionales/WebContent/conexion.properties");
 
 			prop.load(in);
 			in.close();
@@ -136,11 +136,11 @@ public class ConsultarOperacionesDAO
 		{
 			establecerConexion(cadenaConexion, usuario, clave);
 
-			if(filtroTipo.equals("") && ordenarPor.equals(""))
+			if(filtroTipo.trim().equals("") && ordenarPor.trim().equals("") )
 			{
 				Statement s = conexion.createStatement();
-				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES WHERE CORREO_USUARIO = " 
-						+ correoCliente );
+				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES WHERE CORREO_USUARIO = '" 
+						+ correoCliente + "'" );
 
 				while(rs.next())
 				{
@@ -154,11 +154,11 @@ public class ConsultarOperacionesDAO
 				}	
 			}
 			
-			else if(!filtroTipo.equals("") && ordenarPor.equals(""))
+			else if(!filtroTipo.equals(" ") && ordenarPor.equals(" "))
 			{
 				Statement s = conexion.createStatement();
 				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES WHERE CORREO_USUARIO = " 
-						+ correoCliente + " AND TIPO =  " + filtroTipo);
+						+ correoCliente + " AND TIPO =  '" + filtroTipo + "'");
 
 				while(rs.next())
 				{
@@ -171,7 +171,7 @@ public class ConsultarOperacionesDAO
 				}
 			}
 			
-			else if(filtroTipo.equals("") && !ordenarPor.equals(""))
+			else if(filtroTipo.equals(" ") && !ordenarPor.equals(" "))
 			{
 				Statement s = conexion.createStatement();
 				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES WHERE CORREO_USUARIO = " 
@@ -210,6 +210,10 @@ public class ConsultarOperacionesDAO
 
 
 		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 
 		finally
 		{
@@ -236,7 +240,7 @@ public class ConsultarOperacionesDAO
 			establecerConexion(cadenaConexion, usuario, clave);
 			Statement s = conexion.createStatement();
 			
-			if(filtrarPor.equals(" ") && ordenarPor.equals(" "))
+			if(filtrarPor.trim().equals("") && ordenarPor.trim().equals(""))
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM (SELECT ID AS ID_PUNTO_ATENCION, OFICINA "
 						+ "FROM PUNTOS_ATENCION) NATURAL JOIN TRANSACCIONES WHERE OFICINA = " + idOficina);
@@ -277,7 +281,7 @@ public class ConsultarOperacionesDAO
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM (SELECT ID AS ID_PUNTO_ATENCION, OFICINA "
 						+ "FROM PUNTOS_ATENCION) NATURAL JOIN TRANSACCIONES WHERE OFICINA = " + idOficina
-						+ " AND TIPO = " + filtrarPor);
+						+ " AND TIPO = '" + filtrarPor + "'");
 
 				while(rs.next())
 				{
@@ -315,6 +319,10 @@ public class ConsultarOperacionesDAO
 			
 		}
 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		finally
 		{
 			return operaciones;			
@@ -338,7 +346,7 @@ public class ConsultarOperacionesDAO
 			establecerConexion(cadenaConexion, usuario, clave);
 			Statement s = conexion.createStatement();
 			
-			if(filtrarPor.equals(" ") && ordenarPor.equals(" "))
+			if(filtrarPor.trim().equals("") && ordenarPor.trim().equals(""))
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES");
 				while(rs.next())
@@ -354,7 +362,7 @@ public class ConsultarOperacionesDAO
 				}	
 			}
 			
-			else if(filtrarPor.equals(" ") && !ordenarPor.equals(" "))
+			else if(filtrarPor.trim().equals("") && !ordenarPor.trim().equals(""))
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES ORDER BY " + ordenarPor + " " + descoasc);
 
@@ -371,7 +379,7 @@ public class ConsultarOperacionesDAO
 				}	
 			}
 
-			else if(!filtrarPor.equals(" ") && ordenarPor.equals(" "))
+			else if(!filtrarPor.trim().equals("") && ordenarPor.trim().equals(""))
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES WHERE TIPO = "  + filtrarPor);
 
@@ -391,8 +399,8 @@ public class ConsultarOperacionesDAO
 			
 			else 
 			{
-				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES WHERE TIPO = " + filtrarPor
-						+ " ORDER BY " + ordenarPor + " " + descoasc);
+				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES WHERE TIPO = '" + filtrarPor
+						+ "'  ORDER BY  " + ordenarPor + "   " + descoasc);
 				while(rs.next())
 				{
 
@@ -408,7 +416,12 @@ public class ConsultarOperacionesDAO
 
 			
 		}
-
+		
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
 		finally
 		{
 			return operaciones;			

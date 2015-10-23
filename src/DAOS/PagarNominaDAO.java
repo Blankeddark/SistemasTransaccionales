@@ -7,10 +7,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Properties;
 
-public class AsociarCuentaDAO 
+public class PagarNominaDAO 
 {
 	private static final String ARCHIVO_CONEXION = "/../conexion.properties";
 
@@ -22,7 +24,7 @@ public class AsociarCuentaDAO
 
 	private String cadenaConexion;
 
-	public AsociarCuentaDAO()
+	public PagarNominaDAO()
 	{
 		inicializar("./Conexion/conexion.properties");
 	}
@@ -107,57 +109,102 @@ public class AsociarCuentaDAO
 	}
 
 	/**
-	 * Método que asocia la cuenta de un cliente empresarial a sus empleados.
+	 * Método que paga la nómina de un cliente de tipo ejecutivo, se utilizan savepoints
+	 * para asegurar la transaccionalidad del mpetodo y todo eso.
 	 * @param id_eliminar
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean registrarAsociarCuenta (String correoEmpleador, int cuentaEmpleador, String correoEmpleado, int cuentaEmpleado, int valorPagar, String frecuencia ) throws Exception
+	@SuppressWarnings("finally")
+	public ArrayList registrarPagarNomina (int cuenta, String correoCliente) throws Exception
 	{
 		PreparedStatement prepStmt = null;
-
+		ArrayList cuentasEmpleadosPorPagar = new ArrayList();
 		try
 		{
 			establecerConexion(cadenaConexion, usuario, clave);
-			//conexion.setAutoCommit(false);
-			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);			
+
+			//Desactivamos el autoCommit para tener total control sobre la transacción
+			conexion.setAutoCommit(false);
+
+			//Garantizamos que no habrá problemas de transaccionalidad poniendo el nivel de aislamiento
+			// de la transacción en serializable
+			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+
+			//Creamos nuestro primer savePoint para retornarnos al inicio de la transaccion
+			Savepoint savepoint1 = conexion.setSavepoint("Savepoint1");
+
 			Statement s = conexion.createStatement();
-			ResultSet rs = s.executeQuery("SELECT * FROM CLIENTES WHERE CORREO = '" + correoEmpleador + "'");
+			ResultSet rs = s.executeQuery("SELECT * FROM CUENTAS WHERE ID_CUENTA = " + cuenta);
+			int c = 0;
 
 			while(rs.next())
 			{
-				String tipoPersona = rs.getString("TIPO_PERSONA");
-				if(tipoPersona.charAt(0) == 'N')
+				c = rs.getInt("ID_CUENTA");
+				if(c == 0)
 				{
-					throw new Exception("Una persona natural no puede tener una cuenta asociada a empleados");
+					throw new Exception ("La cuenta ingresada no existe");
 				}
 			}
 
-			rs = s.executeQuery("SELECT CORREO_EMPLEADOR, ID_CUENTA_EMPLEADOR AS ID FROM CLIENTES_EMPLEADOS_DE_CLIENTES "
-					+ " WHERE CORREO_EMPLEADO = '" + correoEmpleado + "'");
-
-			int cuentaAsociada = 0;
+			rs = s.executeQuery("SELECT * FROM CLIENTES_EMPLEADOS_DE_CLIENTES WHERE "
+					+ " ID_CUENTA_EMPLEADOR = " + cuenta);
+			int cantidadEmpleados = 0;
 
 			while(rs.next())
-			{
-				cuentaAsociada = rs.getInt("ID");
-				String correo = rs.getString("CORREO_EMPLEADOR");
-
-				if(cuentaAsociada != 0 && correo.equals(correoEmpleador))
-				{
-					throw new Exception("El empledo ya tiene una de sus cuenta asociada");
-				}
+			{   
+				int cuentaEmpleadoActual = rs.getInt("ID_CUENTA_EMPLEADO");
+				cuentasEmpleadosPorPagar.add(cuentaEmpleadoActual);
+				cantidadEmpleados++;
 			}
 
-			String sentencia = "INSERT INTO CLIENTES_EMPLEADOS_DE_CLIENTES(CORREO_EMPLEADOR, CORREO_EMPLEADO,"
-					+ " ID_CUENTA_EMPLEADOR, ID_CUENTA_EMPLEADO, MONTO_PAGO, FRECUENCIA_PAGO) "
-					+ "VALUES (" + "'" + correoEmpleador + "'" + ","  + "'" + correoEmpleado + "'" + "," 
-					+ cuentaEmpleador + "," + cuentaEmpleado + "," + valorPagar + "," + "'" + 
-					frecuencia + "'" + ")";
-			System.out.println("--------------------------------------------------------------------------");
-			System.out.println(sentencia);
-			prepStmt = conexion.prepareStatement(sentencia);
-			prepStmt.executeUpdate();
+			//Creamos otro savePoint antes de que entrar al for
+			Savepoint savepoint2 = conexion.setSavepoint("Savepoint2");
+			RegistrarOperacionCuentaDAO dao1 = new RegistrarOperacionCuentaDAO();
+
+			//El for está acotado por el número de cuentas de empleados asociadas a la cuenta que entra
+			//Por parámetro
+			for (int i = 0; i < cuentasEmpleadosPorPagar.size(); i++) 
+			{	
+				rs = s.executeQuery("SELECT * FROM CLIENTES_EMPLEADOS_DE_CLIENTES WHERE "
+						+ " ID_CUENTA_EMPLEADO = " + (Integer) cuentasEmpleadosPorPagar.get(i) 
+						+ " AND ID_CUENTA_EMPLEADOR = " + cuenta);
+
+				int valor = 0;
+
+				while(rs.next())
+				{
+					valor = rs.getInt("MONTO_PAGO");
+				}
+
+				try
+				{   
+					//Utilizamos como subtransaccion el RF10
+					dao1.registrarOperacionSobreCuentaExistente("C", correoCliente, (Integer) cuentasEmpleadosPorPagar.get(i), 
+							valor, 1, "null", cuenta);
+					//Eliminamos al empleado de la lista de porPagar una vez se le ha pagado
+					cuentasEmpleadosPorPagar.remove(i);
+				}
+
+				catch(Exception e)
+				{   
+
+					System.out.println(e.getMessage());
+					if(e.getMessage().equals("La cuenta actual no cuenta con suficiente dinero para hacer la transferencia"))
+					{   
+						return cuentasEmpleadosPorPagar;
+					}
+
+					else
+					{
+						conexion.rollback(savepoint2);
+					}
+
+					e.printStackTrace();
+				}
+
+			}
+
 		} 
 
 		catch (Exception e) 
@@ -183,10 +230,11 @@ public class AsociarCuentaDAO
 				}
 			}
 
+
 			closeConnection(conexion);
+
 		} 
-
-		return true;
+		
+		return cuentasEmpleadosPorPagar;
 	}
-
 }

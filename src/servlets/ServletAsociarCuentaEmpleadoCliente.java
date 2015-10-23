@@ -7,6 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import Fachada.BancAndes;
+
 /**
  * url-pattern: /asociarCuentaCliente
  */
@@ -32,12 +34,61 @@ public class ServletAsociarCuentaEmpleadoCliente extends ASServlet {
 		imprimirEncabezado(pw);
 		imprimirSidebarCliente(pw);
 		
+		String correoEmpleador = ServletLogin.darUsuarioActual().getCorreo();
 		String cuentaAAsociar = request.getParameter("cuentaAAsociar");
-		String nombreEmpleado = request.getParameter("nombreEmpleado");
+		int idCuentaAsociar = 0;
+		String correoEmpleado = request.getParameter("correoEmpleado");
+		
 		String cuentaEmpleado = request.getParameter("cuentaEmpleado");
+		int idCuentaEmpleado = 0;
 		String valorAPagar = request.getParameter("valorAPagar");
+		int valor = 0;
 		String frecuenciaPago = request.getParameter("frecuenciaPago");
 		
+		try
+		{
+			idCuentaAsociar = Integer.parseInt(cuentaAAsociar);
+		}
+		catch(Exception e)
+		{
+			imprimirAsociarCuentaClienteError(pw, "Lo ingresado para el valor de la cuenta a asociar no es n&uacute;mero v&aacute;lido");
+			imprimirWrapper(pw);
+			return;
+		}
+		
+		if(correoEmpleado.trim().equals("") )
+		{
+			imprimirAsociarCuentaClienteError(pw, "Por favor ingresa un correo para el empleado");
+			imprimirWrapper(pw);
+			return;
+		}
+		
+		try
+		{
+			idCuentaEmpleado = Integer.parseInt(cuentaEmpleado);
+		}
+		catch(Exception e)
+		{
+			imprimirAsociarCuentaClienteError(pw, "Lo ingresado para el id de la cuenta empleado no es n&uacute;mero v&aacute;lido"); 
+		}
+		
+		try
+		{
+			valor = Integer.parseInt(valorAPagar);
+		}
+		catch(Exception e)
+		{
+			imprimirAsociarCuentaClienteError(pw, "Lo ingresado para el valor a pagar no es n&uacute;mero v&aacute;lido"); 
+		}
+		
+		if(frecuenciaPago.trim().equals(""))
+		{
+			imprimirAsociarCuentaClienteError(pw, "Seleccione una frecuencia de pago");
+			imprimirWrapper(pw);
+			return;
+		}
+		
+		BancAndes.darInstancia().asociarCuentaAEmpleado(correoEmpleador, idCuentaAsociar, correoEmpleado, idCuentaEmpleado, valor, frecuenciaPago);
 		imprimirAsociarCuentaClienteExito(pw);
 		imprimirWrapper(pw);
 	}
@@ -67,8 +118,8 @@ public class ServletAsociarCuentaEmpleadoCliente extends ASServlet {
 		pw.println("<input name=\"cuentaAAsociar\" class=\"form-control\">");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Nombre empleado:</label>");
-		pw.println("<input name=\"nombreEmpleado\" class=\"form-control\">");
+		pw.println("<label>Correo empleado:</label>");
+		pw.println("<input name=\"correoEmpleado\" class=\"form-control\">");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Cuenta Empleado:</label>");
@@ -138,8 +189,8 @@ public class ServletAsociarCuentaEmpleadoCliente extends ASServlet {
 			pw.println("<input name=\"cuentaAAsociar\" class=\"form-control\">");
 			pw.println("</div>");
 			pw.println("<div class=\"form-group\">");
-			pw.println("<label>Nombre empleado:</label>");
-			pw.println("<input name=\"nombreEmpleado\" class=\"form-control\">");
+			pw.println("<label>Correo empleado:</label>");
+			pw.println("<input name=\"correoEmpleado\" class=\"form-control\">");
 			pw.println("</div>");
 			pw.println("<div class=\"form-group\">");
 			pw.println("<label>Cuenta Empleado:</label>");
@@ -163,7 +214,7 @@ public class ServletAsociarCuentaEmpleadoCliente extends ASServlet {
 			pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Asociar\"></input>");
 
 			pw.println("</form>");
-			pw.println("font color=\"green\">La operaci&oacute;n fue realizada &eacute;xitosamente</font>");
+			pw.println("<font color=\"green\">La operaci&oacute;n fue realizada &eacute;xitosamente</font>");
 			pw.println("</div>");
 			pw.println("<!-- /.col-lg-6 (nested) -->");
 			pw.println("</div>");
@@ -209,8 +260,8 @@ public class ServletAsociarCuentaEmpleadoCliente extends ASServlet {
 		pw.println("<input name=\"cuentaAAsociar\" class=\"form-control\">");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Nombre empleado:</label>");
-		pw.println("<input name=\"nombreEmpleado\" class=\"form-control\">");
+		pw.println("<label>Correo empleado:</label>");
+		pw.println("<input name=\"correoEmpleado\" class=\"form-control\">");
 		pw.println("</div>");
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Cuenta Empleado:</label>");
