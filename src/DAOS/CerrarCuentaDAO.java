@@ -210,6 +210,10 @@ public class CerrarCuentaDAO
 			}
 
 		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 
 		finally
 		{
@@ -485,6 +489,46 @@ public class CerrarCuentaDAO
 		} 
 
 		return cuentasAsociadasGlobal;
+	}
+	
+	/**
+	 * Retorna los id de las cuentas asociadas a la cuenta con la id ingresada por parámetro.
+	 * @param correoCliente id del cliente
+	 * @return
+	 */
+	public ArrayList<Integer> darCuentasAsociadasA (int idCuenta)
+	{
+		PreparedStatement prepStmt = null;
+		ArrayList<Integer> rta = new ArrayList<Integer>();
+		
+		try
+		{
+			establecerConexion(cadenaConexion, usuario, clave);
+			conexion.setAutoCommit(false);
+			conexion.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+			Statement s = conexion.createStatement();
+			
+			String query = "SELECT ID_CUENTA_EMPLEADO FROM CLIENTES_EMPLEADOS_DE_CLIENTES WHERE ID_CUENTA_EMPLEADOR = " + idCuenta;
+			System.out.println("--------------------------------------------------------------------------");
+			System.out.println(query);
+			ResultSet rs = s.executeQuery(query);
+			
+			while(rs.next())
+			{
+				int numero = rs.getInt("ID_CUENTA_EMPLEADO");
+				rta.add( Integer.valueOf( numero ) );
+			}
+		}
+		
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		finally
+		{
+			return rta;
+		}
 	}
 
 	/**

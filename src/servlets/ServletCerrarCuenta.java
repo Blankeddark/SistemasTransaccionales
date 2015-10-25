@@ -15,7 +15,7 @@ import DAOS.CerrarCuentaDAO;
  */
 public class ServletCerrarCuenta extends ASServlet {
 
-	ArrayList cuentasNoAsignadas;
+	ArrayList<Integer> cuentasNoAsignadas;
 	
 	public ServletCerrarCuenta()
 	{
@@ -56,6 +56,8 @@ public class ServletCerrarCuenta extends ASServlet {
 			return;
 		}
 
+		boolean hayNumNuevaCuenta = false;
+		
 		if(numeroNuevaCuentaAsociada != null)
 		{
 			if( !numeroNuevaCuentaAsociada.trim().equals(""))
@@ -63,6 +65,7 @@ public class ServletCerrarCuenta extends ASServlet {
 				try
 				{
 					idNueva = Integer.parseInt( numeroNuevaCuentaAsociada );
+					hayNumNuevaCuenta = true;
 				}
 				catch (Exception e2)
 				{
@@ -76,16 +79,14 @@ public class ServletCerrarCuenta extends ASServlet {
 		
 		try {
 
-			cuentasNoAsignadas = ccd.registrarCerrarCuentaExistente(
+			ccd.registrarCerrarCuentaExistente(
 					ServletLogin.darUsuarioActual().getCorreo(),
 					numCuenta, idNueva);
 			
-			if(cuentasNoAsignadas == null)
+			if(!hayNumNuevaCuenta)
 			{
-				cuentasNoAsignadas = new ArrayList();
+				cuentasNoAsignadas = ccd.darCuentasAsociadasA(numCuenta);
 			}
-			
-			imprimirCerrarCuentaExitoso(pw);
 		} 
 
 		catch (Exception e) {
@@ -139,7 +140,7 @@ public class ServletCerrarCuenta extends ASServlet {
 		
 		if( !cuentasNoAsignadas.isEmpty() )
 		{
-			pw.println("<font color=\"red\">Las cuentas con los siguientes id no tienen una cuenta empleador:<br>");
+			pw.println("<br><font color=\"red\">Las cuentas con los siguientes id no tienen una cuenta empleador:<br>");
 			
 			for(int i = 0; i < cuentasNoAsignadas.size(); i++)
 			{
