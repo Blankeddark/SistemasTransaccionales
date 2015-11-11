@@ -244,6 +244,22 @@
  
  </servlet>
  
+          <servlet>
+ 
+ 	<display-name>ServletConsultarConsignacionesGeneral</display-name>
+ 	<servlet-name>ServletConsultarConsignacionesGeneral</servlet-name>
+ 	<servlet-class>servlets.ServletConsultarConsignacionesGeneral</servlet-class>
+ 
+ </servlet>
+ 
+           <servlet>
+ 
+ 	<display-name>ServletConsultarPuntosAtencionGeneral</display-name>
+ 	<servlet-name>ServletConsultarPuntosAtencionGeneral</servlet-name>
+ 	<servlet-class>servlets.ServletConsultarPuntosAtencionGeneral</servlet-class>
+ 
+ </servlet>
+ 
  <servlet-mapping>
  
   <servlet-name>ServletPrincipal</servlet-name>
@@ -452,6 +468,20 @@
  
  	<servlet-name>ServletConsultarPrestamosCliente</servlet-name>
  	<url-pattern>/consultarPrestamosCliente</url-pattern>
+ 
+ </servlet-mapping>
+ 
+         <servlet-mapping>
+ 
+ 	<servlet-name>ServletConsultarConsignacionesGeneral</servlet-name>
+ 	<url-pattern>/consultarConsignacionesGeneral</url-pattern>
+ 
+ </servlet-mapping>
+ 
+          <servlet-mapping>
+ 
+ 	<servlet-name>ServletConsultarPuntosAtencionGeneral</servlet-name>
+ 	<url-pattern>/consultarPuntosAtencionGeneral</url-pattern>
  
  </servlet-mapping>
  

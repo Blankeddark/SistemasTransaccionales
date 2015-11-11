@@ -8,18 +8,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
 
-import vos.ClienteValues;
-import vos.CuentaValues;
-import vos.OficinaValues;
-import vos.PrestamoValues;
 import vos.TransaccionValues;
-import vos.UsuarioValues;
 
 public class ConsultarOperacionesDAO 
 {
@@ -153,7 +146,7 @@ public class ConsultarOperacionesDAO
 					System.out.println("---------Usuarios-------");			
 				}	
 			}
-			
+
 			else if(!filtroTipo.equals(" ") && ordenarPor.equals(" "))
 			{
 				Statement s = conexion.createStatement();
@@ -170,7 +163,7 @@ public class ConsultarOperacionesDAO
 					System.out.println("---------Usuarios-------");			
 				}
 			}
-			
+
 			else if(filtroTipo.equals(" ") && !ordenarPor.equals(" "))
 			{
 				Statement s = conexion.createStatement();
@@ -188,7 +181,7 @@ public class ConsultarOperacionesDAO
 					System.out.println("---------Usuarios-------");			
 				}	
 			}
-			
+
 			else 
 			{
 				Statement s = conexion.createStatement();
@@ -206,7 +199,7 @@ public class ConsultarOperacionesDAO
 					System.out.println("---------Usuarios-------");			
 				}
 			}
-			
+
 
 
 		}
@@ -239,7 +232,7 @@ public class ConsultarOperacionesDAO
 		{
 			establecerConexion(cadenaConexion, usuario, clave);
 			Statement s = conexion.createStatement();
-			
+
 			if(filtrarPor.trim().equals("") && ordenarPor.trim().equals(""))
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM (SELECT ID AS ID_PUNTO_ATENCION, OFICINA "
@@ -257,7 +250,7 @@ public class ConsultarOperacionesDAO
 					System.out.println("---------Usuarios-------");			
 				}	
 			}
-			
+
 			else if(filtrarPor.equals(" ") && !ordenarPor.equals(" "))
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM (SELECT ID AS ID_PUNTO_ATENCION, OFICINA "
@@ -295,8 +288,8 @@ public class ConsultarOperacionesDAO
 					System.out.println("---------Usuarios-------");			
 				}	
 			}
-			
-			
+
+
 			else 
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM (SELECT ID AS ID_PUNTO_ATENCION, OFICINA "
@@ -316,7 +309,7 @@ public class ConsultarOperacionesDAO
 				}	
 			}
 
-			
+
 		}
 
 		catch (Exception e)
@@ -345,7 +338,7 @@ public class ConsultarOperacionesDAO
 		{
 			establecerConexion(cadenaConexion, usuario, clave);
 			Statement s = conexion.createStatement();
-			
+
 			if(filtrarPor.trim().equals("") && ordenarPor.trim().equals(""))
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES");
@@ -361,7 +354,7 @@ public class ConsultarOperacionesDAO
 					System.out.println("---------Usuarios-------");			
 				}	
 			}
-			
+
 			else if(filtrarPor.trim().equals("") && !ordenarPor.trim().equals(""))
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES ORDER BY " + ordenarPor + " " + descoasc);
@@ -395,8 +388,8 @@ public class ConsultarOperacionesDAO
 					System.out.println("---------Usuarios-------");			
 				}	
 			}
-			
-			
+
+
 			else 
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES WHERE TIPO = '" + filtrarPor
@@ -414,18 +407,41 @@ public class ConsultarOperacionesDAO
 				}	
 			}
 
-			
+
 		}
-		
+
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-		
+
 		finally
 		{
 			return operaciones;			
 		}
 
+	}
+
+	/**
+	 * Retorna el valor de la consignación cuyo id es ingresado por parámetro.
+	 * @param idConsignaciones id de la consignación cuyo valor es requiere.
+	 * @return
+	 * @throws SQLException 
+	 */
+	public int darValorConsignacion(int idConsignacion) throws SQLException
+	{
+		establecerConexion(cadenaConexion, usuario, clave);
+		Statement s = conexion.createStatement();
+
+
+		int rta = 0;
+		ResultSet rs = s.executeQuery("SELECT MONTO FROM CONSIGNACIONES WHERE ID =" + idConsignacion);
+		while(rs.next())
+		{
+			rta = rs.getInt("MONTO");
+		}
+
+
+		return rta;
 	}
 }

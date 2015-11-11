@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import DAOS.CerrarPrestamoDAO;
 import DAOS.ConsultarCuentasDAO;
-import Fachada.BancAndes;
 
 
 public class ServletCerrarPrestamo extends ASServlet {

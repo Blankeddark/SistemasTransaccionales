@@ -8,8 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import Fachada.BancAndes;
 import vos.PrestamoValues;
+import Fachada.BancAndes;
 
 /**
  * url-pattern: /consultarPrestamosGeneral

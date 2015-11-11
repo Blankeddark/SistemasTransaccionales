@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import vos.ClienteValues;
+import vos.ConsignacionValues;
 import vos.CuentaValues;
 import vos.PrestamoValues;
 import vos.TransaccionValues;
@@ -14,6 +15,7 @@ import vos.TransaccionValues;
  */
 public abstract class ASParsingServlet extends ASServlet {
 
+	private final static int MAXIMO_DATOS_PAGINA = 50;
 	/**
 	 * Parse una tabla de cuentas en orden:
 	 * idCuenta
@@ -27,8 +29,9 @@ public abstract class ASParsingServlet extends ASServlet {
 	 */
 	protected void parsearTablaCuentas(ArrayList<CuentaValues> cuentas, PrintWriter pw)
 	{
-		for (CuentaValues cuentaActual : cuentas)
+		for (int i = 0; i < MAXIMO_DATOS_PAGINA; i++)
 		{
+			CuentaValues cuentaActual = cuentas.get(i);
 			pw.println("<tr class=\"odd gradeX\">");
 			pw.println("<td>" + cuentaActual.getIdCuenta() + "</td>");
 			pw.println("<td>" + cuentaActual.getTipoCuenta() + "</td>");
@@ -42,8 +45,9 @@ public abstract class ASParsingServlet extends ASServlet {
 	
 	protected void parsearTablaOperaciones(ArrayList<TransaccionValues> operaciones, PrintWriter pw)
 	{
-		for(TransaccionValues transaccionActual : operaciones)
+		for(int i = 0; i < MAXIMO_DATOS_PAGINA; i++)
 		{
+			TransaccionValues transaccionActual = operaciones.get(i);
 			pw.println("<tr class=\"odd gradeX\">");
 			pw.println("<td>" + transaccionActual.getIdTransaccion() + "</td>");
 			pw.println("<td>" + transaccionActual.getCorreoUsuario() + "</td>");
@@ -67,8 +71,9 @@ public abstract class ASParsingServlet extends ASServlet {
 	 */
 	protected void parsearTablaCuentasTipo2(ArrayList<CuentaValues> cuentas, PrintWriter pw)
 	{
-		for (CuentaValues cuentaActual : cuentas)
+		for (int i = 0; i < MAXIMO_DATOS_PAGINA && i < cuentas.size(); i++)
 		{
+			CuentaValues cuentaActual = cuentas.get(i);
 			pw.println("<tr class=\"odd gradeX\">");
 			pw.println("<td>" + cuentaActual.getIdCuenta() + "</td>");
 			pw.println("<td>" + cuentaActual.getCorreo() + "</td>");
@@ -85,8 +90,9 @@ public abstract class ASParsingServlet extends ASServlet {
 	 
 	protected void parsearTablaClientes(ArrayList<ClienteValues> clientes, PrintWriter pw)
 	{
-		for (ClienteValues clienteActual : clientes)
+		for (int i = 0; i < MAXIMO_DATOS_PAGINA && i < clientes.size(); i++)
 		{ 
+			ClienteValues clienteActual = clientes.get(i);	
 			pw.println("<tr class=\"odd gradeX\">");
 			pw.println("<td>" + clienteActual.getNombre() + "</td>");
 			pw.println("<td>" + clienteActual.getTipoPersona() + "</td>");
@@ -99,8 +105,9 @@ public abstract class ASParsingServlet extends ASServlet {
 	
 	protected void parsearTablaPrestamos(ArrayList<PrestamoValues> prestamos, PrintWriter pw)
 	{
-		for (PrestamoValues prestamoActual : prestamos)
+		for (int i = 0; i < MAXIMO_DATOS_PAGINA && i < prestamos.size(); i++)
 		{
+			PrestamoValues prestamoActual = prestamos.get(i);
 			pw.println("<tr class=\"odd gradeX\">");
 
 			pw.println("<td>" + prestamoActual.getId() + "</td>");
@@ -115,8 +122,9 @@ public abstract class ASParsingServlet extends ASServlet {
 	
 	protected void parsearTablaPrestamosTipo2(ArrayList<PrestamoValues> prestamos, PrintWriter pw)
 	{
-		for (PrestamoValues prestamoActual : prestamos)
+		for (int i = 0; i < MAXIMO_DATOS_PAGINA && i < prestamos.size(); i++)
 		{
+			PrestamoValues prestamoActual = prestamos.get(i);
 			pw.println("<tr class=\"odd gradeX\">");
 
 			pw.println("<td>" + prestamoActual.getId() + "</td>");
@@ -128,6 +136,21 @@ public abstract class ASParsingServlet extends ASServlet {
 			pw.println("<td>" + prestamoActual.getEstado() + "</td>");
 			pw.println("</tr>");
 		}
+	}
+	
+	protected void parsearTablaConsignaciones(ArrayList<ConsignacionValues> consignaciones, PrintWriter pw)
+	{
+		for (int i = 0; i < MAXIMO_DATOS_PAGINA && i < consignaciones.size(); i++)
+		{
+			ConsignacionValues consignacionActual = consignaciones.get(i);
+			pw.println("<tr class=\"odd gradeX\">");
+			pw.println("<td>"+ consignacionActual.getId()  +"</td>");
+			pw.println("<td>" + consignacionActual.getIdCuentaOrigen() +"</td>");
+			pw.println("<td>"+  consignacionActual.getIdCuentaDestino()+ "</td>");
+			pw.println("<td>"+ consignacionActual.getMonto() + "</td>");
+			pw.println("</tr>");
+		}
+
 	}
 	/**
 	 * 
@@ -222,5 +245,6 @@ public abstract class ASParsingServlet extends ASServlet {
 			}
 		}
 	}
+	
 	
 }

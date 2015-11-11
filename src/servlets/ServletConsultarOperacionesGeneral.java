@@ -8,8 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import Fachada.BancAndes;
 import vos.TransaccionValues;
+import Fachada.BancAndes;
 
 /**
  * url-pattern: /consultarOperacionesGeneral
@@ -38,27 +38,101 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 	{
 		System.out.println("en doPost de ServletConsultarOperacionesGeneral");
 		PrintWriter pw = response.getWriter();
-		
+
 		imprimirEncabezado(pw);
 		imprimirSidebarGG(pw);
+
+		String botonBuscar = request.getParameter("Buscar");
+		String botonBuscarV2 = request.getParameter("BuscarV2");
+		String botonBuscarV3 = request.getParameter("BuscarV3");
+
+		String tipoOperacion = request.getParameter("tipoOperacion");
+		String ordenarPor = request.getParameter("ordenarPor");
+		String descoasc = request.getParameter("descoasc");
+		String fechaInicial = request.getParameter("fechaInicial");
+		String fechaFinal = request.getParameter("fechaFinal");
+		String monto  = request.getParameter("monto");
 		
-		try
+		
+
+		if (botonBuscar != null)
 		{
-			String tipoOperacion = request.getParameter("tipoOperacion");
-			String ordenarPor = request.getParameter("ordenarPor");
-			String descoasc = request.getParameter("descoasc");
+			try
+			{
+
+				operaciones = BancAndes.darInstancia().darOperacionesGeneral(ordenarPor, tipoOperacion, descoasc);
+			}
+
+			catch(Exception e)
+			{
+				imprimirConsultarOperacionesGeneralError(pw, e.getMessage());
+				imprimirWrapper(pw);
+				e.printStackTrace();
+				return;
+			}
+		}
+		else if (botonBuscarV2 != null)
+		{
+			int montoInt = 0;
+			try
+			{
+				montoInt = Integer.parseInt(monto);
+			}
 			
-			operaciones = BancAndes.darInstancia().darOperacionesGeneral(ordenarPor, tipoOperacion, descoasc);
+			catch(Exception e)
+			{
+				imprimirConsultarOperacionesGeneralError(pw, "Lo ingresado en monto no es un n&uacute;mero v&aacute;lido");
+				imprimirWrapper(pw);
+				e.printStackTrace();
+				return;
+			}
+			
+			try
+			{
+
+				operaciones = BancAndes.darInstancia().consultarOperacionesV2(fechaInicial, fechaFinal, montoInt, tipoOperacion);
+			}
+
+			catch(Exception e)
+			{
+				imprimirConsultarOperacionesGeneralError(pw, e.getMessage());
+				imprimirWrapper(pw);
+				e.printStackTrace();
+				return;
+			}
 		}
-		
-		catch(Exception e)
+
+		else if (botonBuscarV3 != null)
 		{
-			imprimirConsultarOperacionesGeneralError(pw, e.getMessage());
-			imprimirWrapper(pw);
-			e.printStackTrace();
-			return;
+			int montoInt = 0;
+			try
+			{
+				montoInt = Integer.parseInt(monto);
+			}
+			
+			catch(Exception e)
+			{
+				imprimirConsultarOperacionesGeneralError(pw, "Lo ingresado en monto no es un n&uacute;mero v&aacute;lido");
+				imprimirWrapper(pw);
+				e.printStackTrace();
+				return;
+			}
+			
+			try
+			{
+
+				operaciones = BancAndes.darInstancia().consultarOperacionesV3(fechaInicial, fechaFinal, montoInt, tipoOperacion);
+			}
+
+			catch(Exception e)
+			{
+				imprimirConsultarOperacionesGeneralError(pw, e.getMessage());
+				imprimirWrapper(pw);
+				e.printStackTrace();
+				return;
+			}
 		}
-		
+
 		imprimirConsultarOperacionesGeneralResultados(pw);
 		imprimirWrapper(pw);
 	}
@@ -121,7 +195,31 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 		pw.println("</div>");
 		pw.println("<br>");
 
-		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\"></input>");
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Fecha inicial transaccion:</label>");
+		pw.println("<input class=\"form-control\" name=\"fechaInicial\" placeholder=\"DD/MM/AAAA\" value=\"\">");
+		pw.println("</div>");
+
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Fecha final transaccion:</label>");
+		pw.println("<input name=\"fechaFinal\" class=\"form-control\" placeholder=\"DD/MM/AAAA\" value=\"\">");
+		pw.println("</div>");
+
+
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Monto:</label>");
+		pw.println("<input name=\"monto\" class=\"form-control\">");
+		pw.println("</div>");
+
+		pw.println("<br>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"Buscar\" value=\"Buscar\"></input>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"BuscarV2\" value=\"Buscar V2\"></input>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-danger\" name=\"BuscarV3\" value=\"Buscar V3\"></input>");
+
+
 
 		pw.println("</form>");
 		pw.println("</div>");
@@ -175,7 +273,7 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 		pw.println("</div>");
 
 	}
-	
+
 	private void imprimirConsultarOperacionesGeneralResultados(PrintWriter pw)
 	{
 		pw.println("<div id=\"page-wrapper\">");
@@ -234,7 +332,30 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 		pw.println("</div>");
 		pw.println("<br>");
 
-		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\"></input>");
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Fecha inicial transaccion:</label>");
+		pw.println("<input class=\"form-control\" name=\"fechaInicial\" placeholder=\"DD/MM/AAAA\" value=\"\">");
+		pw.println("</div>");
+
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Fecha final transaccion:</label>");
+		pw.println("<input name=\"fechaFinal\" class=\"form-control\" placeholder=\"DD/MM/AAAA\" value=\"\">");
+		pw.println("</div>");
+
+
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Monto:</label>");
+		pw.println("<input name=\"monto\" class=\"form-control\">");
+		pw.println("</div>");
+
+		pw.println("<br>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"Buscar\" value=\"Buscar\"></input>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"BuscarV2\" value=\"Buscar V2\"></input>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-danger\" name=\"BuscarV3\" value=\"Buscar V3\"></input>");
+
 
 		pw.println("</form>");
 		pw.println("</div>");
@@ -284,7 +405,7 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 		pw.println("</div>");
 
 	}
-	
+
 	private void imprimirConsultarOperacionesGeneralError(PrintWriter pw, String error)
 	{
 		pw.println("<div id=\"page-wrapper\">");
@@ -343,7 +464,30 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 		pw.println("</div>");
 		pw.println("<br>");
 
-		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\"></input>");
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Fecha inicial transaccion:</label>");
+		pw.println("<input class=\"form-control\" name=\"fechaInicial\" placeholder=\"DD/MM/AAAA\" value=\"\">");
+		pw.println("</div>");
+
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Fecha final transaccion:</label>");
+		pw.println("<input name=\"fechaFinal\" class=\"form-control\" placeholder=\"DD/MM/AAAA\" value=\"\">");
+		pw.println("</div>");
+
+
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Monto:</label>");
+		pw.println("<input name=\"monto\" class=\"form-control\">");
+		pw.println("</div>");
+
+		pw.println("<br>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"Buscar\" value=\"Buscar\"></input>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"BuscarV2\" value=\"Buscar V2\"></input>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"BuscarV3\" value=\"Buscar V3\"></input>");
+
 
 		pw.println("</form>");
 		pw.println("</div>");

@@ -17,7 +17,6 @@ import java.util.Properties;
 
 import vos.CuentaValues;
 import vos.EmpleadoValues;
-import conexion.ConexionBd;
 
 public class CerrarCuentaDAO 
 {

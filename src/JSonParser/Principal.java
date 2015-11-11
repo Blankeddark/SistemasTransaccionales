@@ -2,7 +2,6 @@ package JSonParser;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Iterator;
- 
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

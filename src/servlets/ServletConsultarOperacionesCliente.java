@@ -40,24 +40,42 @@ public class ServletConsultarOperacionesCliente extends ASParsingServlet {
 		PrintWriter pw = response.getWriter();
 		
 		imprimirEncabezado(pw);
-		imprimirSidebarGG(pw);
+		imprimirSidebarCliente(pw);
 		
-		try
+		String botonBuscar = request.getParameter("Buscar");
+		String botonBuscarV2 = request.getParameter("BuscarV2");
+		String botonBuscarV3 = request.getParameter("BuscarV3");
+
+		String tipoOperacion = request.getParameter("tipoOperacion");
+		String ordenarPor = request.getParameter("ordenarPor");
+		String descoasc = request.getParameter("descoasc");
+		String fechaInicial = request.getParameter("fechaInicial");
+		String fechaFinal = request.getParameter("fechaFinal");
+
+		if (botonBuscar != null)
 		{
-			String tipoOperacion = request.getParameter("tipoOperacion");
-			String ordenarPor = request.getParameter("ordenarPor");
-			String descoasc = request.getParameter("descoasc");
-			
-			operaciones = BancAndes.darInstancia().darOperacionesCliente(ordenarPor, tipoOperacion, descoasc,
-																		ServletLogin.darUsuarioActual().getCorreo() );
+			try
+			{
+
+				operaciones = BancAndes.darInstancia().darOperacionesGeneral(ordenarPor, tipoOperacion, descoasc);
+			}
+
+			catch(Exception e)
+			{
+				imprimirConsultarOperacionesClienteError(pw, e.getMessage());
+				imprimirWrapper(pw);
+				e.printStackTrace();
+				return;
+			}
 		}
-		
-		catch(Exception e)
+		else if (botonBuscarV2 != null)
 		{
-			imprimirConsultarOperacionesClienteError(pw, e.getMessage());
-			imprimirWrapper(pw);
-			e.printStackTrace();
-			return;
+
+		}
+
+		else if (botonBuscarV3 != null)
+		{
+
 		}
 		
 		imprimirConsultarOperacionesClienteResultados(pw);
@@ -122,7 +140,29 @@ public class ServletConsultarOperacionesCliente extends ASParsingServlet {
 		pw.println("</div>");
 		pw.println("<br>");
 
-		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\"></input>");
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Fecha inicial transaccion:</label>");
+		pw.println("<input class=\"form-control\" name=\"fechaInicial\" placeholder=\"DD/MM/AAAA\" value=\"\">");
+		pw.println("</div>");
+
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Fecha final transaccion:</label>");
+		pw.println("<input name=\"fechaFinal\" class=\"form-control\" placeholder=\"DD/MM/AAAA\" value=\"\">");
+		pw.println("</div>");
+
+
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Monto:</label>");
+		pw.println("<input class=\"form-control\">");
+		pw.println("</div>");
+
+		pw.println("<br>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"Buscar\" value=\"Buscar\"></input>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"BuscarV2\" value=\"Buscar V2\"></input>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"BuscarV3\" value=\"Buscar V3\"></input>");
 
 		pw.println("</form>");
 		pw.println("</div>");
@@ -235,7 +275,29 @@ public class ServletConsultarOperacionesCliente extends ASParsingServlet {
 		pw.println("</div>");
 		pw.println("<br>");
 
-		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\"></input>");
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Fecha inicial transaccion:</label>");
+		pw.println("<input class=\"form-control\" name=\"fechaInicial\" placeholder=\"DD/MM/AAAA\" value=\"\">");
+		pw.println("</div>");
+
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Fecha final transaccion:</label>");
+		pw.println("<input name=\"fechaFinal\" class=\"form-control\" placeholder=\"DD/MM/AAAA\" value=\"\">");
+		pw.println("</div>");
+
+
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Monto:</label>");
+		pw.println("<input class=\"form-control\">");
+		pw.println("</div>");
+
+		pw.println("<br>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"Buscar\" value=\"Buscar\"></input>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"BuscarV2\" value=\"Buscar V2\"></input>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"BuscarV3\" value=\"Buscar V3\"></input>");
 
 		pw.println("</form>");
 		pw.println("</div>");
@@ -344,7 +406,29 @@ public class ServletConsultarOperacionesCliente extends ASParsingServlet {
 		pw.println("</div>");
 		pw.println("<br>");
 
-		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\"></input>");
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Fecha inicial transaccion:</label>");
+		pw.println("<input class=\"form-control\" name=\"fechaInicial\" placeholder=\"DD/MM/AAAA\" value=\"\">");
+		pw.println("</div>");
+
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Fecha final transaccion:</label>");
+		pw.println("<input name=\"fechaFinal\" class=\"form-control\" placeholder=\"DD/MM/AAAA\" value=\"\">");
+		pw.println("</div>");
+
+
+		pw.println("<div class=\"form-group\">");
+		pw.println("<label>Monto:</label>");
+		pw.println("<input class=\"form-control\">");
+		pw.println("</div>");
+
+		pw.println("<br>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"Buscar\" value=\"Buscar\"></input>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"BuscarV2\" value=\"Buscar V2\"></input>");
+
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" name=\"BuscarV3\" value=\"Buscar V3\"></input>");
 
 		pw.println("</form>");
 		pw.println("</div>");

@@ -2,10 +2,9 @@ package Test;
 
 import java.util.ArrayList;
 
-import DAOS.PoblarTablasRB1DAO;
-import Fachada.BancAndes;
-import JSonParser.Principal;
 import junit.framework.TestCase;
+import DAOS.PoblarTablasRB1DAO;
+import JSonParser.Principal;
 
 
 public class DatabaseTests extends TestCase

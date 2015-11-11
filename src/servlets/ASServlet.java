@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
 
 public abstract class ASServlet extends HttpServlet {
 
@@ -346,6 +345,12 @@ public abstract class ASServlet extends HttpServlet {
 		pw.println("</li>");
 		pw.println("<li>");
 		pw.println("<a href=\"consultarPrestamosGeneral\">Consultar prestamos</a>");
+		pw.println("</li>");
+		pw.println("<li>");
+		pw.println("<a href=\"consultarConsignacionesGeneral\">Consultar consignaciones</a>");
+		pw.println("</li>");
+		pw.println("<li>");
+		pw.println("<a href=\"consultarPuntosAtencionGeneral\">Consultar puntos atenci&oacute;n</a>");
 		pw.println("</li>");
 		pw.println("</ul>");
 		pw.println("<!-- /.nav-second-level -->");

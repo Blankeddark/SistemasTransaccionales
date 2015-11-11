@@ -2,7 +2,7 @@ package Fachada;
 
 import java.util.ArrayList;
 
-import vos.CuentaValues;
+import vos.ConsignacionValues;
 import vos.PrestamoValues;
 import vos.Top10Values;
 import vos.TransaccionValues;
@@ -16,6 +16,7 @@ import DAOS.ConsultarClienteDAO;
 import DAOS.ConsultarCuentasDAO;
 import DAOS.ConsultarOperacionesDAO;
 import DAOS.ConsultarPrestamosDAO;
+import DAOS.Iter4DAO;
 import DAOS.PagarNominaDAO;
 import DAOS.PoblarTablasRB1DAO;
 import DAOS.RegistrarOperacionCuentaDAO;
@@ -41,9 +42,11 @@ public class BancAndes
 	private Top10ActividadesDAO top10;
 	private ConsultarOperacionesDAO consultaOperacionesDAO;
 	private ConsultarPrestamosDAO consultaPrestamoDAO;
-    private AsociarCuentaDAO asociarDAO;
-    private PagarNominaDAO pagarNominaDAO;
-	
+	private AsociarCuentaDAO asociarDAO;
+	private Iter4DAO iter4Dao;
+
+	private PagarNominaDAO pagarNominaDAO;
+
 	// -----------------------------------------------------------------
 	// Singleton
 	// -----------------------------------------------------------------
@@ -68,6 +71,8 @@ public class BancAndes
 		return instancia;
 	}
 
+
+
 	/**
 	 * contructor de la clase. Inicializa el atributo dao.
 	 */
@@ -84,7 +89,8 @@ public class BancAndes
 		top10 = new Top10ActividadesDAO();
 		consultaOperacionesDAO = new ConsultarOperacionesDAO();
 		consultaPrestamoDAO = new ConsultarPrestamosDAO();
-        asociarDAO = new AsociarCuentaDAO();
+		asociarDAO = new AsociarCuentaDAO();
+		iter4Dao = new Iter4DAO();
 		pagarNominaDAO = new PagarNominaDAO();
 	}
 
@@ -103,6 +109,7 @@ public class BancAndes
 		registrarOperacionCuentaDAO.inicializar(ruta);
 		registrarOperacionPrestamoDAO.inicializar(ruta);
 		consultarActivoDAO.inicializar(ruta);
+		iter4Dao.inicializar(ruta);
 	}
 
 
@@ -446,6 +453,19 @@ public class BancAndes
 		return null;
 	}
 
+	public ArrayList registrarPagarNomina(int cuenta, String correoCliente)
+	{
+		try
+		{
+			return pagarNominaDAO.registrarPagarNomina(cuenta, correoCliente);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public ArrayList<UsuarioActivoValues> darUsuarioActivoOficina(String tipoTransaccion, int oficina)
 	{
 		try {
@@ -458,7 +478,7 @@ public class BancAndes
 		return null;
 	}
 
-	
+
 	public ArrayList<Top10Values> darTop10TransaccionesGeneral()
 	{
 		try {
@@ -470,7 +490,7 @@ public class BancAndes
 
 		return null;
 	}
-	
+
 	public ArrayList<Top10Values> darTop10TransaccionesOficina(int oficina)
 	{
 		try {
@@ -482,7 +502,59 @@ public class BancAndes
 
 		return null;
 	}
+
+	public ArrayList<TransaccionValues> darOperacionesV2(String fechaInicial, String fechaFinal, String tipoOperacion, int monto)
+	{
+		try
+		{
+			return iter4Dao.darOperacionesV2(fechaInicial, fechaFinal, tipoOperacion, monto);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
+	public ArrayList<ConsignacionValues> darConsignacionesIter4(int monto, String tipoPrestamo) throws Exception
+	{
+		try
+		{
+			return iter4Dao.darConsignacionesIter4(monto, tipoPrestamo);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public ArrayList<TransaccionValues> darOperacionesV3(String fechaInicial, String fechaFinal, 
+			String tipoOperacion, int monto) throws Exception
+			{
+		try
+		{
+			return iter4Dao.darOperacionesV3(fechaInicial, fechaFinal, tipoOperacion, monto);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+			}
+
+	public ArrayList consultarPuntoAtencionIter4(int id1, int id2) throws Exception
+	{
+		try
+		{
+			return iter4Dao.consultarPuntoAtencionIter4(id1, id2);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
 	public ArrayList<TransaccionValues> darOperacionesCliente( String ordenarPor, String filtrarPor, String desasc,String correoCliente)
 	{
 		try {
@@ -494,20 +566,8 @@ public class BancAndes
 
 		return null;
 	}
-	
-	public ArrayList<TransaccionValues> darOperacionesGeneral( String ordenarPor, String filtrarPor, String desasc)
-	{
-		try {
-			return consultaOperacionesDAO.darOperacionesGeneral(ordenarPor, filtrarPor, desasc) ;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
-		return null;
-	}
-	
-	public ArrayList<TransaccionValues> darCuentasOficina( int idOficina, String ordenarPor, String desasc, String filtrarPor)
+	public ArrayList<TransaccionValues> darOperacionesOficina( int idOficina, String ordenarPor, String desasc, String filtrarPor)
 	{
 		try {
 			return consultaOperacionesDAO.darOperacionesOficina(idOficina, ordenarPor, desasc, filtrarPor);
@@ -518,8 +578,8 @@ public class BancAndes
 
 		return null;
 	}
-	
-	public ArrayList<TransaccionValues> darCuentasGeneral( String ordenarPor, String filtrarPor, String desasc)
+
+	public ArrayList<TransaccionValues> darOperacionesGeneral( String ordenarPor, String filtrarPor, String desasc)
 	{
 		try {
 			return consultaOperacionesDAO.darOperacionesGeneral(ordenarPor, desasc, filtrarPor) ;
@@ -530,7 +590,7 @@ public class BancAndes
 
 		return null;
 	}
-	
+
 	public ArrayList<PrestamoValues> darPrestamosCliente( String correoCliente, String ordenarPor, String filtrarPor, String desasc)
 	{
 		try {
@@ -542,7 +602,7 @@ public class BancAndes
 
 		return null;
 	}
-	
+
 	public ArrayList<PrestamoValues> darPrestamosOficina( int idOficina, String ordenarPor, String filtrarPor, String desasc)
 	{
 		try {
@@ -554,7 +614,7 @@ public class BancAndes
 
 		return null;
 	}
-	
+
 	public ArrayList<PrestamoValues> darPrestamosGeneral( String ordenarPor, String filtrarPor, String desasc)
 	{
 		try {
@@ -567,7 +627,7 @@ public class BancAndes
 		return null;
 	}
 
-	
+
 	/**
 	 * Método que se encarga de solucionar el RF12 "Asociar cuenta de cliente empresarial a empleado"
 	 */
@@ -577,26 +637,106 @@ public class BancAndes
 		{
 			asociarDAO.registrarAsociarCuenta(correoEmpleador, cuentaEmpleador, correoEmpleado, cuentaEmpleado, valorPagar, frecuencia);
 		} 
-		
+
 		catch (Exception e) 
 		{
 			// TODO Auto-generated catch block
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
-		
+
 	}
-	
-	public ArrayList registrarPagarNomina(int cuenta, String correoCliente)
+
+
+	/**
+	 * Método que se encarga de resolver RFC7
+	 * @param fecha1
+	 * @param fecha2
+	 * @param monto
+	 * @param tipo
+	 */
+	public ArrayList consultarOperacionesV2(String fecha1, String fecha2, int monto, String tipo)
 	{
-		try
+		try 
 		{
-			return pagarNominaDAO.registrarPagarNomina(cuenta, correoCliente);
+			return iter4Dao.darOperacionesV2(fecha1, fecha2, tipo, monto);
 		}
-		catch(Exception e)
+
+		catch (Exception e) 
 		{
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		return null;
+	}
+
+	/**
+	 * Método que se encarga de resolver RFC8
+	 * @param fecha1
+	 * @param fecha2
+	 * @param monto
+	 * @param tipo
+	 * @return
+	 */
+	public ArrayList consultarOperacionesV3(String fecha1, String fecha2, int monto, String tipo)
+	{
+		try 
+		{
+			return iter4Dao.darOperacionesV3(fecha1, fecha2, tipo, monto);
+		}
+
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+
+	/**
+	 * Mpetodo que resuelve RFC9
+	 * @param monto
+	 * @param tipo
+	 * @return
+	 */
+	public ArrayList consultarConsignaciones(int monto, String tipo)
+	{
+		try 
+		{
+			return iter4Dao.darConsignacionesIter4(monto, tipo);
+		}
+
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Mpetodo que resuelve RFC10
+	 * @param punto1
+	 * @param punto2
+	 * @return
+	 */
+	public ArrayList consultarPuntosAtencion(int punto1, int punto2)
+	{
+		try 
+		{
+			return iter4Dao.consultarPuntoAtencionIter4(punto1, punto2);
+		}
+
+		catch (Exception e) 
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 
