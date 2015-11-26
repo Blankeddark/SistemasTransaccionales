@@ -14,10 +14,10 @@ public class AgregarCosasRandomMain {
 		AgregarPuntosAtencionDAO agregarPuntosAtencion = new AgregarPuntosAtencionDAO();
 		
 		//agregarOficinas.agregarOficinasRandom(700);
-		//agregarClientes.agregarClientesConThread(972000);
+		//agregarClientes.agregarClientes(972000);
 		//agregarCuentas.agregarCuentasRandom(500000);
 		//agregarPuntosAtencion.agregarPuntosAtencion(1000);
-		agregarConsignaciones.agregarConsignacionesRandom(500000);
+		//agregarConsignaciones.agregarConsignacionesRandom(500000);
 	}
 	
 	

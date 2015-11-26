@@ -2,7 +2,10 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +20,7 @@ import Fachada.BancAndes;
 public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 
 	ArrayList<TransaccionValues> operaciones;
+	String tipoOperacion = "";
 
 	public ServletConsultarOperacionesGeneral()
 	{
@@ -41,19 +45,42 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 
 		imprimirEncabezado(pw);
 		imprimirSidebarGG(pw);
+		
+		int montoInt = 0;
 
 		String botonBuscar = request.getParameter("Buscar");
 		String botonBuscarV2 = request.getParameter("BuscarV2");
 		String botonBuscarV3 = request.getParameter("BuscarV3");
 
-		String tipoOperacion = request.getParameter("tipoOperacion");
+	 tipoOperacion = request.getParameter("tipoOperacion");
+		
+		
 		String ordenarPor = request.getParameter("ordenarPor");
 		String descoasc = request.getParameter("descoasc");
 		String fechaInicial = request.getParameter("fechaInicial");
 		String fechaFinal = request.getParameter("fechaFinal");
 		String monto  = request.getParameter("monto");
 		
+		if(tipoOperacion.equals("Consignar"))
+		{
+			tipoOperacion = "C";
+		}
 		
+		else if(tipoOperacion.equals("Retirar"))
+		{
+			tipoOperacion = "R";
+		}		
+		
+		else if(tipoOperacion.equalsIgnoreCase("Pago Prestamo"))
+		{
+			tipoOperacion = "PP";
+		}
+		
+		else if(tipoOperacion.equalsIgnoreCase("Pago Prestamo Extraordinario"))
+		{
+			tipoOperacion = "PPE";
+		}
+
 
 		if (botonBuscar != null)
 		{
@@ -73,7 +100,44 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 		}
 		else if (botonBuscarV2 != null)
 		{
-			int montoInt = 0;
+			if(tipoOperacion.trim().equals("") || tipoOperacion == null)
+			{
+				imprimirConsultarOperacionesGeneralError(pw, "Seleccione un tipo de operacion");
+				imprimirWrapper(pw);
+				return;
+			}
+			
+			if (fechaInicial.equals("") || fechaFinal.equals(""))
+			{
+				imprimirConsultarOperacionesGeneralError(pw, "Tanto la fecha inicial como la final deben ser v&aacute;lidas y estr en formato dd/MM/yyyy");
+				imprimirWrapper(pw);
+				return;
+			}
+			
+			SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+			
+			Date fechaInicialDate = null;
+			try {
+				fechaInicialDate = format.parse(fechaInicial);
+			} catch (ParseException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			Date fechaFinalDate = null;
+			try {
+				fechaFinalDate = format.parse(fechaFinal);
+			} catch (ParseException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			if (! (fechaInicialDate.before(fechaFinalDate) ) )
+			{
+				imprimirConsultarOperacionesGeneralError(pw, "La fecha final debe ser posterior a la inicial");
+				imprimirWrapper(pw);
+				return;
+			}
+			
 			try
 			{
 				montoInt = Integer.parseInt(monto);
@@ -104,7 +168,20 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 
 		else if (botonBuscarV3 != null)
 		{
-			int montoInt = 0;
+			if(tipoOperacion.trim().equals("") || tipoOperacion == null)
+			{
+				imprimirConsultarOperacionesGeneralError(pw, "Seleccione un tipo de operacion");
+				imprimirWrapper(pw);
+				return;
+			}
+			
+			if (fechaInicial.equals("") || fechaFinal.equals(""))
+			{
+				imprimirConsultarOperacionesGeneralError(pw, "Tanto la fecha inicial como la final deben ser v&aacute;lidas y estr en formato dd/MM/yyyy");
+				imprimirWrapper(pw);
+				return;
+			}
+			
 			try
 			{
 				montoInt = Integer.parseInt(monto);
@@ -162,38 +239,13 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 		pw.println("<label>Tipo:</label>");
 		pw.println("<select name=\"tipoOperacion\" class=\"form-control\">");
 		pw.println("<option> </option>");
-		pw.println("<option>Abrir Cuenta</option>");
-		pw.println("<option>Cerrar Cuenta</option>");
 		pw.println("<option>Retirar</option>");
 		pw.println("<option>Consignar</option>");
-		pw.println("<option>Solicitar Prestamo</option>");
-		pw.println("<option>Aprobar Prestamo</option>");
-		pw.println("<option>Rechazar Prestamo</option>");
-		pw.println("<option>Cerrar Prestamo</option>");
 		pw.println("<option>Pago Prestamo</option>");
 		pw.println("<option>Pago Prestamo Extraordinario</option>");
 		pw.println("</select>");
 		pw.println("</div>");
 
-
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Ordenar por:</label>");
-		pw.println("<select name=\"ordenarPor\" class=\"form-control\">");
-		pw.println("<option> </option>");
-		pw.println("<option>Correo cliente</option>");
-		pw.println("<option>Fecha</option>");
-		pw.println("</select>");
-		pw.println("</div>");
-
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Orden:</label>");
-		pw.println("<select name=\"descoasc\" class=\"form-control\">");
-		pw.println("<option> </option>");
-		pw.println("<option>DESC</option>");
-		pw.println("<option>ASC</option>");
-		pw.println("</select>");
-		pw.println("</div>");
-		pw.println("<br>");
 
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Fecha inicial transaccion:</label>");
@@ -299,38 +351,12 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 		pw.println("<label>Tipo:</label>");
 		pw.println("<select name=\"tipoOperacion\" class=\"form-control\">");
 		pw.println("<option> </option>");
-		pw.println("<option>Abrir Cuenta</option>");
-		pw.println("<option>Cerrar Cuenta</option>");
 		pw.println("<option>Retirar</option>");
 		pw.println("<option>Consignar</option>");
-		pw.println("<option>Solicitar Prestamo</option>");
-		pw.println("<option>Aprobar Prestamo</option>");
-		pw.println("<option>Rechazar Prestamo</option>");
-		pw.println("<option>Cerrar Prestamo</option>");
 		pw.println("<option>Pago Prestamo</option>");
 		pw.println("<option>Pago Prestamo Extraordinario</option>");
 		pw.println("</select>");
 		pw.println("</div>");
-
-
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Ordenar por:</label>");
-		pw.println("<select name=\"ordenarPor\" class=\"form-control\">");
-		pw.println("<option> </option>");
-		pw.println("<option>Correo cliente</option>");
-		pw.println("<option>Fecha</option>");
-		pw.println("</select>");
-		pw.println("</div>");
-
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Orden:</label>");
-		pw.println("<select name=\"descoasc\" class=\"form-control\">");
-		pw.println("<option> </option>");
-		pw.println("<option>DESC</option>");
-		pw.println("<option>ASC</option>");
-		pw.println("</select>");
-		pw.println("</div>");
-		pw.println("<br>");
 
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Fecha inicial transaccion:</label>");
@@ -387,7 +413,7 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 		pw.println("</thead>");
 		pw.println("<tbody>");
 
-		parsearTablaOperaciones(operaciones, pw);
+		parsearTablaOperacionesFake(operaciones, tipoOperacion, pw);
 
 		pw.println("</tbody>");
 		pw.println("</table>");
@@ -431,38 +457,12 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 		pw.println("<label>Tipo:</label>");
 		pw.println("<select name=\"tipoOperacion\" class=\"form-control\">");
 		pw.println("<option> </option>");
-		pw.println("<option>Abrir Cuenta</option>");
-		pw.println("<option>Cerrar Cuenta</option>");
 		pw.println("<option>Retirar</option>");
 		pw.println("<option>Consignar</option>");
-		pw.println("<option>Solicitar Prestamo</option>");
-		pw.println("<option>Aprobar Prestamo</option>");
-		pw.println("<option>Rechazar Prestamo</option>");
-		pw.println("<option>Cerrar Prestamo</option>");
 		pw.println("<option>Pago Prestamo</option>");
 		pw.println("<option>Pago Prestamo Extraordinario</option>");
 		pw.println("</select>");
 		pw.println("</div>");
-
-
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Ordenar por:</label>");
-		pw.println("<select name=\"ordenarPor\" class=\"form-control\">");
-		pw.println("<option> </option>");
-		pw.println("<option>Correo cliente</option>");
-		pw.println("<option>Fecha</option>");
-		pw.println("</select>");
-		pw.println("</div>");
-
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Orden:</label>");
-		pw.println("<select name=\"descoasc\" class=\"form-control\">");
-		pw.println("<option> </option>");
-		pw.println("<option>DESC</option>");
-		pw.println("<option>ASC</option>");
-		pw.println("</select>");
-		pw.println("</div>");
-		pw.println("<br>");
 
 		pw.println("<div class=\"form-group\">");
 		pw.println("<label>Fecha inicial transaccion:</label>");
@@ -491,7 +491,7 @@ public class ServletConsultarOperacionesGeneral extends ASParsingServlet {
 
 		pw.println("</form>");
 		pw.println("</div>");
-		pw.println("<font color=\"red\">No se pudo realizar la b&uacute;squeda. ERROR:<br>" + error);
+		pw.println("<font color=\"red\">No se pudo realizar la b&uacute;squeda. ERROR:<br>" + error + "</font>");
 		pw.println("<!-- /.col-lg-6 (nested) -->");
 		pw.println("</div>");
 		pw.println("</div>");

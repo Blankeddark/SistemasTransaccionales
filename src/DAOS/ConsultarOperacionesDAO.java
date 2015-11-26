@@ -342,7 +342,7 @@ public class ConsultarOperacionesDAO
 			if(filtrarPor.trim().equals("") && ordenarPor.trim().equals(""))
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES");
-				while(rs.next())
+				while(rs.next() && operaciones.size() < 50)
 				{
 
 					int idTransaccion = rs.getInt("ID_TRANSACCION");
@@ -359,7 +359,7 @@ public class ConsultarOperacionesDAO
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES ORDER BY " + ordenarPor + " " + descoasc);
 
-				while(rs.next())
+				while(rs.next() && operaciones.size() < 50)
 				{
 
 					int idTransaccion = rs.getInt("ID_TRANSACCION");
@@ -376,7 +376,7 @@ public class ConsultarOperacionesDAO
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES WHERE TIPO = "  + filtrarPor);
 
-				while(rs.next())
+				while(rs.next() && operaciones.size() < 50)
 				{
 
 					int idTransaccion = rs.getInt("ID_TRANSACCION");
@@ -394,7 +394,7 @@ public class ConsultarOperacionesDAO
 			{
 				ResultSet rs = s.executeQuery("SELECT * FROM TRANSACCIONES WHERE TIPO = '" + filtrarPor
 						+ "'  ORDER BY  " + ordenarPor + "   " + descoasc);
-				while(rs.next())
+				while(rs.next() && operaciones.size() < 50)
 				{
 
 					int idTransaccion = rs.getInt("ID_TRANSACCION");

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import vos.UsuarioValues;
 import _ASTools.UsaRandom;
@@ -155,10 +156,10 @@ public class AgregarClientesDAO {
 		Statement s = conexion.createStatement();
 		for (int i = 0; i < cantidadClientes/2; i++)
 		{
-//			if (i % 30 == 0)
-//			{
-//				TimeUnit.MILLISECONDS.sleep(500);
-//			}
+		if (i % 30 == 0)
+			{
+				TimeUnit.MILLISECONDS.sleep(400);
+			}
 			try
 			{
 			agregarUsuarioRandom(random);

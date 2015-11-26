@@ -40,7 +40,7 @@ public class Iter4DAO
 		{
 			File arch = new File(path+ARCHIVO_CONEXION);
 			Properties prop = new Properties();
-			FileInputStream in = new FileInputStream (arch);
+			FileInputStream in = new FileInputStream ("C:/Users/Sergio/git/PROJECT_Sistrans/SistemasTransaccionales/WebContent/conexion.properties");
 
 			prop.load(in);
 			in.close();
@@ -137,6 +137,14 @@ public class Iter4DAO
 			establecerConexion(cadenaConexion, usuario, clave);
 
 			Statement s = conexion.createStatement();
+			
+			System.out.println("SELECT * FROM (SELECT ID_TRANSACCION AS ID  "
+					+ "FROM (SELECT CORREO AS CORREO_USUARIO "
+					+ "FROM (SELECT CORREO_CLIENTE AS CORREO FROM PRESTAMOS "
+					+ "WHERE TIPO = ' " + tipoPrestamo + " ' ) NATURAL JOIN CLIENTES ) "
+					+ "NATURAL JOIN TRANSACCIONES WHERE TIPO = 'C') NATURAL JOIN CONSIGNACIONES"
+					+ " WHERE MONTO >= " + monto);
+			
 			ResultSet rs = s.executeQuery("SELECT * FROM (SELECT ID_TRANSACCION AS ID  "
 					+ "FROM (SELECT CORREO AS CORREO_USUARIO "
 					+ "FROM (SELECT CORREO_CLIENTE AS CORREO FROM PRESTAMOS "
@@ -144,7 +152,7 @@ public class Iter4DAO
 					+ "NATURAL JOIN TRANSACCIONES WHERE TIPO = 'C') NATURAL JOIN CONSIGNACIONES"
 					+ " WHERE MONTO >= " + monto);
 
-			while(rs.next())
+			while(rs.next() && consignaciones.size() < 50)
 			{		
 				int id = rs.getInt("ID");
 				int idCuentaOrigen = rs.getInt("ID_CUENTA_ORIGEN");
@@ -155,6 +163,11 @@ public class Iter4DAO
 			}
 
 
+		}
+		
+		catch (Exception e)
+		{
+			e.printStackTrace();
 		}
 
 		finally
@@ -177,24 +190,26 @@ public class Iter4DAO
 			Statement s = conexion.createStatement();
 			String[] inicialArray = fechaInicial.split("/");
 			String[] finalArray = fechaFinal.split("/");	
-			@SuppressWarnings("deprecation")
-			Date inicial = new Date(Integer.parseInt(inicialArray[2]), Integer.parseInt(inicialArray[1]), Integer.parseInt(inicialArray[0]));
-			@SuppressWarnings("deprecation")
-			Date finalFecha = new Date(Integer.parseInt(finalArray[2]), Integer.parseInt(finalArray[1]), Integer.parseInt(finalArray[0]));
+//			@SuppressWarnings("deprecation")
+//			Date inicial = new Date(Integer.parseInt(inicialArray[2]), Integer.parseInt(inicialArray[1]), Integer.parseInt(inicialArray[0]));
+//			@SuppressWarnings("deprecation")
+//			Date finalFecha = new Date(Integer.parseInt(finalArray[2]), Integer.parseInt(finalArray[1]), Integer.parseInt(finalArray[0]));
 			ResultSet rs = s.executeQuery("SELECT * FROM CLIENTES WHERE ROWNUM = 1");
 
-			if(!tipoOperacion.trim().equals(" "))
+			if(tipoOperacion.trim().equals(""))
 			{
-				rs = s.executeQuery("SELECT * FROM TRANSACCIONES WHERE TIPO = '" + tipoOperacion + "' " 
-						+ " AND FECHA_TRANSACCION BETWEEN TO_DATE ('" + inicial + "' , 'yyyy/mm/dd/') "
-						+ " AND TO_DATE ('" + finalFecha + "' , 'yyyy/mm/dd/') " );
+				rs = s.executeQuery("SELECT * FROM TRANSACCIONES WHERE " 
+						+ " FECHA_TRANSACCION BETWEEN TO_DATE ('" + fechaInicial + "' , 'dd/mm/yyyy/') "
+						+ " AND TO_DATE ('" + fechaFinal + "' , 'dd/mm/yyyy/') " );
 			}
 
 
 			else 
 			{   
 				String tabla = "";
-
+				String columnaMonto = "MONTO";
+				String identificadorId = "ID";
+				
 				if(tipoOperacion.equals("C"))
 				{
 					tabla = "CONSIGNACIONES";
@@ -208,21 +223,28 @@ public class Iter4DAO
 				else if(tipoOperacion.equals("PP") || tipoOperacion.equals("PPE"))
 				{
 					tabla = "PAGOS_PRESTAMO";
+					columnaMonto = "MONTO_PAGADO";
+					identificadorId = "ID_PAGO";
 				}
 
 				else
 				{
-					throw new Exception ("El tipo de operación ingresado no es una transacción que maneje montos");
+					throw new Exception ("El tipo de operacion ingresado no es una transaccion que maneje montos");
 				}
+				
+				System.out.println("SELECT * FROM (SELECT * FROM TRANSACCIONES WHERE TIPO = '" + tipoOperacion + "' " 
+						+ " AND FECHA_TRANSACCION BETWEEN TO_DATE ('" + fechaInicial + "' , 'dd/mm/yyyy/') "
+						+ " AND TO_DATE ('" + fechaFinal + "' , 'dd/mm/yyyy/')) NATURAL JOIN (SELECT " + identificadorId + "  AS ID_TRANSACCION, " + columnaMonto + " FROM " + tabla + " )"
+						+ " WHERE " + columnaMonto + "  >= " + monto);
 
 				rs = s.executeQuery("SELECT * FROM (SELECT * FROM TRANSACCIONES WHERE TIPO = '" + tipoOperacion + "' " 
-						+ " AND FECHA_TRANSACCION BETWEEN TO_DATE ('" + inicial + "' , 'yyyy/mm/dd/') "
-						+ " AND TO_DATE ('" + finalFecha + "' , 'yyyy/mm/dd/')) NATURAL JOIN (SELECT ID AS ID_TRANSACCION, MONTO FROM '" + tabla + "' )"
-						+ " WHERE MONTO >= " + monto);
+						+ " AND FECHA_TRANSACCION BETWEEN TO_DATE ('" + fechaInicial + "' , 'dd/mm/yyyy/') "
+						+ " AND TO_DATE ('" + fechaFinal + "' , 'dd/mm/yyyy/')) NATURAL JOIN (SELECT " + identificadorId + "  AS ID_TRANSACCION, " + columnaMonto + " FROM " + tabla + " )"
+						+ " WHERE " + columnaMonto + "  >= " + monto);
 			}
 
 
-			while(rs.next())
+			while( rs.next() && transacciones.size() < 50)
 			{		
 				int id = rs.getInt("ID_TRANSACCION");
 				String correoUsuario = rs.getString("CORREO_USUARIO");
@@ -234,6 +256,10 @@ public class Iter4DAO
 			}
 
 
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 
 		finally
@@ -253,10 +279,10 @@ public class Iter4DAO
 		{
 			establecerConexion(cadenaConexion, usuario, clave);
 			Statement s = conexion.createStatement();
-			String[] inicialArray = fechaInicial.split("/");
+			String[] fechaInicialArray = fechaInicial.split("/");
 			String[] finalArray = fechaFinal.split("/");	
 			@SuppressWarnings("deprecation")
-			Date inicial = new Date(Integer.parseInt(inicialArray[2]), Integer.parseInt(inicialArray[1]), Integer.parseInt(inicialArray[0]));
+			Date inicial = new Date(Integer.parseInt(fechaInicialArray[2]), Integer.parseInt(fechaInicialArray[1]), Integer.parseInt(fechaInicialArray[0]));
 			@SuppressWarnings("deprecation")
 			Date finalFecha = new Date(Integer.parseInt(finalArray[2]), Integer.parseInt(finalArray[1]), Integer.parseInt(finalArray[0]));
 			ResultSet rs = s.executeQuery("SELECT * FROM CLIENTES WHERE ROWNUM = 1");
@@ -264,8 +290,8 @@ public class Iter4DAO
 			if(!tipoOperacion.trim().equals(" "))
 			{
 				rs = s.executeQuery("SELECT * FROM TRANSACCIONES WHERE TIPO != '" + tipoOperacion +  "' "  
-						+ " AND FECHA_TRANSACCION BETWEEN TO_DATE ('" + inicial + "' , 'yyyy/mm/dd/') "
-						+ " AND TO_DATE ('" + finalFecha + "' , 'yyyy/mm/dd/') " );
+						+ " AND FECHA_TRANSACCION BETWEEN TO_DATE ('" + fechaInicial + "' , 'dd/mm/yyyy/') "
+						+ " AND TO_DATE ('" + fechaFinal + "' , 'dd/mm/yyyy/') " );
 			}
 
 			else if(monto != 0)
@@ -278,8 +304,8 @@ public class Iter4DAO
 					tabla1 = "RETIROS";
 					tabla2 = "PAGOS_PRESTAMO";
 					rs = s.executeQuery("SELECT * FROM (SELECT * FROM TRANSACCIONES WHERE TIPO != 'CONSIGNACIONES' "  
-							+ " AND FECHA_TRANSACCION BETWEEN TO_DATE ('" + inicial + "' , 'yyyy/mm/dd/') "
-							+ " AND TO_DATE ('" + finalFecha + "' , 'yyyy/mm/dd/')) NATURAL JOIN "
+							+ " AND FECHA_TRANSACCION BETWEEN TO_DATE ('" + fechaInicial + "' , 'dd/mm/yyyy/') "
+							+ " AND TO_DATE ('" + fechaFinal + "' , 'dd/mm/yyyy/')) NATURAL JOIN "
 									+ " (SELECT ID AS ID_TRANSACCION, MONTO FROM "
 									+ "( (SELECT ID, MONTO_PAGADO AS MONTO FROM PAGOS_PRESTAMO) UNION (SELECT ID, MONTO FROM RETIROS) ) )"
 							+ " WHERE MONTO < " + monto);
@@ -290,8 +316,8 @@ public class Iter4DAO
 					tabla1 = "RETIROS";
 					tabla2 = "PAGOS_PRESTAMO";
 					rs = s.executeQuery("SELECT * FROM (SELECT * FROM TRANSACCIONES WHERE TIPO != 'PAGOS_PRESTAMO' "  
-							+ " AND FECHA_TRANSACCION BETWEEN TO_DATE ('" + inicial + "' , 'yyyy/mm/dd/') "
-							+ " AND TO_DATE ('" + finalFecha + "' , 'yyyy/mm/dd/')) NATURAL JOIN "
+							+ " AND FECHA_TRANSACCION BETWEEN TO_DATE ('" + fechaInicial + "' , 'dd/mm/yyyy/') "
+							+ " AND TO_DATE ('" + fechaFinal + "' , 'dd/mm/yyyy/')) NATURAL JOIN "
 									+ " ( SELECT ID AS ID_TRANSACCION, MONTO FROM "
 									+ "( (SELECT ID, MONTO FROM RETIROS) UNION (SELECT ID, MONTO FROM CONSIGNACIONES) ) )"
 							+ " WHERE MONTO < " + monto);
@@ -305,8 +331,8 @@ public class Iter4DAO
 					tabla2 = "CONSIGNACIONES";
 					
 					rs = s.executeQuery("SELECT * FROM (SELECT * FROM TRANSACCIONES WHERE TIPO != 'RETIROS' "  
-							+ " AND FECHA_TRANSACCION BETWEEN TO_DATE ('" + inicial + "' , 'yyyy/mm/dd/') "
-							+ " AND TO_DATE ('" + finalFecha + "' , 'yyyy/mm/dd/')) NATURAL JOIN "
+							+ " AND FECHA_TRANSACCION BETWEEN TO_DATE ('" + fechaInicial + "' , 'dd/mm/yyyy/') "
+							+ " AND TO_DATE ('" + fechaFinal + "' , 'dd/mm/yyyy/')) NATURAL JOIN "
 									+ " ( SELECT ID AS ID_TRANSACCION, MONTO FROM "
 									+ "( (SELECT ID, MONTO_PAGADO AS MONTO FROM PAGOS_PRESTAMO) UNION (SELECT ID, MONTO FROM CONSIGNACIONES) ) )"
 							+ " WHERE MONTO < " + monto);
@@ -314,13 +340,13 @@ public class Iter4DAO
 
 				else
 				{
-					throw new Exception ("El tipo de operación ingresado no es una transacción que maneje montos");
+					throw new Exception ("El tipo de operacion ingresado no es una transacción que maneje montos");
 				}
 
 			}
 
 
-			while(rs.next())
+			while(rs.next() && transacciones.size() < 50)
 			{		
 				int id = rs.getInt("ID_TRANSACCION");
 				String correoUsuario = rs.getString("CORREO_USUARIO");
@@ -332,6 +358,10 @@ public class Iter4DAO
 			}
 
 
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 
 		finally
@@ -370,26 +400,37 @@ public class Iter4DAO
 					+ " (SELECT CORREO AS CORREO_USUARIO, NOMBRE, NACIONALIDAD, TELEFONO, CIUDAD"
 					+ " FROM USUARIOS)" );
 
-			while(rs.next())
-			{		
+			ArrayList<UsuarioValues> clientes = new ArrayList<UsuarioValues>();
+			ArrayList<TransaccionValues> operaciones = new ArrayList<TransaccionValues>();
+			
+			while(rs.next() && respuesta.size() < 25)
+			{	
 				String correo = rs.getString("CORREO_USUARIO");
 				String nombre = rs.getString("NOMBRE");
 				String nacionalidad = rs.getString("NACIONALIDAD");
 				String telefono = rs.getString("TELEFONO");
 				String ciudad = rs.getString("CIUDAD");
 				UsuarioValues usuarioActual = new UsuarioValues(correo, null, null, null, null, nombre, nacionalidad, null, telefono, ciudad, null, null, null, null);
-				respuesta.add(usuarioActual);
-
-				int id = rs.getInt("ID");
+				clientes.add(usuarioActual);
+				
+				
+				
+				int id = rs.getInt("ID_TRANSACCION");
 				String tipo = rs.getString("TIPO");
 				Date fecha = rs.getDate("FECHA_TRANSACCION");
 				int idPunto = rs.getInt("ID_PUNTO_ATENCION");
 				TransaccionValues transaccionActual = new TransaccionValues(id, correo, tipo, fecha, idPunto);
-				respuesta.add(transaccionActual);
-
+				operaciones.add(transaccionActual);
+				
 			}
+			respuesta.add(clientes);
+			respuesta.add(operaciones);
 
 
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 
 		finally

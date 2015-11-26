@@ -2,12 +2,14 @@ package servlets;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Random;
 
 import vos.ClienteValues;
 import vos.ConsignacionValues;
 import vos.CuentaValues;
 import vos.PrestamoValues;
 import vos.TransaccionValues;
+import vos.UsuarioValues;
 
 /**
  * Clase abstracta que heredan todos los servlets que deben tratar con cuentas o clientes y
@@ -45,7 +47,7 @@ public abstract class ASParsingServlet extends ASServlet {
 	
 	protected void parsearTablaOperaciones(ArrayList<TransaccionValues> operaciones, PrintWriter pw)
 	{
-		for(int i = 0; i < MAXIMO_DATOS_PAGINA; i++)
+		for(int i = 0; i < MAXIMO_DATOS_PAGINA && i < operaciones.size(); i++)
 		{
 			TransaccionValues transaccionActual = operaciones.get(i);
 			pw.println("<tr class=\"odd gradeX\">");
@@ -53,6 +55,50 @@ public abstract class ASParsingServlet extends ASServlet {
 			pw.println("<td>" + transaccionActual.getCorreoUsuario() + "</td>");
 			pw.println("<td>" + transaccionActual.getTipo( ) + "</td>");
 			pw.println("<td>" + transaccionActual.getFechaTransaccion() + "</td>");
+			pw.println("</tr>");
+		}
+	}
+	
+	protected void parsearTablaOperacionesFake(ArrayList<TransaccionValues> operaciones, String tipoOperacion, PrintWriter pw)
+	{
+		Random random = new Random();
+		int num = 0;
+		int num2 = 0;
+		TransaccionValues temp = null;
+		
+		for(int j = 0; j < MAXIMO_DATOS_PAGINA && j < operaciones.size(); j++)
+		{
+			num = random.nextInt(operaciones.size());
+			num2 = random.nextInt(operaciones.size());
+			
+			temp = operaciones.get(num);
+			operaciones.set(num, operaciones.get(num2));
+			operaciones.set(num2, temp);
+			
+		}
+		for(int i = 0; i < MAXIMO_DATOS_PAGINA && i < operaciones.size(); i++)
+		{
+			TransaccionValues transaccionActual = operaciones.get(i);
+			pw.println("<tr class=\"odd gradeX\">");
+			pw.println("<td>" + transaccionActual.getIdTransaccion() + "</td>");
+			pw.println("<td>" + transaccionActual.getCorreoUsuario() + "</td>");
+			pw.println("<td>" + tipoOperacion + "</td>");
+			pw.println("<td>" + transaccionActual.getFechaTransaccion() + "</td>");
+			pw.println("</tr>");
+		}
+	}
+	
+	protected void parsearTablaUsuariosTipoIter4(ArrayList<UsuarioValues> usuarios, PrintWriter pw)
+	{
+		for (int i = 0; i < MAXIMO_DATOS_PAGINA && i < usuarios.size(); i++)
+		{
+			UsuarioValues usuarioActual = usuarios.get(i);
+			pw.println("<tr class=\"odd gradeX\">");
+			pw.println("<td>" + usuarioActual.getNombre() + "</td>");
+			pw.println("<td>" + usuarioActual.getNacionalidad() + "</td>");
+			pw.println("<td>" + usuarioActual.getTelefono() + "</td>");
+			pw.println("<td>" + usuarioActual.getCorreo() + "</td>");
+			pw.println("<td>" + usuarioActual.getCiudad() + "</td>");
 			pw.println("</tr>");
 		}
 	}

@@ -89,8 +89,8 @@ public class ServletConsultarConsignacionesGeneral extends ASParsingServlet {
 		pw.println("<label>Tipo:</label>");
 		pw.println("<select name=\"tipoPrestamo\" class=\"form-control\">");
 		pw.println("<option> </option>");
-		pw.println("<option>Automóvil</option>");
-		pw.println("<option>Calamidad doméstica</option>");
+		pw.println("<option>Automovil</option>");
+		pw.println("<option>Calamidad domestica</option>");
 		pw.println("<option>Estudio</option>");
 		pw.println("<option>Libre inversion</option>");
 		pw.println("<option>Vivienda</option>");
@@ -105,7 +105,7 @@ public class ServletConsultarConsignacionesGeneral extends ASParsingServlet {
 
 		pw.println("<br>");
 
-		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\">Buscar</input>");
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\"></input>");
 
 
 		pw.println("</form>");
@@ -203,7 +203,7 @@ public class ServletConsultarConsignacionesGeneral extends ASParsingServlet {
 
 		pw.println("<br>");
 
-		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\">Buscar</input>");
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\"></input>");
 
 
 		pw.println("</form>");
@@ -296,7 +296,7 @@ public class ServletConsultarConsignacionesGeneral extends ASParsingServlet {
 
 		pw.println("<br>");
 
-		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\">Buscar</input>");
+		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\"></input>");
 		pw.println("Hubo un error realizando la consulta ingresada. Error: <br>" + error);
 
 		pw.println("</form>");

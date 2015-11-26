@@ -89,26 +89,26 @@ public class ServletConsultarPrestamosGeneral extends ASParsingServlet {
 		pw.println("</div>");
 
 
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Ordenar por:</label>");
-		pw.println("<select name=\"ordenarPor\" class=\"form-control\">");
-		pw.println("<option> </option>");
-		pw.println("<option>Correo cliente</option>");
-		pw.println("<option>Nombre Cliente</option>");
-		pw.println("<option>Saldo pendiente</option>");
-		pw.println("<option>Cuotas pagadas</option>");
-		pw.println("</select>");
-		pw.println("</div>");
-
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Orden:</label>");
-		pw.println("<select name=\"descoasc\" class=\"form-control\">");
-		pw.println("<option> </option>");
-		pw.println("<option>DESC</option>");
-		pw.println("<option>ASC</option>");
-		pw.println("</select>");
-		pw.println("</div>");
-		pw.println("<br>");
+//		pw.println("<div class=\"form-group\">");
+//		pw.println("<label>Ordenar por:</label>");
+//		pw.println("<select name=\"ordenarPor\" class=\"form-control\">");
+//		pw.println("<option> </option>");
+//		pw.println("<option>Correo cliente</option>");
+//		pw.println("<option>Nombre Cliente</option>");
+//		pw.println("<option>Saldo pendiente</option>");
+//		pw.println("<option>Cuotas pagadas</option>");
+//		pw.println("</select>");
+//		pw.println("</div>");
+//
+//		pw.println("<div class=\"form-group\">");
+//		pw.println("<label>Orden:</label>");
+//		pw.println("<select name=\"descoasc\" class=\"form-control\">");
+//		pw.println("<option> </option>");
+//		pw.println("<option>DESC</option>");
+//		pw.println("<option>ASC</option>");
+//		pw.println("</select>");
+//		pw.println("</div>");
+//		pw.println("<br>");
 
 		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\"></input>");
 
@@ -219,26 +219,26 @@ public class ServletConsultarPrestamosGeneral extends ASParsingServlet {
 		pw.println("</div>");
 
 
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Ordenar por:</label>");
-		pw.println("<select name=\"ordenarPor\" class=\"form-control\">");
-		pw.println("<option> </option>");
-		pw.println("<option>Correo cliente</option>");
-		pw.println("<option>Nombre Cliente</option>");
-		pw.println("<option>Saldo pendiente</option>");
-		pw.println("<option>Cuotas pagadas</option>");
-		pw.println("</select>");
-		pw.println("</div>");
-
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Orden:</label>");
-		pw.println("<select name=\"descoasc\" class=\"form-control\">");
-		pw.println("<option> </option>");
-		pw.println("<option>DESC</option>");
-		pw.println("<option>ASC</option>");
-		pw.println("</select>");
-		pw.println("</div>");
-		pw.println("<br>");
+//		pw.println("<div class=\"form-group\">");
+//		pw.println("<label>Ordenar por:</label>");
+//		pw.println("<select name=\"ordenarPor\" class=\"form-control\">");
+//		pw.println("<option> </option>");
+//		pw.println("<option>Correo cliente</option>");
+//		pw.println("<option>Nombre Cliente</option>");
+//		pw.println("<option>Saldo pendiente</option>");
+//		pw.println("<option>Cuotas pagadas</option>");
+//		pw.println("</select>");
+//		pw.println("</div>");
+//
+//		pw.println("<div class=\"form-group\">");
+//		pw.println("<label>Orden:</label>");
+//		pw.println("<select name=\"descoasc\" class=\"form-control\">");
+//		pw.println("<option> </option>");
+//		pw.println("<option>DESC</option>");
+//		pw.println("<option>ASC</option>");
+//		pw.println("</select>");
+//		pw.println("</div>");
+//		pw.println("<br>");
 
 		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\"></input>");
 
@@ -321,26 +321,26 @@ public class ServletConsultarPrestamosGeneral extends ASParsingServlet {
 		pw.println("</div>");
 
 
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Ordenar por:</label>");
-		pw.println("<select name=\"ordenarPor\" class=\"form-control\">");
-		pw.println("<option> </option>");
-		pw.println("<option>Correo cliente</option>");
-		pw.println("<option>Nombre Cliente</option>");
-		pw.println("<option>Saldo pendiente</option>");
-		pw.println("<option>Cuotas pagadas</option>");
-		pw.println("</select>");
-		pw.println("</div>");
-
-		pw.println("<div class=\"form-group\">");
-		pw.println("<label>Orden:</label>");
-		pw.println("<select name=\"descoasc\" class=\"form-control\">");
-		pw.println("<option> </option>");
-		pw.println("<option>DESC</option>");
-		pw.println("<option>ASC</option>");
-		pw.println("</select>");
-		pw.println("</div>");
-		pw.println("<br>");
+//		pw.println("<div class=\"form-group\">");
+//		pw.println("<label>Ordenar por:</label>");
+//		pw.println("<select name=\"ordenarPor\" class=\"form-control\">");
+//		pw.println("<option> </option>");
+//		pw.println("<option>Correo cliente</option>");
+//		pw.println("<option>Nombre Cliente</option>");
+//		pw.println("<option>Saldo pendiente</option>");
+//		pw.println("<option>Cuotas pagadas</option>");
+//		pw.println("</select>");
+//		pw.println("</div>");
+//
+//		pw.println("<div class=\"form-group\">");
+//		pw.println("<label>Orden:</label>");
+//		pw.println("<select name=\"descoasc\" class=\"form-control\">");
+//		pw.println("<option> </option>");
+//		pw.println("<option>DESC</option>");
+//		pw.println("<option>ASC</option>");
+//		pw.println("</select>");
+//		pw.println("</div>");
+//		pw.println("<br>");
 
 		pw.println("<input type=\"submit\" class=\"btn btn-primary\" value=\"Buscar\"></input>");
 
